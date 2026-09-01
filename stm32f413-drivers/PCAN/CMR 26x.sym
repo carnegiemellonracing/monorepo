@@ -199,42 +199,6 @@ Var=PID_controls_target_yaw_rate signed 16,16 /f:0.01 /p:2
 Var=PID_controls_bias signed 32,16 /f:0.01 /p:2
 Var=PID_controls_pid signed 48,16 /f:0.01 /p:2
 
-[CONTROLS_SOLVER_AUX]
-ID=7FFh
-DLC=4
-CycleTime=10
-TimeOut=50
-Var=combined_normalized_throttle signed 0,16
-Var=SOLVER_allow_regen unsigned 16,8
-Var=SOLVER_placeholder unsigned 24,8
-
-[CONTROLS_SOLVER_INPUTS]
-ID=7E6h
-DLC=8
-CycleTime=10
-TimeOut=50
-Var=SOLVER_moment_req_Nm float 0,32 /u:Nm
-Var=SOLVER_lin_accel_Nm float 32,32 /u:Nm
-
-[CONTROLS_SOLVER_OUTPUTS]
-ID=7F0h
-DLC=8
-CycleTime=10
-TimeOut=50
-Var=SOLVER_frontLeft_Nm signed 0,16 /u:Nm /f:0.1
-Var=SOLVER_frontRight_Nm signed 16,16 /u:Nm /f:0.1
-Var=SOLVER_rearLeft_Nm signed 32,16 /u:Nm /f:0.1
-Var=SOLVER_rearRight_Nm signed 48,16 /u:Nm /f:0.1
-
-[CONTROLS_SOLVER_SETTINGS]
-ID=7EEh
-DLC=6
-CycleTime=10
-TimeOut=50
-Var=SOLVER_k_lin unsigned 0,16
-Var=SOLVER_k_yaw unsigned 16,16
-Var=SOLVER_k_tie unsigned 32,16
-
 [CUBEMARS_DATA]
 ID=6E6h
 DLC=2
@@ -630,16 +594,16 @@ Var=PACK_avgCurrent_mA signed 32,32 /u:mA
 [HV_SENSORS]
 ID=306h
 DLC=4
-CycleTime=5
-TimeOut=25
+CycleTime=100
+TimeOut=500
 Var=SENSORS_packVoltage_cV unsigned 0,16
 Var=SENSORS_packCurrent_dA unsigned 16,16
 
 [IVT_CURRENT]
 ID=521h
 DLC=2
-CycleTime=10
-TimeOut=50
+CycleTime=400
+TimeOut=2000
 Var=CURRENT_muxID unsigned 0,8
 Var=CURRENT_count_state unsigned 8,8
 
@@ -658,48 +622,6 @@ CycleTime=10
 TimeOut=50
 Var=CELL_balanceRequest unsigned 0,8 /e:HVC_Balance_State
 Var=CELL_threshold unsigned 8,16
-
-[MOTORPOWER_STATE]
-ID=52Eh
-DLC=8
-CycleTime=5
-TimeOut=25
-Var=STATE_motor_power_FL unsigned 0,16
-Var=STATE_motor_power_FR unsigned 16,16
-Var=STATE_motor_power_RL unsigned 32,16
-Var=STATE_motor_power_RR unsigned 48,16
-
-[MOVELLA_STATUS]
-ID=772h
-DLC=4
-CycleTime=10
-TimeOut=50
-Var=STATUS_filter_mode_1 unsigned 0,2
-Var=STATUS_have_gnss_time_pulse unsigned 2,1
-Var=STATUS_rtk_status unsigned 3,2
-Var=STATUS_reserved_4 unsigned 5,3
-Var=STATUS_clipflag_mag_z unsigned 8,1
-Var=STATUS_reserved_2 unsigned 9,2
-Var=STATUS_clipping_indication unsigned 11,1
-Var=STATUS_reserved_3 unsigned 12,1
-Var=STATUS_sync_in_marker unsigned 13,1
-Var=STATUS_sync_out_marker unsigned 14,1
-Var=STATUS_filter_mode_2 unsigned 15,1
-Var=STATUS_clipflag_acc_x unsigned 16,1
-Var=STATUS_clipflag_acc_y unsigned 17,1
-Var=STATUS_clipflag_acc_z unsigned 18,1
-Var=STATUS_clipflag_gyr_x unsigned 19,1
-Var=STATUS_clipflag_gyr_y unsigned 20,1
-Var=STATUS_clipflag_gyr_z unsigned 21,1
-Var=STATUS_clipflag_mag_x unsigned 22,1
-Var=STATUS_clipflag_mag_y unsigned 23,1
-Var=STATUS_self_test unsigned 24,1
-Var=STATUS_filter_valid unsigned 25,1
-Var=STATUS_gnss_fix unsigned 26,1
-Var=STATUS_no_rotation_update unsigned 27,2
-Var=STATUS_representative_motion unsigned 29,1
-Var=STATUS_clock_bias_estimation unsigned 30,1
-Var=STATUS_reserved_1 unsigned 31,1
 
 [REAR_SLIP_RATIOS]
 ID=7E9h
@@ -1723,6 +1645,14 @@ Var=Over_Voltage_Count unsigned 40,8
 Var=Under_Voltage_Count unsigned 48,8
 Var=Over_Temp_Count unsigned 56,8
 
+[CDC_Motor_Power]
+ID=52Eh
+DLC=8
+Var=motor_power_FL unsigned 0,16
+Var=motor_power_FR unsigned 16,16
+Var=motor_power_RL unsigned 32,16
+Var=motor_power_RR unsigned 48,16
+
 [DIM_Config1_Drv0]
 ID=601h
 DLC=4
@@ -2038,6 +1968,27 @@ DLC=1
 Var=TEST_ID unsigned 0,7	// Randomly generated test id sent everytime the car states up
 Var=TEST_STATUS bit 7,1	// 1- START TEST, 0 - STOP TEST
 
+[CDC_Solver_Inputs]
+ID=7E6h
+DLC=8
+Var=Moment_REQ float 0,32
+Var=Lin_Accel_REQ float 32,32
+
+[CDC_Solver_Outputs]
+ID=7F0h
+DLC=8
+Var=Torque_FL signed 0,16
+Var=Torque_FR signed 16,16
+Var=Torque_RL signed 32,16
+Var=Torque_RR signed 48,16
+
+[CDC_Solver_Settings]
+ID=7EEh
+DLC=6
+Var=k_lin unsigned 0,16 /u:Unit
+Var=k_yaw unsigned 16,16 /u:Unit
+Var=k_tie unsigned 32,16 /u:Unit
+
 [VSM_Git]
 ID=7F1h
 DLC=8
@@ -2179,6 +2130,33 @@ Var=rl_x signed 0,16 /u:m/s /f:0.01
 Var=rl_y signed 16,16 /u:m/s /f:0.01
 Var=rr_x signed 32,16 /u:m/s /f:0.01
 Var=rr_y signed 48,16 /u:m/s /f:0.01
+
+[Movella_MTi860G_Status]
+ID=772h
+DLC=4
+Color=008000h
+Var=Movella_fitler_mode unsigned 0,2 /e:MovellaFilterMode
+Var=Movella_have_gnss_time_pulse unsigned 2,1
+Var=Movella_rtk_status unsigned 3,2
+Var=Movella_clipflag_mag_z unsigned 8,1
+Var=Movella_clipping_indication unsigned 11,1
+Var=Movella_sync_in_marker unsigned 13,1
+Var=Movella_sync_out_marker unsigned 14,1
+Var=Movella_filter_mode_2 unsigned 15,1
+Var=Movella_clipflag_acc_x unsigned 16,1
+Var=Movella_clipflag_acc_y unsigned 17,1
+Var=Movella_clipflag_acc_z unsigned 18,1
+Var=Movella_clipflag_gyr_x unsigned 19,1
+Var=Movella_clipflag_gyr_y unsigned 20,1
+Var=Movella_clipflag_gyr_z unsigned 21,1
+Var=Movella_clipflag_mag_x unsigned 22,1
+Var=Movella_clipflag_mag_y unsigned 23,1
+Var=Movella_self_test unsigned 24,1
+Var=Movella_filter_valid unsigned 25,1
+Var=Movella_gnss_fix unsigned 26,1
+Var=Movella_no_rotation_update unsigned 27,2
+Var=Movella_representative_motion unsigned 29,1
+Var=Movella_clock_bias_estimation unsigned 30,1
 
 [LV_BMS_Voltages1]
 ID=7F7h
