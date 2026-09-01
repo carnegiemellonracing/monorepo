@@ -141,6 +141,16 @@ void stateInit(void) {
 }
 
 /**
+ * @brief Gets current external state
+ *
+ * @return Current state.
+ */
+cmr_canState_t getCurrentExternalState(TickType_t lastWakeTime) {
+    cmr_canVSMState_t vsmState = getCurrentState();
+    return vsmToCANState[vsmState];
+}
+
+/**
  * @brief Gets the current state.
  *
  * @return Current state.

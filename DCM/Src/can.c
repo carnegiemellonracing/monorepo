@@ -855,41 +855,16 @@ static void canTX100Hz(void *pvParameters) {
 
         sendHeartbeat(lastWakeTime);
 
-        // Solver
-        // canTX(CMR_CAN_BUS_VEH, CMR_CANID_CONTROLS_SOLVER_INPUTS, &solver_inputs, sizeof(cmr_can_solver_inputs_t), canTX100Hz_period_ms);
-        // canTX(CMR_CAN_BUS_VEH, CMR_CANID_CONTROLS_SOLVER_AUX, &solver_aux, sizeof(cmr_can_solver_aux_t), canTX100Hz_period_ms);
-        // canTX(CMR_CAN_BUS_VEH, CMR_CANID_CONTROLS_SOLVER_OUTPUTS, &solver_torques, sizeof(solver_torques), canTX100Hz_period_ms);
-        // canTX(CMR_CAN_BUS_VEH, CMR_CANID_CONTROLS_SOLVER_SETTINGS, &solver_settings, sizeof(cmr_can_solver_settings_t), canTX100Hz_period_ms);
-
-		// SF
-		const cmr_canDCMSafetyFilterStates_t *sfStatesInfo = getSafetyFilterInfo();
-		cmr_canDCMMotorPower_t *motorPowerInfo = getMotorPowerInfo();
-		motorPowerInfo->motor_power_FL = (HAL_CAN_GetTxMailboxesFreeLevel(&(can[CMR_CAN_BUS_TRAC].handle)) >> 16) & 0xFFFF;
-		motorPowerInfo->motor_power_FR = HAL_CAN_GetTxMailboxesFreeLevel(&(can[CMR_CAN_BUS_TRAC].handle));
-
-		motorPowerInfo->motor_power_RL = (HAL_CAN_GetTxMailboxesFreeLevel(&(can[CMR_CAN_BUS_VEH].handle)) >> 16) & 0xFFFF;
-		motorPowerInfo->motor_power_RR = HAL_CAN_GetTxMailboxesFreeLevel(&(can[CMR_CAN_BUS_VEH].handle));
-        
-        // //canTX(CMR_CAN_BUS_VEH, CMR_CANID_MOTORPOWER_STATE, motorPowerInfo, sizeof(*motorPowerInfo), canTX200Hz_period_ms); //motor power
-		// //canTX(CMR_CAN_BUS_TRAC, CMR_CANID_MOTORPOWER_STATE, motorPowerInfo, sizeof(*motorPowerInfo), canTX200Hz_period_ms); //motor power
-        // // Forward Movella status to Vehicle CAN at 100Hz.
-        // canTX(CMR_CAN_BUS_VEH, CMR_CANID_MOVELLA_STATUS, movellaStatus, sizeof(cmr_canMovellaStatus_t), canTX100Hz_period_ms);
-        
         cmr_canHeartbeat_t *heartbeatVSM = canVehicleGetPayload(CANRX_VEH_HEARTBEAT_VSM);
 		canTX(CMR_CAN_BUS_DAQ, CMR_CANID_DAQ_VSM_HEARTBEAT, heartbeatVSM, sizeof(cmr_canHeartbeat_t), canTX100Hz_period_ms); 
         vTaskDelayUntil(&lastWakeTime, canTX100Hz_period_ms);
     }
 }
 
-
 static void sendHeartbeat(TickType_t lastWakeTime) {
-    cmr_canHeartbeat_t *heartbeatVSM = canVehicleGetPayload(CANRX_VEH_HEARTBEAT_VSM);
-
     cmr_canHeartbeat_t heartbeat = {0};
 
-    if (heartbeatVSM != NULL) {
-        heartbeat.state = heartbeatVSM->state;
-    }
+    heartbeat.state = getCurrentExternalState(lastWakeTime);
 
     updateErrorsWarnings(&heartbeat, lastWakeTime);
 
@@ -1422,7 +1397,7 @@ void conditionalCallback(cmr_can_t *canb_rx, uint32_t canID, const void *data, s
  */
 void canInit(void) {
 
-    //Gotta check the schematic when it's finalized
+    //Gotta check the schematic when it's
 
     // Vehicle CAN initialization - CAN1
     cmr_canInit(&can[CMR_CAN_BUS_VEH], FDCAN1, CMR_CAN_BITRATE_500K, NULL,
