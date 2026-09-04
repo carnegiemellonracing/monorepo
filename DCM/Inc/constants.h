@@ -15,6 +15,12 @@ static const float current_torque_slope = 85.0f / 31.6f;
 static const float front_bias = 0.25f;
 static const float front_bias_endurance = 0.25f;
 
+// v1 vehicle rear-outer bias controller
+static const float rear_bias_v1 = 0.75f;
+static const float outer_bias_v1 = 0.60f;
+static const int32_t swAngle_millideg_zero = 1000;
+static const float accel_ms2_zero = 1.0f;
+
 
 
 static const uint16_t DTI_MAX_DC_CURRENT_PER_MOTOR_DA = 850;

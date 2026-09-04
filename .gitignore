@@ -20,6 +20,7 @@ CMakeUserPresets.json
 .DS_Store
 gitcommit.h
 
+.clangd
 *.ninja
 *-stamp/
 tmp/
