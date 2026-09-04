@@ -491,6 +491,18 @@ void cdcRXCallback(uint16_t canID, const void *data) {
     }
 }
 
+void ebsRxCallback(uint16_t canID) {
+    if (canID == CMR_CANID_HEARTBEAT_VSM) {
+        cmr_canState_t state = stateGetVSM();
+        if (state == CMR_CAN_AS_DRIVING) {
+            cmr_gpioWrite(GPIO_EBS_RELAY_1, 1);
+            cmr_gpioWrite(GPIO_EBS_RELAY_2, 1);
+        } else {
+            cmr_gpioWrite(GPIO_EBS_RELAY_1, 0);
+            cmr_gpioWrite(GPIO_EBS_RELAY_2, 0);
+        }
+    }
+}
 
 void canRXCallback(cmr_can_t *can_rx, uint16_t canID, const void *data, size_t dataLen) {
     (void) can_rx;
@@ -501,6 +513,9 @@ void canRXCallback(cmr_can_t *can_rx, uint16_t canID, const void *data, size_t d
     if (canID >= CMR_CANID_CDC_CONFIG0_DRV0 &&
         canID <= CMR_CANID_CDC_CONFIG3_DRV3) {
         cdcRXCallback(canID, data);
+    }
+    if (canID == CMR_CANID_HEARTBEAT_VSM) {
+        ebsRxCallback(CMR_CANID_HEARTBEAT_VSM);
     }
 }
 

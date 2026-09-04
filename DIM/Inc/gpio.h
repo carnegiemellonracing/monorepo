@@ -30,6 +30,8 @@ typedef enum {
     GPIO_LED_BSPD,            /**< @brief BSPD Error LED */
     GPIO_ASMS_ON,             /**< @brief AS Master Switch On/Off */
     GPIO_LED_STATUS,          /**< @brief Status LED */
+    GPIO_EBS_RELAY_1,         /**< @brief EBS Relay GPIO 1 */
+    GPIO_EBS_RELAY_2,         /**< @brief EBS Relay GPIO 2 */
     GPIO_PD_N,                /**< @brief GPIO Output for the screen */
     GPIO_AS_ERROR,            /**< @brief AS Error GPIO Output */
     GPIO_LEN                  /**< @brief Total GPIO pins. */

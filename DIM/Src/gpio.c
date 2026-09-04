@@ -152,6 +152,24 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
 			.Speed = GPIO_SPEED_FREQ_LOW
 		}
 	},
+	[GPIO_EBS_RELAY_1] = {
+        .port = GPIOB,
+        .init = {
+            .Pin = GPIO_PIN_12,
+            .Mode = GPIO_MODE_OUTPUT_PP,
+            .Pull = GPIO_PULLUP,
+            .Speed = GPIO_SPEED_FREQ_LOW
+        }
+    },
+    [GPIO_EBS_RELAY_2] = {
+        .port = GPIOB,
+        .init = {
+            .Pin = GPIO_PIN_13,
+            .Mode = GPIO_MODE_OUTPUT_PP,
+            .Pull = GPIO_PULLUP,
+            .Speed = GPIO_SPEED_FREQ_LOW
+        }
+    },
 	[GPIO_PD_N] = {
 		.port = GPIOB,
 		.init = {
