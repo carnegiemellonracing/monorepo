@@ -11,9 +11,9 @@
             "type": "uint8_t"
         },
         "CMR_CANID_AS_MISSION_FINISHED": {
-            "cycleTime": 100,
-            "timeOut": 500,
-            "type": "missionFinished"
+            "cycleTime": 5,
+            "timeOut": 25,
+            "type": "asFinishedData"
         },
         "CMR_CANID_AS_PRESSURE_READINGS": {
             "cycleTime": 10,
@@ -1017,15 +1017,15 @@
         "canrx_prefixes_used": [
             "CANRX_"
         ],
-        "files_processed": 2826,
-        "files_with_matches": 2826,
+        "files_processed": 2702,
+        "files_with_matches": 2702,
         "global_mappings": {
-            "canrx_mappings": 193,
-            "canrx_timeouts": 183,
-            "canrx_types": 64,
-            "constants": 269,
+            "canrx_mappings": 163,
+            "canrx_timeouts": 154,
+            "canrx_types": 66,
+            "constants": 268,
             "struct_members": 0,
-            "variable_types": 331
+            "variable_types": 323
         },
         "prefixes_used": [
             "CMR_CANID_",
