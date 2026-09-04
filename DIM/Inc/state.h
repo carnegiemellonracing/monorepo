@@ -55,7 +55,7 @@ cmr_state getCurrState();
 cmr_canGear_t stateGetGear(void);
 cmr_canGear_t stateGetGearReq(void);
 
-cmr_canDrsMode_t stateGetDrs(void);
+cmr_canCDCDRSStateEnum_t stateGetDrs(void);
 cmr_canDrsMode_t stateGetDrsReq(void);
 
 cmr_canDVMode_t stateGetDVMode(void);
