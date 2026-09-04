@@ -3,30 +3,33 @@
     // Hover to view descriptions of existing attributes.
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
+    "inputs": [
+        {
+            "id": "pickCmakeTarget",
+            "type": "command",
+            "command": "cmake.setDefaultTarget"
+        }
+    ],
     "configurations": [
+
+        // ============================================================================
+        //                                    REMOTE FLASH
+        // ============================================================================
         {
             "name": "Build and Flash Boards",
-            "type": "debugpy",
+            "type": "node-terminal",
             "request": "launch",
-            "program": "./flash_boards.py",
-            "console": "integratedTerminal",
-            "justMyCode": true,
-            "cwd": "${workspaceFolder}/BOOT/Host",
-            "preLaunchTask": "Build CAN Flasher",
-            "args": [
-                "${workspaceFolder}\\build\\debug\\Debug",
-                "--flash-cli",
-                ".\\build\\debug\\Debug\\FlashCli.exe",
-                "--device",
-                "peak_pcanusb",
-                "--channel",
-                "0"
-            ]
+            "cwd": "${workspaceFolder}/BOOT",
+            "preLaunchTask": "Build firmware + flasher",
+            // ${input:pickCmakeTarget} resolves before preLaunchTask runs, so
+            // the build tasks below pick up the target chosen here.
+            //"command": "python ./flash_boards.py \"${workspaceFolder}/build/${input:pickCmakeTarget}/src/${input:pickCmakeTarget}-build\" --flash-cli .\\Host\\build\\debug\\Debug\\FlashCli.exe --device peak_pcanusb --channel 0"
+            "command": "python ./flash_boards.py \"${workspaceFolder}/build/\" ${command:cmake.buildTargetName} --flash-cli .\\Host\\build\\debug\\Debug\\FlashCli.exe --device peak_pcanusb --channel 0"
         },
+
         // ============================================================================
         //                                    BOOT_TARGET
         // ============================================================================
-
         {
             "name": "Build & Debug BOOT_TARGET - ST-Link",
             "cwd": "${workspaceFolder}",

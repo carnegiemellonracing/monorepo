@@ -20,4 +20,16 @@ $Content = @"
 const uint32_t GIT_INFO = 0x$GitInfoHex;
 const uint8_t IS_UNCOMMITTED = $IsDirty;
 "@
-Write-Output $Content | Out-File -Encoding ASCII -FilePath ./Inc/gitcommit.h
+
+$FilePath = "./Inc/gitcommit.h"
+
+# Only write the file if its contents have changed
+$ExistingContent = if (Test-Path $FilePath) {
+    Get-Content -Raw -Path $FilePath
+} else {
+    $null
+}
+
+if ($ExistingContent -ne $Content) {
+    Write-Output $Content | Out-File -Encoding ASCII -FilePath $FilePath -NoNewline
+}

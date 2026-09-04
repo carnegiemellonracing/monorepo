@@ -10,19 +10,40 @@
     },
     "tasks": [
         {
+            "label": "Build selected CMake target",
+            "type": "cmake",
+            "command": "build",
+            "targets": [
+                "${command:cmake.buildTargetName}"
+            ],
+            "preset": "${command:cmake.activeBuildPresetName}",
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
             "label": "Build CAN Flasher",
             "type": "shell",
             "command": "cmake",
             "args": [
                 "--build",
-                "--preset debug",
+                "--preset",
+                "debug"
             ],
             "options": {
                 "cwd": "${workspaceFolder}/BOOT/Host"
             },
             "problemMatcher": []
         },
-        
+        {
+            "label": "Build firmware + flasher",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "Build selected CMake target",
+                "Build CAN Flasher"
+            ],
+            "problemMatcher": []
+        },
         {
             "type": "shell",
             "label": "CubeProg: Flash project (SWD)",

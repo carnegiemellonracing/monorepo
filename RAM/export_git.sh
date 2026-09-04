@@ -17,8 +17,16 @@ done < <(git ls-files --others --exclude-standard)
 IS_DIRTY=0
 GIT_INFO_HEX="$HASH"
 
-cat > ./Inc/gitcommit.h <<EOF
+CONTENT=$(cat <<EOF
 #include <stdint.h>
 const uint32_t GIT_INFO = 0x$GIT_INFO_HEX;
 const uint8_t IS_UNCOMMITTED = $IS_DIRTY;
 EOF
+)
+
+FILE_PATH="./Inc/gitcommit.h"
+
+# Only write the file if its contents have changed
+if [ ! -f "$FILE_PATH" ] || ! cmp -s <(printf '%s' "$CONTENT") "$FILE_PATH"; then
+  printf '%s' "$CONTENT" > "$FILE_PATH"
+fi
