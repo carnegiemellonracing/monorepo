@@ -144,21 +144,21 @@ def merge_signals(symv1_path: str, cmr25e_path: str, output_path: str = None) ->
         print(f"Error writing output file: {e}")
         return
     
-    print("\n" + "="*60)
-    print("MERGE SUMMARY")
-    print("="*60)
+    # print("\n" + "="*60)
+    # print("MERGE SUMMARY")
+    # print("="*60)
     
-    if new_messages:
-        print(f"\nNew messages added ({len(new_messages)}):")
-        for msg in new_messages:
-            print(f"  + {msg}")
+    # if new_messages:
+    #     print(f"\nNew messages added ({len(new_messages)}):")
+    #     for msg in new_messages:
+    #         print(f"  + {msg}")
     
-    if skipped_messages:
-        print(f"\nSkipped messages (CAN ID already exists in symv1) ({len(skipped_messages)}):")
-        for msg in skipped_messages[:20]:  # Show first 20
-            print(f"  - {msg}")
-        if len(skipped_messages) > 20:
-            print(f"  ... and {len(skipped_messages) - 20} more")
+    # if skipped_messages:
+    #     print(f"\nSkipped messages (CAN ID already exists in symv1) ({len(skipped_messages)}):")
+    #     for msg in skipped_messages[:20]:  # Show first 20
+    #         print(f"  - {msg}")
+    #     if len(skipped_messages) > 20:
+    #         print(f"  ... and {len(skipped_messages) - 20} more")
     
     print(f"\nTotal new messages added: {len(new_messages)}")
     print(f"Total new signals added: {new_signals_count}")
