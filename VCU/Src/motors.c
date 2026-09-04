@@ -157,8 +157,10 @@ static void motorsCommand (
         //                 dataFSM    -> brakePressureFront_PSI
         //                 );
         // mcCtrlOn();
+        
+        cmr_canState_t state = getCurrentExternalState();
 
-        switch (heartbeatVSM->state) {
+        switch (vsmToCANState[state]) {
             // Drive the vehicle in RTD
             case CMR_CAN_AS_DRIVING:
             case CMR_CAN_RTD: {

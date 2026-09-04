@@ -932,8 +932,11 @@ static void canTX200Hz(void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        if (heartbeatVSM->state == CMR_CAN_RTD || 
-            heartbeatVSM->state == CMR_CAN_AS_DRIVING){
+        
+        cmr_canState_t VSMstate = getCurrentExternalState(); 
+        //instance here
+        if (VSMstate == CMR_CAN_RTD || 
+            VSMstate == CMR_CAN_AS_DRIVING){
             drive_enable = 1;
             sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_BROADCAST_SET_DRIVE_EN, &drive_enable, sizeof(drive_enable), canTX200Hz_period_ms);
 
