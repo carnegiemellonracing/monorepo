@@ -17,12 +17,12 @@
 #include "constants.h"
 #include "controls.h"
 #include "motors.h"
+#include "motors_helper.h"
 #include "safety_filter.h"
 #include "../optimizer/optimizer.h"
 #include "26x_sensors.h"
-#include "sensors.h"s
+#include "sensors.h"
 #include "lut.h"
-#include "constants.h"
 
 #define PI 3.1415926535897932384626f
 
@@ -1088,8 +1088,39 @@ void setFastTorqueWithBias (uint8_t throttlePos_u8, float front_bias) {
    setVelocityInt16All(maxFastSpeed_rpm);
 }
 
+cmr_loadDistribution_t getTorqueMultipliersForWheels(int32_t swAngle_millideg, float acceleration_mps2) {
+    cmr_loadDistribution_t torqueMultsForWheels = {1.0,1.0,1.0,1.0};
+    /// TODO: figure out which sign is which direction
+    if (swAngle_millideg > swAngle_millideg_zero) {
+        torqueMultsForWheels.fr *= (1.0f-outer_bias_v1)/(outer_bias_v1);
+        torqueMultsForWheels.rr *= (1.0f-outer_bias_v1)/(outer_bias_v1);
+    }
+    else if (swAngle_millideg < -1*swAngle_millideg_zero) {
+        torqueMultsForWheels.fl *= (1.0f-outer_bias_v1)/(outer_bias_v1);
+        torqueMultsForWheels.rl *= (1.0f-outer_bias_v1)/(outer_bias_v1);
+    }
+
+    if (acceleration_mps2 > accel_ms2_zero) {
+        torqueMultsForWheels.fl *= (1.0f-rear_bias_v1)/(rear_bias_v1);
+        torqueMultsForWheels.fr *= (1.0f-rear_bias_v1)/(rear_bias_v1);
+    }
+    else if (acceleration_mps2 < -1*accel_ms2_zero) {
+        torqueMultsForWheels.rl *= (1.0f-rear_bias_v1)/(rear_bias_v1);
+        torqueMultsForWheels.rr *= (1.0f-rear_bias_v1)/(rear_bias_v1);
+    }
+
+    return torqueMultsForWheels;
+}
+
+void setROBiasTorques(uint8_t throttlePos_u8, int32_t swAngle_millideg, float acceleration_mps2) {
+    cmr_loadDistribution_t torqueMultsForWheels = getTorqueMultipliersForWheels(swAngle_millideg, acceleration_mps2);
+    const float base_Nm = maxFastTorque_Nm * (float)(throttlePos_u8) / (float)(UINT8_MAX);
+    setTorqueLimsAllDistProtected(base_Nm, 0.0f, &torqueMultsForWheels, NULL);
+    setVelocityInt16All(maxFastSpeed_rpm);
+}
+
 void setRegenTorques (uint8_t regen_pct) {
-    const float reqTorque = max_regen_torque_Nm * (float) regen_pct;
+    const float reqTorque = max_regen_torque_Nm * (float) regen_pct; // p sure this needs to be divied by 100? but dead code so eh
    
    setTorqueLimsUnprotected(MOTOR_FL, 0.0f, reqTorque);
    setTorqueLimsUnprotected(MOTOR_FR, 0.0f, reqTorque);
