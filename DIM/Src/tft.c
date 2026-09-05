@@ -461,7 +461,6 @@ static void drawRTDScreen(void) {
 
     /* Memorator present? */
     // Wait to update if hasn't seen in 2 sec (2000 ms)
-    memorator_status_t memoratorStatus = MEMORATOR_NOT_CONNECTED;
     // volatile cmr_canHeartbeat_t *cdcHeartbeat = (cmr_canHeartbeat_t *)metaCDCHeartbeat->payload;
     // if ((*(uint16_t *)(cdcHeartbeat->warning) & CMR_CAN_WARN_CDC_MEMORATOR_DAQ_TIMEOUT) != 0) {
     //     memoratorStatus = MEMORATOR_NOT_CONNECTED;
@@ -473,12 +472,16 @@ static void drawRTDScreen(void) {
     //         memoratorStatus = MEMORATOR_CONNECTED_STATE_OK;
     //     }
     // }
-    if (cmr_canRXMetaTimeoutWarn(&(canRXMeta[CANRX_MEMORATOR_WARNINGS]), xTaskGetTickCount()) == 0) {
+    memorator_status_t memoratorStatus = MEMORATOR_NOT_CONNECTED; 
+    if (cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_MEMORATOR_WARNINGS]), xTaskGetTickCount()) == 0) {
         volatile cmr_canMemoratorWarnings_t *memowarn = (cmr_canMemoratorWarnings_t*)getPayload(CANRX_MEMORATOR_WARNINGS); 
-        if (memowarn->warnings == MEMO_WARN_NONE) {
+        uint32_t lastreceived = (&canRXMeta[CANRX_MEMORATOR_WARNINGS])->lastReceived_ms;
+        if (((memowarn->warnings & 0xFF) == MEMO_WARN_NONE ) && (lastreceived > 0)) {
             memoratorStatus = MEMORATOR_CONNECTED_STATE_OK; 
+        } else {
+            memoratorStatus = MEMORATOR_CONNECTED_BAD_STATE;
         }
-    }
+    } 
 
     /* GPS present? */
     // Checks broadcast from CDC to see status of SBG
