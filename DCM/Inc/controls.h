@@ -28,8 +28,8 @@
 void setSlowTorque(uint8_t throttlePos_u8, int32_t swAngle_millideg);
 void setFastTorque(uint8_t throttlePos_u8);
 void setFastTorqueWithBias(uint8_t throttlePos_u8, float front_bias);
-void setROBiasTorques(uint8_t throttlePos_u8, int32_t swAngle_millideg, float acceleration_mps2);
-cmr_loadDistribution_t getTorqueMultipliersForWheels(int32_t swAngle_millideg, float acceleration_mps2);
+void setROBiasTorques(uint8_t throttlePos_u8, float torqueMultsForWheels[MOTOR_LEN]);
+void getTorqueMultipliersForWheels(int32_t swAngle_millideg, float* torqueMultsForWheels);
 float getYawRateControlLeftRightBias(int32_t swAngle_millideg);
 void setTractionControl(uint8_t throttlePos_u8, uint16_t brakePressurePsi_u8, int32_t swAngle_millideg, float leftRightBias_Nm,
     bool assumeNoTurn, bool ignoreYawRate, bool allowRegen, float critical_speed_mps);
