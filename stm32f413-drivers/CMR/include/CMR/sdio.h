@@ -9,12 +9,15 @@
 
 #include <stdint.h>
 #include "CMR/gpio.h"    // pin defintions
-#include "fatfs.h"  // File Writing Middleware
 
 #pragma once
 
 #ifdef HAL_SD_MODULE_ENABLED
 #ifdef HAL_DMA_MODULE_ENABLED
+
+// only include fatfs if SD module was actually enabled
+#include "fatfs.h"  // File Writing Middleware
+
 // Code should be reasonable easy to port (and might just work) for H7 but 
 // untested so we have this include guard to draw attention to it
 #ifdef F413 
