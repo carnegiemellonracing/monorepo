@@ -785,6 +785,13 @@ TimeOut=50
 Var=CELL_balanceRequest unsigned 0,8 /e:HVC_Balance_State
 Var=CELL_threshold unsigned 8,16
 
+[MEMORATOR_WARNINGS]
+ID=520h
+DLC=1
+CycleTime=800
+TimeOut=4000
+Var=WARNINGS_warnings unsigned 0,8
+
 [MOTORPOWER_STATE]
 ID=52Eh
 DLC=8
@@ -1474,10 +1481,6 @@ Var=Charger_Enable_Vector unsigned 0,8
 Var=Max_Mains_Current unsigned 8,16 -m /u:A /f:0.1
 Var=Requested_Voltage unsigned 24,16 -m /u:V /f:0.1
 Var=Requested_Current unsigned 40,16 -m /u:A /f:0.1
-
-[BRUSA_Charger_Status]
-ID=520h
-DLC=8
 
 [BRUSA_Charger_Temp]
 ID=523h
