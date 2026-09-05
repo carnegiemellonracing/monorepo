@@ -1502,6 +1502,15 @@ typedef struct {
     uint8_t state;
 } cmr_canMemoratorHeartbeat_t;
 
+typedef enum {
+    MEMO_WARN_NONE = 0,
+    MEMO_WARN_SD_FULL,
+    MEMO_WARN_SD_NOT_IN
+} cmr_canMemoWarnMode_t; 
+typedef struct {
+    cmr_canMemoWarnMode_t warnings; 
+} cmr_canMemoratorWarnings_t; 
+
 typedef struct {
 	uint8_t test_id;
 } cmr_canTestID_t;

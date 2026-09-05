@@ -447,7 +447,6 @@ static void getDTITemps(int32_t *mcTemp_C, int32_t *motorTemp_C, cornerId_t *hot
  */
 static void drawRTDScreen(void) {
     /* Setup the Required CAN info for Display */
-    cmr_canRXMeta_t *metaMemoratorBroadcast = canRXMeta + CANRX_MEMORATOR_BROADCAST;
 
     cmr_canRXMeta_t *metaCDCHeartbeat = canRXMeta + CANRX_CDC_HEARTBEAT;
 
@@ -463,15 +462,21 @@ static void drawRTDScreen(void) {
     /* Memorator present? */
     // Wait to update if hasn't seen in 2 sec (2000 ms)
     memorator_status_t memoratorStatus = MEMORATOR_NOT_CONNECTED;
-    volatile cmr_canHeartbeat_t *cdcHeartbeat = (cmr_canHeartbeat_t *)metaCDCHeartbeat->payload;
-    if ((*(uint16_t *)(cdcHeartbeat->warning) & CMR_CAN_WARN_CDC_MEMORATOR_DAQ_TIMEOUT) != 0) {
-        memoratorStatus = MEMORATOR_NOT_CONNECTED;
-    }
+    // volatile cmr_canHeartbeat_t *cdcHeartbeat = (cmr_canHeartbeat_t *)metaCDCHeartbeat->payload;
+    // if ((*(uint16_t *)(cdcHeartbeat->warning) & CMR_CAN_WARN_CDC_MEMORATOR_DAQ_TIMEOUT) != 0) {
+    //     memoratorStatus = MEMORATOR_NOT_CONNECTED;
+    // }
+    // if (cmr_canRXMetaTimeoutWarn(metaMemoratorBroadcast, xTaskGetTickCount()) == 0) {
+    //     memoratorStatus = MEMORATOR_CONNECTED_BAD_STATE;
+    //     volatile cmr_canMemoratorHeartbeat_t *memoratorHeartbeat = (void *)metaMemoratorBroadcast->payload;
+    //     if (memoratorHeartbeat->state == 0xA3) {
+    //         memoratorStatus = MEMORATOR_CONNECTED_STATE_OK;
+    //     }
+    // }
     if (cmr_canRXMetaTimeoutWarn(metaMemoratorBroadcast, xTaskGetTickCount()) == 0) {
-        memoratorStatus = MEMORATOR_CONNECTED_BAD_STATE;
-        volatile cmr_canMemoratorHeartbeat_t *memoratorHeartbeat = (void *)metaMemoratorBroadcast->payload;
-        if (memoratorHeartbeat->state == 0xA3) {
-            memoratorStatus = MEMORATOR_CONNECTED_STATE_OK;
+        volatile cmr_canMemoratorWarnings_t *memowarn = (cmr_canMemoratorWarnings_t*)getPayload(CANRX_MEMORATOR_WARNINGS); 
+        if (memoratorHeartbeat->warnings == MEMO_WARN_NONE) {
+            memoratorStatus = MEMORATOR_CONNECTED_STATE_OK; 
         }
     }
 

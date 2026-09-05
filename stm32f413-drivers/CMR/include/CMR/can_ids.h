@@ -558,6 +558,8 @@ typedef enum {
     CMR_CANID_RTC_DATE = 0x513,
     CMR_CANID_RTC_TIME = 0x514,
 
+    CMR_CANID_MEMORATOR_WARNINGS = 0x520, 
+
 } cmr_canID_t;
 
 typedef enum {
