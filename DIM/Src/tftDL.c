@@ -317,7 +317,7 @@ static void tftDL_showStates(uint32_t *file_addr, uint32_t state_addr, uint32_t 
         [CMR_CAN_DRSM_AUTO] = " AUTO ",
     };
 
-    size_t dvCharsLen = 6;
+    //size_t dvCharsLen = 6;
     static const char *dvChars[] = {
         [CMR_CAN_DV_MODE_SLOW] = " SLOW ",
         [CMR_CAN_DV_MODE_NORMAL] = "NORMAL",
@@ -327,7 +327,7 @@ static void tftDL_showStates(uint32_t *file_addr, uint32_t state_addr, uint32_t 
     cmr_canState_t stateVSM = stateGetVSM();
     cmr_canState_t stateVSMReq = stateGetVSMReq();
     cmr_canGear_t gear = stateGetGear();
-    cmr_canDrsMode_t drsMode = stateGetDrs();
+    cmr_canCDCDRSStateEnum_t drsMode = stateGetDrs();
     cmr_canDVMode_t dvCtrlMode = stateGetDVMode();
 
     uint32_t *state_color = (void *)(file_addr + state_col_addr);
@@ -401,7 +401,7 @@ static void tftDL_showStates(uint32_t *file_addr, uint32_t state_addr, uint32_t 
  * @brief sets the display message from the RAM
  * Sets at top and 2 notes on right side
  */
-void tftDL_showRAMMsg(uint32_t *file_addr, uint32_t prev_lap_loc, uint32_t targ_lap_loc, uint32_t msg_loc) {
+void tftDL_showRAMMsg(uint32_t *file_addr, uint32_t msg_loc) {
     // struct {
     //     char buf[TIMEDISPLAYLEN];
     // } *prev_time_str = (void *)(file_addr + prev_lap_loc);
@@ -442,18 +442,18 @@ void setTempColor(uint32_t background_index, uint32_t text_index, bool temp_yell
  *
  * @param memoratorPresent Memorator present (based on heartbeat)
  * @param movellaStatus Movella Status
- * @param speed_mph Speed (from CDC)
+ * @param speed_mph Speed (from DCM)
  * @param hvVoltage_mV Pack Voltage (from HVC)
  * @param power_kW Electrical power dissipation
- * (inferred from CDC)
+ * (inferred from DCM)
  * @param dcdcTemp_C DCDC Thermistor temp.
  * Unused.
  * @param motorTemp_C Motor termperature.
- * Referred from RMS via CDC. Deg. C.
+ * Referred from RMS via DCM. Deg. C.
  * @param acTemp_C AC temp (from HVC).
  * Currently Max cell temp. Deg. C.
  * @param mcTemp_C MC internal temp.
- * Referred from RMS via CDC. Deg. C.
+ * Referred from RMS via DCM. Deg. C.
  * @param glvVoltage Voltage from GLV
  */
 void tftDL_RTDUpdate(
@@ -462,12 +462,6 @@ void tftDL_RTDUpdate(
     int32_t hvVoltage_mV,
     int32_t power_kW,
     uint32_t speed_kmh,
-    bool motorTemp_yellow,
-    bool motorTemp_red,
-    bool acTemp_yellow,
-    bool acTemp_red,
-    bool mcTemp_yellow,
-    bool mcTemp_red,
     int32_t motorTemp_C,
     int32_t acTemp_C,
     int32_t mcTemp_C,
@@ -578,7 +572,7 @@ void tftDL_RTDUpdate(
     tftDL_RTDwriteInt(tftDL_RTDData, ESE_RAM_MAX_CELL, 5, "%4ld", packVoltagesStruct->maxCellVoltage_mV);
 
     tftDL_showStates(tftDL_RTDData, ESE_STATE_STR, ESE_VSM_STATE_COLOR, ESE_GEAR_STR, ESE_DRS_MODE_STR, false);
-    tftDL_showRAMMsg(tftDL_RTDData, ESE_RAM_MIN_CELL, ESE_RAM_MAX_CELL, ESE_RAM_MSG_STR);
+    tftDL_showRAMMsg(tftDL_RTDData, ESE_RAM_MSG_STR);
 
 
     uint32_t *fl_color = (void *)(tftDL_RTDData + ESE_RTD_FL_COLOR);
@@ -601,6 +595,8 @@ void tftDL_RTDUpdate(
             break;
         case RR:
             rr_color_cmd = red;
+            break;
+        default:
             break;
     }
     *fl_color = fl_color_cmd;
@@ -635,7 +631,7 @@ void tftDL_racingScreenUpdate(
     *radio_color = radio_color_cmd;
 
     tftDL_showStates(tftDL_racingData, ESE_RS_VSM_STATE_STR, ESE_RS_VSM_STATE_COLOR, ESE_RS_GEAR_STR, ESE_RS_DRS_MODE_STR, true);
-    tftDL_showRAMMsg(tftDL_racingData, ESE_RS_RAM_LAST_LAP, ESE_RS_RAM_TARG_LAP, ESE_RS_RAM_MSG_STR);
+    tftDL_showRAMMsg(tftDL_racingData, ESE_RS_RAM_MSG_STR);
 }
 
 /**
@@ -675,7 +671,7 @@ static void tftDL_showBMBStatus(volatile cmr_canHVCBMBErrors_t *BMBerr) {
 
 static void tftDL_showDTIError(uint32_t strlocation, uint32_t colorLocation, uint16_t errorCode) {
     char *print_location = (void *)(tftDL_errorData + strlocation);
-    const size_t print_len = 13;
+    const size_t print_len = 14;
     // Spaces are to align text, so each string has 12 characters followed by a \0
     switch (errorCode) {
         case 2347:
@@ -959,16 +955,16 @@ void tftDL_configUpdate() {
             return;  // both are an error
 
         if (current_scroll_index == DRIVER_PROFILE_INDEX) {
-            flush_config_screen_to_cdc = true;
-            waiting_for_cdc_to_confirm_config = true;
-            // Wait for CDC to confirm old driver params first
-            while (waiting_for_cdc_to_confirm_config) {
+            flush_config_screen_to_dcm= true;
+            waiting_for_dcm_to_confirm_config = true;
+            // Wait for DCM to confirm old driver params first
+            while (waiting_for_dcm_to_confirm_config) {
             }
 
             // Change driver
             setConfigIncrementValue(current_scroll_index, config_increment_up_requested, config_increment_down_requested);
-            waiting_for_cdc_new_driver_config = true;
-            while (waiting_for_cdc_new_driver_config) {
+            waiting_for_dcm_new_driver_config = true;
+            while (waiting_for_dcm_new_driver_config) {
                 // wait for the new driver to be selected
             }
         } else {

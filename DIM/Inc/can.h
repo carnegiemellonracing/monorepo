@@ -35,7 +35,7 @@ extern char RAMBUF[];
  */
 
 // Config Screen update requested
-extern volatile bool flush_config_screen_to_cdc;  // = false;
+extern volatile bool flush_config_screen_to_dcm;  // = false;
 
 // bool on if waiting for cdc to confirm config screen update
 extern volatile bool config_screen_update_confirmed;  // = false;
@@ -44,10 +44,10 @@ extern volatile bool config_screen_update_confirmed;  // = false;
 extern volatile bool config_screen_values_received_on_boot;  // = false;
 
 // letting the rx callback to know to pay attention to the cdc messages
-extern volatile bool waiting_for_cdc_to_confirm_config;  // = false;
+extern volatile bool waiting_for_dcm_to_confirm_config;  // = false;
 
 // letting the DIM know that new driver params are available
-extern volatile bool waiting_for_cdc_new_driver_config;
+extern volatile bool waiting_for_dcm_new_driver_config;
 
 extern volatile bool exit_config_request;
 
@@ -62,47 +62,18 @@ extern volatile bool redraw_new_driver_profiles;
 typedef enum {
     CANRX_HEARTBEAT_VSM = 0,   /**< @brief VSM heartbeat. */
     CANRX_HVC_PACK_VOLTAGE,    /**< @brief BMS pack voltage. */
-    CANRX_DTI_FL_CONTROL_STATUS,
     CANRX_DTI_FL_ERPM,
-    CANRX_DTI_FL_CURRENT,
     CANRX_DTI_FL_TEMPFAULT,
-    CANRX_DTI_FL_IDIQ,
-    CANRX_DTI_FL_IO_STATUS,
-    CANRX_DTI_FL_ACLIMS,
-    CANRX_DTI_FL_DCLIMS,
-    CANRX_DTI_FR_CONTROL_STATUS,
     CANRX_DTI_FR_ERPM,
-    CANRX_DTI_FR_CURRENT,
     CANRX_DTI_FR_TEMPFAULT,
-    CANRX_DTI_FR_IDIQ,
-    CANRX_DTI_FR_IO_STATUS,
-    CANRX_DTI_FR_ACLIMS,
-    CANRX_DTI_FR_DCLIMS,
-    CANRX_DTI_RL_CONTROL_STATUS,
     CANRX_DTI_RL_ERPM,
-    CANRX_DTI_RL_CURRENT,
     CANRX_DTI_RL_TEMPFAULT,
-    CANRX_DTI_RL_IDIQ,
-    CANRX_DTI_RL_IO_STATUS,
-    CANRX_DTI_RL_ACLIMS,
-    CANRX_DTI_RL_DCLIMS,
-    CANRX_DTI_RR_CONTROL_STATUS,
     CANRX_DTI_RR_ERPM,
-    CANRX_DTI_RR_CURRENT,
     CANRX_DTI_RR_TEMPFAULT,
-    CANRX_DTI_RR_IDIQ,
-    CANRX_DTI_RR_IO_STATUS,
-    CANRX_DTI_RR_ACLIMS,
-    CANRX_DTI_RR_DCLIMS,
     CANRX_SENSORIC_DIST,
     CANRX_SENSORIC_VEL_ANG,
     CANRX_HVC_PACK_TEMPS,      /**< @brief HVC cell temps. */
     CANRX_VSM_STATUS,          /**< @brief VSM status */
-    CANRX_PTCf_LOOP_A_TEMPS,   /**< @brief PTCf Loop A temps */
-    CANRX_PTCf_LOOP_B_TEMPS,   /**< @brief PTCf Loop B temps */
-    CANRX_PTC_LOOP_A_TEMPS,    /**< @brief PTC Loop A temps */
-    CANRX_PTC_LOOP_B_TEMPS,    /**< @brief PTC Loop B temps */
-    CANRX_PTC_LOOP_C_TEMPS,    /**< @brief PTC Loop C temps */
     CANRX_HVC_HEARTBEAT,       /**< @brief HVC Error. */
     CANRX_HVC_BMB_STATUS,      /**< @brief HVC BMB Status */
     CANRX_MEMORATOR_BROADCAST, /**< @brief Memorator broadcast. */
@@ -111,11 +82,9 @@ typedef enum {
     CANRX_VSM_SENSORS,
     CANRX_HVC_LOW_VOLTAGE, /**< @brief HVC Low Voltage for Safety Circuit Status*/
     CANRX_DRS_STATE,
-    CANRX_CDC_ODOMETER,
     CANRX_CDC_CONTROLS_STATUS,
     CANRX_CDC_HEARTBEAT,
     CANRX_PACK_CELL_VOLTAGES,  /**< @brief Pack Cell Voltages for min and Max Cell */
-    CANRX_VSM_POWER_DIAGNOSTICS, 
     CANRX_RTC_DATE,
     CANRX_RTC_TIME,
     CANRX_LEN /**< @brief Number of periodic CAN messages. */

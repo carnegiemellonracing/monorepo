@@ -324,6 +324,7 @@ static uint32_t sampleBrakeImplaus(const cmr_sensor_t *sensor) {
  */
 
 int32_t sampleBrakeSensorImplaus(const cmr_sensor_t *sensor, uint32_t reading) {
+    (void) sensor; //Placate compiler
     return reading < LOWER_BRAKES_IMPLAUS_THRESHOLD || reading > UPPER_BRAKES_IMPLAUS_THRESHOLD ;
 }
 
