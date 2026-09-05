@@ -304,6 +304,7 @@ void _platform_rccSystemClockEnable(void)
     }
 
     // Sets up some peripheral clocks. These settings allow for SDIO to function
+    #ifdef HAL_SD_MODULE_ENABLED
     PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_SDIO | RCC_PERIPHCLK_CLK48;
     PeriphClkInitStruct.Clk48ClockSelection = RCC_CLK48CLKSOURCE_PLLQ;
     PeriphClkInitStruct.SdioClockSelection = RCC_SDIOCLKSOURCE_CLK48;
@@ -311,6 +312,7 @@ void _platform_rccSystemClockEnable(void)
     {
         cmr_panic("HAL_RCC_PeriphCLKConfig() failed!");
     }
+    #endif
 }
 
 /**

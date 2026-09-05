@@ -264,7 +264,7 @@ void _platform_canFilter(
         uint32_t id2 = filter->ids[1];
 
         FDCAN_FilterTypeDef config = {
-            .IdType = FDCAN_STANDARD_ID,
+            .IdType = (filter->isExtended) ? FDCAN_EXTENDED_ID : FDCAN_STANDARD_ID,
             .FilterIndex = i,
             .FilterType = filterType,
             .FilterConfig = filterConfig,
