@@ -77,18 +77,18 @@ if(ENABLE_FATFS)
     target_include_directories(FATFS PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/FATFS/App
         ${CMAKE_CURRENT_SOURCE_DIR}/FATFS/Target
-        ${CMAKE_CURRENT_SOURCE_DIR}/MiddleWares/Third_Party/FatFs/src
+        ${CMAKE_CURRENT_SOURCE_DIR}/Middlewares/Third_Party/FatFs/src
     )
 
     target_sources(FATFS PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/FATFS/App/fatfs.c
         ${CMAKE_CURRENT_SOURCE_DIR}/FATFS/Target/bsp_driver_sd.c
         ${CMAKE_CURRENT_SOURCE_DIR}/FATFS/Target/sd_diskio.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/MiddleWares/Third_Party/FatFs/src/diskio.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/MiddleWares/Third_Party/FatFs/src/ff_gen_drv.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/MiddleWares/Third_Party/FatFs/src/ff.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/MiddleWares/Third_Party/FatFs/src/option/ccsbcs.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/MiddleWares/Third_Party/FatFs/src/option/syscall.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/Middlewares/Third_Party/FatFs/src/diskio.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/Middlewares/Third_Party/FatFs/src/ff_gen_drv.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/Middlewares/Third_Party/FatFs/src/ff.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/Middlewares/Third_Party/FatFs/src/option/ccsbcs.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/Middlewares/Third_Party/FatFs/src/option/syscall.c
     )
 
     target_link_libraries(FATFS PUBLIC HAL)
