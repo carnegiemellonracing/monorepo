@@ -86,6 +86,8 @@ enum HVCState(0="HVC_STATE_ERROR", 1="HVC_STATE_DISCHARGE",
     10="HVC_STATE_CHARGE_CONSTANT_VOLTAGE", 11="HVC_STATE_CLEAR_ERROR",
     12="HVC_STATE_UNKNOWN")
 enum LRUDButtons(1="DIM_LEFT", 2="DIM_RIGHT", 4="DIM_UP", 8="DIM_DOWN")
+enum MemoWarnMode(0="MEMO_WARN_NONE", 1="MEMO_WARN_SD_FULL",
+    2="MEMO_WARN_SD_NOT_IN")
 enum MovellaFilterMode(0="Without_GNSS_filter_profile_is_in_VRU_mode",
     1="Coasting_mode_GNSS_has_been_lost_less_than_60_sec_ago",
     3="With_GNSS_default_mode")
