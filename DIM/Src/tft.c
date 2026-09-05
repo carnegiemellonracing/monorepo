@@ -448,7 +448,7 @@ static void getDTITemps(int32_t *mcTemp_C, int32_t *motorTemp_C, cornerId_t *hot
 static void drawRTDScreen(void) {
     /* Setup the Required CAN info for Display */
 
-    cmr_canRXMeta_t *metaCDCHeartbeat = canRXMeta + CANRX_CDC_HEARTBEAT;
+    //cmr_canRXMeta_t *metaCDCHeartbeat = canRXMeta + CANRX_CDC_HEARTBEAT;
 
     volatile cmr_canHVCPackVoltage_t *canHVCPackVoltage = (volatile cmr_canHVCPackVoltage_t *) getPayload(CANRX_HVC_PACK_VOLTAGE);
 
@@ -473,9 +473,9 @@ static void drawRTDScreen(void) {
     //         memoratorStatus = MEMORATOR_CONNECTED_STATE_OK;
     //     }
     // }
-    if (cmr_canRXMetaTimeoutWarn(metaMemoratorBroadcast, xTaskGetTickCount()) == 0) {
+    if (cmr_canRXMetaTimeoutWarn(&(canRXMeta[CANRX_MEMORATOR_WARNINGS]), xTaskGetTickCount()) == 0) {
         volatile cmr_canMemoratorWarnings_t *memowarn = (cmr_canMemoratorWarnings_t*)getPayload(CANRX_MEMORATOR_WARNINGS); 
-        if (memoratorHeartbeat->warnings == MEMO_WARN_NONE) {
+        if (memowarn->warnings == MEMO_WARN_NONE) {
             memoratorStatus = MEMORATOR_CONNECTED_STATE_OK; 
         }
     }
