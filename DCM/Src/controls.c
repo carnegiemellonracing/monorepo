@@ -17,12 +17,12 @@
 #include "constants.h"
 #include "controls.h"
 #include "motors.h"
+#include "motors_helper.h"
 #include "safety_filter.h"
 #include "../optimizer/optimizer.h"
 #include "26x_sensors.h"
-#include "sensors.h"s
+#include "sensors.h"
 #include "lut.h"
-#include "constants.h"
 
 #define PI 3.1415926535897932384626f
 
@@ -851,14 +851,13 @@ void runControls (
         }
         case CMR_CAN_GEAR_TEST: {
             disableTorqueMode();
-            setPowerLimit(false, MOTOR_FL, 40.0 * front_bias);
-            setPowerLimit(false, MOTOR_FR, 40.0 * front_bias);
-            setPowerLimit(false, MOTOR_RL, 40.0 * (1 - front_bias));
-            setPowerLimit(false, MOTOR_RR, 40.0 * (1 - front_bias));
-            // float target_speed_mps = 5.0f;
-            // getProcessedValue(&target_speed_mps, SLOW_SPEED_INDEX, float_1_decimal);
-            // set_motor_speed(throttlePos_u8, target_speed_mps, false);
-            set_manual_cruise_control(throttlePos_u8);
+            float torqueMultsForWheels[MOTOR_LEN];
+            getTorqueMultipliersForWheels(swAngle_millideg, torqueMultsForWheels);
+            setROBiasTorques(throttlePos_u8, torqueMultsForWheels);
+            setPowerLimit(false, MOTOR_FL, maxPowerPerMotor_kW * front_bias);
+            setPowerLimit(false, MOTOR_FR, maxPowerPerMotor_kW * front_bias);
+            setPowerLimit(false, MOTOR_RL, maxPowerPerMotor_kW * (1 - front_bias));
+            setPowerLimit(false, MOTOR_RR, maxPowerPerMotor_kW * (1 - front_bias));
             break;
         }
 
@@ -1088,8 +1087,36 @@ void setFastTorqueWithBias (uint8_t throttlePos_u8, float front_bias) {
    setVelocityInt16All(maxFastSpeed_rpm);
 }
 
+void getTorqueMultipliersForWheels(int32_t swAngle_millideg, float* torqueMultsForWheels) {
+    for (int motor = 0; motor < MOTOR_LEN; motor++) {
+        torqueMultsForWheels[motor] = 1.0f;
+    }
+
+    /// TODO: figure out which sign is which direction
+    if (swAngle_millideg > swAngle_millideg_zero_threshold) {
+        torqueMultsForWheels[MOTOR_FR] *= (inner_bias)/(1.0f-inner_bias);
+        torqueMultsForWheels[MOTOR_RR] *= (inner_bias)/(1.0f-inner_bias);
+    }
+    else if (swAngle_millideg < -swAngle_millideg_zero_threshold) {
+        torqueMultsForWheels[MOTOR_FL] *= (inner_bias)/(1.0f-inner_bias);
+        torqueMultsForWheels[MOTOR_RL] *= (inner_bias)/(1.0f-inner_bias);
+    }
+
+    ///TODO: make this compatible with regen
+    torqueMultsForWheels[MOTOR_FL] *= (front_bias)/(1.0f-front_bias);
+    torqueMultsForWheels[MOTOR_FR] *= (front_bias)/(1.0f-front_bias);
+}
+
+void setROBiasTorques(uint8_t throttlePos_u8, float torqueMultsForWheels[MOTOR_LEN]) {
+    const float unscaled_reqTorque_Nm = maxFastTorque_Nm * (float)(throttlePos_u8) / (float)(UINT8_MAX);
+    for (int motor = 0; motor < MOTOR_LEN; motor++) {
+        setTorqueLimsUnprotected(motor, unscaled_reqTorque_Nm*torqueMultsForWheels[motor], 0.0f);
+    }
+    setVelocityInt16All(maxFastSpeed_rpm);
+}
+
 void setRegenTorques (uint8_t regen_pct) {
-    const float reqTorque = max_regen_torque_Nm * (float) regen_pct;
+    const float reqTorque = max_regen_torque_Nm * (float) regen_pct; // p sure this needs to be divied by 100? but dead code so eh
    
    setTorqueLimsUnprotected(MOTOR_FL, 0.0f, reqTorque);
    setTorqueLimsUnprotected(MOTOR_FR, 0.0f, reqTorque);
