@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.24)
 project(stm-drivers)
 
+# Configuration
+option(ENABLE_FATFS "Enable FATFS support" OFF)
+
 if("${PROCESSOR}" STREQUAL "F413")
     add_compile_definitions(STM32F413xx)
 elseif("${PROCESSOR}" STREQUAL "H725")
@@ -14,6 +17,11 @@ add_compile_definitions(${PROCESSOR})
 add_library(stm-drivers STATIC)
 add_library(HAL)
 
+if(ENABLE_FATFS)
+    add_library(FATFS)
+endif()
+
+
 # Sources
 #file(GLOB CMSIS_DEVICE_SOURCES CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${PROCESSOR_FAM}/CMSIS/Device/Source/*.c)
 file(GLOB CMSIS_DSP_SOURCES CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${PROCESSOR_FAM}/CMSIS/DSP/Source/*.c)
@@ -25,6 +33,7 @@ if("${PROCESSOR_FAM}" STREQUAL "F4XX")
     file(GLOB CMSIS_DSP_LIB_SOURCES CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${PROCESSOR_FAM}/CMSIS/DSP/ComputeLibrary/Source/*.c)
     file(GLOB HAL_SOURCES CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${PROCESSOR_FAM}/STM32F4xx_HAL_Driver/Src/*.c)
     target_sources(HAL PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/${PROCESSOR_FAM}/CMSIS/Device/ST/STM32F4xx/Source/Templates/system_stm32f4xx.c)
+
     set(PROCESSOR_SPECIFIC_INCLUDES
         ${CMAKE_CURRENT_SOURCE_DIR}/${PROCESSOR_FAM}/CMSIS/Device/ST/STM32F4xx/Include
         ${CMAKE_CURRENT_SOURCE_DIR}/${PROCESSOR_FAM}/CMSIS/DAP/Include
@@ -35,6 +44,7 @@ else()
     file(GLOB CMSIS_DEVICE_SOURCES CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${PROCESSOR_FAM}/CMSIS/Device/ST/STM32H7xx/Source/*.c)
     file(GLOB HAL_SOURCES CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${PROCESSOR_FAM}/STM32H7xx_HAL_Driver/Src/*.c)
     target_sources(HAL PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/${PROCESSOR_FAM}/CMSIS/Device/ST/STM32H7xx/Source/Templates/system_stm32h7xx.c)
+
     set(PROCESSOR_SPECIFIC_INCLUDES
         ${CMAKE_CURRENT_SOURCE_DIR}/${PROCESSOR_FAM}/CMSIS/Device/ST/STM32H7xx/Include
         ${CMAKE_CURRENT_SOURCE_DIR}/${PROCESSOR_FAM}/STM32H7xx_HAL_Driver/Inc
@@ -61,11 +71,46 @@ target_include_directories(HAL PUBLIC
     ${PROCESSOR_SPECIFIC_INCLUDES}
 )
 
+
+# FATFS
+if(ENABLE_FATFS)
+    target_include_directories(FATFS PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/FATFS/App
+        ${CMAKE_CURRENT_SOURCE_DIR}/FATFS/Target
+        ${CMAKE_CURRENT_SOURCE_DIR}/Middlewares/Third_Party/FatFs/src
+    )
+
+    target_sources(FATFS PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/FATFS/App/fatfs.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/FATFS/Target/bsp_driver_sd.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/FATFS/Target/sd_diskio.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/Middlewares/Third_Party/FatFs/src/diskio.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/Middlewares/Third_Party/FatFs/src/ff_gen_drv.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/Middlewares/Third_Party/FatFs/src/ff.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/Middlewares/Third_Party/FatFs/src/option/ccsbcs.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/Middlewares/Third_Party/FatFs/src/option/syscall.c
+    )
+
+    target_link_libraries(FATFS PUBLIC HAL)
+endif()
+
+
+# Other drivers
 target_link_libraries(stm-drivers PUBLIC HAL)
+
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/FreeRTOS)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/DIM-ESE)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/CMR)
-target_link_libraries(CMR PUBLIC DIM-ESE freertos_kernel HAL)
+
+
+# CMR dependencies but only include fatfs if enabled
+if(ENABLE_FATFS)
+    target_link_libraries(CMR PUBLIC DIM-ESE freertos_kernel HAL FATFS)
+else()
+    target_link_libraries(CMR PUBLIC DIM-ESE freertos_kernel HAL)
+endif()
+
+
 target_link_libraries(stm-drivers
     PUBLIC
     CMR

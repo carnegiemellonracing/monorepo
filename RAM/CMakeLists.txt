@@ -43,6 +43,7 @@ set(cpu_PARAMS
 set(sources_SRCS)
 set(PROCESSOR F413)
 set(PROCESSOR_FAM F4XX)
+set(ENABLE_FATFS ON)
 
 # Include directories for all compilers
 set(include_DIRS
@@ -124,8 +125,10 @@ add_executable(${CMAKE_PROJECT_NAME}
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/config.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/gpio.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/main.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/Src/memorator.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/parser.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/sample.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/Src/statusLED.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/syscall.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/sysmem.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/uart.c
