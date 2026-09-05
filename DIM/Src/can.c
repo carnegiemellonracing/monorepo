@@ -503,10 +503,6 @@ void canRXCallback(cmr_can_t *can_rx, uint16_t canID, const void *data, size_t d
         canID <= CMR_CANID_CDC_CONFIG3_DRV3) {
         cdcRXCallback(canID, data);
     }
-    int x = 0; 
-    if (canID == CMR_CANID_MEMORATOR_WARNINGS) {
-        x++; 
-    }
 }
 
 /**
