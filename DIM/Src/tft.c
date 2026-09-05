@@ -475,8 +475,7 @@ static void drawRTDScreen(void) {
     memorator_status_t memoratorStatus = MEMORATOR_NOT_CONNECTED; 
     if (cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_MEMORATOR_WARNINGS]), xTaskGetTickCount()) == 0) {
         volatile cmr_canMemoratorWarnings_t *memowarn = (cmr_canMemoratorWarnings_t*)getPayload(CANRX_MEMORATOR_WARNINGS); 
-        uint32_t lastreceived = (&canRXMeta[CANRX_MEMORATOR_WARNINGS])->lastReceived_ms;
-        if (((memowarn->warnings & 0xFF) == MEMO_WARN_NONE ) && (lastreceived > 0)) {
+        if (((memowarn->warnings & 0xFF) == MEMO_WARN_NONE )) {
             memoratorStatus = MEMORATOR_CONNECTED_STATE_OK; 
         } else {
             memoratorStatus = MEMORATOR_CONNECTED_BAD_STATE;
