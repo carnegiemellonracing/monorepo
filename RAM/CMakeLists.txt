@@ -43,6 +43,7 @@ set(cpu_PARAMS
 set(sources_SRCS)
 set(PROCESSOR F413)
 set(PROCESSOR_FAM F4XX)
+set(ENABLE_FATFS ON)
 
 # Include directories for all compilers
 set(include_DIRS
