@@ -44,6 +44,7 @@ typedef enum {
     CANRX_RR_ERPM,
     CANRX_AS_MISSION_FINISHED,
     CANRX_AMS_ERROR,
+    CANRX_MEMORATOR_WARNINGS, 
     CANRX_LEN     /**< @brief Number of periodic CAN messages. */
 } canRX_t;
 

@@ -175,6 +175,11 @@ cmr_canRXMeta_t canRXMeta[] = {
     [CANRX_AS_MISSION_FINISHED] = {
         .canID = CMR_CANID_AS_MISSION_FINISHED,
     },
+    [CANRX_MEMORATOR_WARNINGS] =  { 
+        .canID = CMR_CANID_MEMORATOR_WARNINGS, 
+        .timeoutError_ms = 4000, 
+        .timeoutWarn_ms = 2000,
+    } 
 };
 
 /**
@@ -386,7 +391,8 @@ void canInit(void) {
             .ids = {
                     CMR_CANID_AS_PRESSURE_READINGS,
                     CMR_CANID_DTI_ERROR_MESSAGES,
-                    CMR_CANID_AMS_ERROR
+                    CMR_CANID_AMS_ERROR, 
+                    CMR_CANID_MEMORATOR_WARNINGS
             }
 		},
     };

@@ -122,6 +122,7 @@ static bool AutonomousClear();
 static bool getVehicleFinished();
 static bool getRESGo();
 static bool RESTriggered();
+static bool memoratorOk(); 
 
 // ------------------------------------------------------------------------------------------------
 // Interface functions
@@ -352,7 +353,8 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
             // T6
             if (dimRequestedState == CMR_CAN_RTD) {
                 if ((throttlePosition <= 5 &&
-                    brakePressureRear_PSI >= brakePressureThreshold_PSI)
+                    brakePressureRear_PSI >= brakePressureThreshold_PSI &&
+                    memoratorOk())
                 ) {
                     nextState = CMR_CAN_VSM_STATE_RTD;
                 } else {
@@ -676,4 +678,18 @@ static inline bool RESCorrect(){
 	uint8_t *data = (uint8_t*)(getPayload(CANRX_RES));
 	bool res_triggered = !(data[7] & CMR_CAN_RES_TRIG);
 	return res_triggered; 
+}
+
+/**
+ * @brief Checks memorator state
+ */
+static inline bool memoratorOk(){
+    if (cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_MEMORATOR_WARNINGS]), xTaskGetTickCount()) == 0) {
+        volatile cmr_canMemoratorWarnings_t *memowarn = (cmr_canMemoratorWarnings_t*)getPayload(CANRX_MEMORATOR_WARNINGS); 
+        if (((memowarn->warnings & 0xFF) != MEMO_WARN_NONE)) {
+            return false; 
+        }
+        return true; 
+    } 
+    return false; 
 }

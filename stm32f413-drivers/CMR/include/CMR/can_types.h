@@ -1507,8 +1507,15 @@ typedef enum {
     MEMO_WARN_SD_FULL,
     MEMO_WARN_SD_NOT_IN
 } cmr_canMemoWarnMode_t; 
+
+typedef enum {
+    MEMORATOR_NOT_CONNECTED = 0,   /** @brief Memorator not connected/not sending info */
+    MEMORATOR_CONNECTED_BAD_STATE, /** @brief Memorator transmitting, but not sending correctly */
+    MEMORATOR_CONNECTED_STATE_OK   /** @brief Memorator transmitting correctly */
+} memorator_status_t;
+
 typedef struct {
-    cmr_canMemoWarnMode_t warnings; 
+    uint8_t warnings; 
 } cmr_canMemoratorWarnings_t; 
 
 typedef struct {
