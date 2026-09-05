@@ -615,6 +615,20 @@
                 "enumstruct": "cmr_canVSMHeartbeatWrn_t cmr_canCDCHeartbeatWrn_t cmr_canFSMHeartbeatWrn_t"
             }
         },
+        "CMR_CANID_HEARTBEAT_MEMORATOR": {
+            "cycleTime": 10,
+            "error": {
+                "enumstruct": "cmr_canVSMHeartbeatErr_t cmr_canDIMHeartbeatErr_t cmr_canCDCHeartbeatErr_t cmr_canFSMHeartbeatErr_t cmr_canHV_BMSHeartbeatErr_t"
+            },
+            "state": {
+                "e": "State"
+            },
+            "timeOut": 50,
+            "type": "cmr_canHeartbeat_t",
+            "warning": {
+                "enumstruct": "cmr_canVSMHeartbeatWrn_t cmr_canCDCHeartbeatWrn_t cmr_canFSMHeartbeatWrn_t"
+            }
+        },
         "CMR_CANID_HEARTBEAT_VSM": {
             "cycleTime": 10,
             "error": {
@@ -911,6 +925,16 @@
             "timeOut": 500,
             "type": "cmr_can_rear_whl_velocity_t"
         },
+        "CMR_CANID_RTC_DATE": {
+            "cycleTime": 10,
+            "timeOut": 50,
+            "type": "curDate"
+        },
+        "CMR_CANID_RTC_TIME": {
+            "cycleTime": 10,
+            "timeOut": 50,
+            "type": "curTime"
+        },
         "CMR_CANID_SBG_BODY_VEL": {
             "cycleTime": 400.0,
             "timeOut": 2000,
@@ -1017,20 +1041,20 @@
         "canrx_prefixes_used": [
             "CANRX_"
         ],
-        "files_processed": 2702,
-        "files_with_matches": 2702,
+        "files_processed": 2978,
+        "files_with_matches": 2978,
         "global_mappings": {
             "canrx_mappings": 163,
             "canrx_timeouts": 154,
             "canrx_types": 66,
-            "constants": 268,
+            "constants": 271,
             "struct_members": 0,
-            "variable_types": 323
+            "variable_types": 316
         },
         "prefixes_used": [
             "CMR_CANID_",
             "CAN_ID_"
         ],
-        "total_canids": 110
+        "total_canids": 113
     }
 }
