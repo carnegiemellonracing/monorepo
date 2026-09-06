@@ -19,6 +19,8 @@ enum CDCHeartbeatWrn(1="CDC_WRN_VSM_TIMEOUT",
     8192="CDC_WRN_DTI_SRC_RL", 16384="CDC_WRN_DTI_SRC_FR",
     32768="CDC_WRN_DTI_SRC_FL")
 enum CoolingState(0="OFF", 1="LOW", 2="HIGH")
+enum DIMBrakecheckStatus(0="DIM_BRAKECHECK_ONGOING",
+    1="DIM_BRAKECHECK_BAD", 2="DIM_BRAKECHECK_GOOD")
 enum DIMButtons(4="DIM_ACTIONBUTTON", 8="DIM_LAUNCHBUTTON")
 enum DIMHeartbeatErr(1="DIM_ERR_VSM_TIMEOUT")
 enum DRS_MODE(0="DRS_CLOSED", 1="DRS_OPEN", 2="DRS_TOGGLE",
@@ -423,7 +425,7 @@ Var=ACTIONS_dvControlMode unsigned 32,8
 
 [DIM_REQUEST]
 ID=235h
-DLC=5
+DLC=6
 CycleTime=5
 TimeOut=25
 Var=REQUEST_requestedState unsigned 0,8 /e:State
@@ -431,6 +433,7 @@ Var=REQUEST_requestedGear unsigned 8,8 /e:Gear
 Var=REQUEST_requestedDrsMode unsigned 16,8 /e:DrsMode
 Var=REQUEST_requestedDriver unsigned 24,8
 Var=REQUEST_requestedDVCtrl unsigned 32,8
+Var=REQUEST_brakeCheckResult unsigned 40,8
 
 [DRS_STATE]
 ID=52Ch
@@ -754,8 +757,8 @@ Var=PACK_avgCurrent_mA signed 32,32 /u:mA
 [HV_SENSORS]
 ID=306h
 DLC=4
-CycleTime=100
-TimeOut=500
+CycleTime=5
+TimeOut=25
 Var=SENSORS_packVoltage_cV unsigned 0,16
 Var=SENSORS_packCurrent_dA unsigned 16,16
 
