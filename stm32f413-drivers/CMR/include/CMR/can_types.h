@@ -836,6 +836,12 @@ typedef enum{
     CMR_CAN_DIM_ERR_VSM_TIMEOUT = (1<<0) 
 } cmr_canDIMHeartbeatErr_t; 
 
+typedef enum{
+    CMR_CAN_DIM_BRAKECHECK_ONGOING,
+    CMR_CAN_DIM_BRAKECHECK_BAD,
+    CMR_CAN_DIM_BRAKECHECK_GOOD
+} cmr_canDIMBrakecheckStatus_t;
+
 /** @brief Driver Interface Module state/gear request. */
 typedef struct {
     uint8_t requestedState;     //e:State /**< @brief Requested state. */
@@ -843,6 +849,7 @@ typedef struct {
     uint8_t requestedDrsMode;   //e:DrsMode /**< @brief Requested DRS mode. */
     uint8_t requestedDriver;    /**< @brief Requested Driver for Config Screen. */
     uint8_t requestedDVCtrl;
+    uint8_t brakeCheckResult;
 } cmr_canDIMRequest_t;
 
 /** @brief Driver Interface Module power diagnostics. */
