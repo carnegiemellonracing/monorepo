@@ -18,23 +18,20 @@ static cmr_canHVCError_t errorRegister = CMR_CAN_HVC_ERROR_NONE;
 
 cmr_canHV_BMSHeartbeatErr_t checkHVBMSErrors(){
     clearHVBMSErrorReg();
-    cmr_canHV_BMSHeartbeatErr_t errorFlags = errorRegister; 
+    cmr_canHV_BMSHeartbeatErr_t errorFlags = (cmr_canHV_BMSHeartbeatErr_t)errorRegister; 
     uint16_t maxCellTemp = getPackMaxCellTemp();
-    if(checkBMBTimeout()) { //BMSM 
+    if(checkBMBTimeout()) { 
         // TODO E2 devise a UART monitor system
         errorFlags |= CMR_CAN_HVBMS_ERROR_BMB_TIMEOUT; /**< @brief BMB has timed out. */
     }
     if(maxCellTemp > 4000 && maxCellTemp < 4990) { // Temp limit of 59C //BMSM 
 //        // TODO: #Define with 590
-//        // TODO E3 create structures for cell temp data and stats (min/max)
        errorFlags |= CMR_CAN_HVBMS_ERROR_CELL_OVERTEMP; 
     }
     if(getPackMaxCellVoltage() > 4280) { // Cell voltage limit of 4280 //BMSM 
-        // TODO E4 create structures for cell voltage data and stats (min/max)
         errorFlags |= CMR_CAN_HVBMS_ERROR_CELL_OVERVOLT;
     }
     if(getPackMinCellVoltage() < 2400) {
-        // TODO E5 create structures for cell voltage data and stats (min/max)
        errorFlags |= CMR_CAN_HVBMS_ERROR_CELL_UNDERVOLT; 
     }
    if((getBattMillivolts()) > maxPackVoltageMV) {
@@ -45,7 +42,7 @@ cmr_canHV_BMSHeartbeatErr_t checkHVBMSErrors(){
        // E7
        errorFlags |= CMR_CAN_HVBMS_ERROR_PACK_UNDERVOLT; 
    }
-    errorRegister = errorFlags;
+    errorRegister = (cmr_canHVCError_t)errorFlags;
     
     return errorFlags;
 }

@@ -35,13 +35,8 @@ TickType_t bms_start_time;
  * @note Indexed by `canRX_t`.
  */
 cmr_canRXMeta_t canRXMeta[] = {
-    [CANRX_HEARTBEAT_VSM] = { //not needed? 
+    [CANRX_HEARTBEAT_VSM] = {
         .canID = CMR_CANID_HEARTBEAT_VSM,
-        .timeoutError_ms = 2500,
-        .timeoutWarn_ms = 25
-    },
-    [CANRX_HVC_COMMAND] = {
-        .canID = CMR_CANID_HVC_COMMAND,
         .timeoutError_ms = 2500,
         .timeoutWarn_ms = 25
     },
@@ -72,7 +67,7 @@ static void sendBMSBMBStatusVoltage(uint8_t bmb_index);
 static void sendBMSBMBStatusTemp(uint8_t bmb_index);
 static void sendBMSMinMaxCellVoltage(void);
 static void sendBMSMinMaxCellTemp(void);
-static void sendAllBMBVoltages(uint8_t bmb_index);
+// sstatic void sendAllBMBVoltages(uint8_t bmb_index);
 static void sendHVBMSPackVoltage(void); 
 static void checkClearErr(void); 
 static uint16_t thermVoltage_to_tempC(uint16_t thermVolt); 
@@ -133,13 +128,13 @@ static void canTX1Hz(void *pvParameters) {
 }
 
 /** @brief CAN 10 Hz TX priority. */
-static const uint32_t canTX10Hz_priority = 4;
+// static const uint32_t canTX10Hz_priority = 4;
 
 /** @brief CAN 10 Hz TX period (milliseconds). */
 static const TickType_t canTX10Hz_period_ms = 100;
 
 /** @brief CAN 10 Hz TX task. */
-static cmr_task_t canTX10Hz_task;
+// static cmr_task_t canTX10Hz_task;
 
 /**
  * @brief Task for sending CAN messages at 10 Hz.
@@ -148,6 +143,7 @@ static cmr_task_t canTX10Hz_task;
  *
  * @return Does not return.
  */
+/*
 static void canTX10Hz(void *pvParameters) {
     (void) pvParameters;    // Placate compiler.
 
@@ -161,6 +157,7 @@ static void canTX10Hz(void *pvParameters) {
         vTaskDelayUntil(&lastWakeTime, canTX10Hz_period_ms);
     }
 }
+*/
 
 /** @brief CAN 100 Hz TX priority. */
 static const uint32_t canTX100Hz_priority = 5;
@@ -427,7 +424,7 @@ static void sendBMSMinMaxCellTemp(void) {
         uint8_t minIndex;
 
         if(use_emd) {
-            cmr_canEMDTemperatures_t *EMDTemperatures = getPayload(CANRX_EMD_TEMP);
+            volatile cmr_canEMDTemperatures_t *EMDTemperatures = getPayload(CANRX_EMD_TEMP);
             maxTemp = EMDTemperatures->max_temp_2C * 2;
             minTemp = EMDTemperatures->min_temp_2C * 2;
         }
@@ -472,8 +469,10 @@ static void sendBMSMinMaxCellTemp(void) {
  * @param lastWakeTime Pass in from canTX100Hz. Used to update lastStateChangeTime and errors/warnings.
  */
 static void sendHeartbeat(TickType_t lastWakeTime) {
-    cmr_canHeartbeat_t *vsm_heartbeat = getPayload(CANRX_HEARTBEAT_VSM);
-    cmr_canHVCError_t currentError = checkHVBMSErrors();
+    (void) lastWakeTime;
+    
+    volatile cmr_canHeartbeat_t *vsm_heartbeat = getPayload(CANRX_HEARTBEAT_VSM);
+    cmr_canHVCError_t currentError = (cmr_canHVCError_t)checkHVBMSErrors();
 
     cmr_canHeartbeat_t HVBMSHeartbeat = {
         .state = vsm_heartbeat->state 
@@ -484,7 +483,7 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
 }
 
 static void checkClearErr(void){
-    cmr_canHVCHeartbeat_t *hvcheartbeat = getPayload(CANRX_HEARTBEAT_HVC); 
+    volatile cmr_canHVCHeartbeat_t *hvcheartbeat = getPayload(CANRX_HEARTBEAT_HVC); 
     if(hvcheartbeat->hvcState==CMR_CAN_HVC_STATE_CLEAR_ERROR){
         clearHVBMSErrorReg(); 
     }
@@ -508,6 +507,7 @@ static void sendBMSBMBStatusErrors(void) {
 //	canTX(CMR_CANID_HVC_BMB_STATUS_ERRORS, &errs, sizeof(cmr_canHVCBMBErrors_t), canTX100Hz_period_ms);
 }
 
+/*
 static void sendAllBMBVoltages(uint8_t bmbIndex) {
     uint16_t voltageMask = 0x1FFE;
     BMB_Data_t *data = getBMBData(bmbIndex);
@@ -544,6 +544,7 @@ static void sendAllBMBVoltages(uint8_t bmbIndex) {
     canTX(CMR_CANID_HVBMS_BMB_0_CELL_TEMPS_0_4 + bmbIndex, &temp0, sizeof(temp0), canTX100Hz_period_ms);
     canTX(CMR_CANID_HVBMS_BMB_0_CELL_TEMPS_5_9 + bmbIndex, &temp1, sizeof(temp1), canTX100Hz_period_ms);
 }
+*/
 
 static uint16_t thermVoltage_to_tempC(uint16_t thermVolt_mV){
     float pullup_ohms = 4700.0; 
