@@ -22,7 +22,7 @@ static const int32_t swAngleTurningThreshold_millideg = 4000;
 static const int32_t swAngleMax_millideg = 27000;
 /// The maximum scaling factor applied to the phantom differential when turning.
 static const float maxPhantomDiffScalingFactor = 0.25f;
-
+/// Power limit setpoint per DTI motor. Two motors per inverter provide a combined limit of 70 KW.
 static const float maxPowerPerMotor_kW = 35.0f;
 
 static const uint16_t DTI_MAX_DC_CURRENT_PER_MOTOR_DA = 850;
