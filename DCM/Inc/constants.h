@@ -15,11 +15,13 @@ static const float current_torque_slope = 85.0f / 31.6f;
 static const float front_bias = 0.25f;
 static const float front_bias_endurance = 0.25f;
 
-// v1 vehicle rear-outer bias controller
-static const float inner_bias = 0.40f;
-static const int32_t swAngle_millideg_zero_threshold = 1000;
-
-
+/// GVC v1 constants.
+/// The steering wheel angle threshold for which phantom differential starts being applied.
+static const int32_t swAngleTurningThreshold_millideg = 4000;
+/// The maximum steering wheel angle.
+static const int32_t swAngleMax_millideg = 27000;
+/// The maximum scaling factor applied to the phantom differential when turning.
+static const float maxPhantomDiffScalingFactor = 0.25f;
 
 static const float maxPowerPerMotor_kW = 35.0f;
 
