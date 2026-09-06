@@ -393,7 +393,7 @@ static int getBadModuleState(canRX_t module, cmr_canVSMState_t vsmState, TickTyp
 /**
  * @brief Check if Autonomous Systems are in emergency state*/
 
-static bool getASEmergency(){
+__attribute__((unused)) static bool getASEmergency(){
     return false;
 }
 
@@ -403,31 +403,29 @@ static bool getASEmergency(){
 bool invertersPass(TickType_t lastWakeTime_ms){
     cmr_canDTI_ErrorMessages_t *dti_error_codes = getPayload(CANRX_DTI_ERROR_CODE);
     bool inverter_message_valid = !cmr_canRXMetaTimeoutError(&canRXMeta[CANRX_DTI_ERROR_CODE], lastWakeTime_ms);
-    if (COMPETITION_MODE){
-        if (((!dti_error_codes->fl_fault_code) ||
-            (!dti_error_codes->fr_fault_code) ||
-            (!dti_error_codes->rl_fault_code) ||
-            (!dti_error_codes->rr_fault_code)) &&
-            inverter_message_valid) {
-                return true;
-        }
-        else{
+
+    if (!inverter_message_valid) {
+        if(COMPETITION_MODE){
             sendFirstError(INVERTER_COMP);
-            return false;
-        }
-    }
-    else {
-        if (((!dti_error_codes->fl_fault_code) &&
-            (!dti_error_codes->fr_fault_code) &&
-            (!dti_error_codes->rl_fault_code) &&
-            (!dti_error_codes->rr_fault_code)) &&
-            inverter_message_valid) {
-                return true;
-        }
-        else{
+        } else {
             sendFirstError(INVERTER_ALL);
-            return false;
         }
+        return false;
+    }
+
+    bool fl_ok = !dti_error_codes->fl_fault_code;
+    bool fr_ok = !dti_error_codes->fr_fault_code;
+    bool rl_ok = !dti_error_codes->rl_fault_code;
+    bool rr_ok = !dti_error_codes->rr_fault_code;
+
+    if (COMPETITION_MODE){
+        if (fl_ok || fr_ok || rl_ok || rr_ok) return true;
+        sendFirstError(INVERTER_COMP);
+        return false;
+    } else {
+        if (fl_ok && fr_ok && rl_ok && rr_ok) return true;
+        sendFirstError(INVERTER_ALL);
+        return false;
     }
 }
 
