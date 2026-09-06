@@ -11,9 +11,9 @@
             "type": "uint8_t"
         },
         "CMR_CANID_AS_MISSION_FINISHED": {
-            "cycleTime": 5,
-            "timeOut": 25,
-            "type": "asFinishedData"
+            "cycleTime": 100,
+            "timeOut": 500,
+            "type": "missionFinished"
         },
         "CMR_CANID_AS_PRESSURE_READINGS": {
             "cycleTime": 10,
@@ -900,6 +900,11 @@
             "timeOut": 50,
             "type": "cmr_canHVCBalanceCommand_t"
         },
+        "CMR_CANID_MEMORATOR_WARNINGS": {
+            "cycleTime": 800.0,
+            "timeOut": 4000,
+            "type": "cmr_canMemoratorWarnings_t"
+        },
         "CMR_CANID_MOTORPOWER_STATE": {
             "cycleTime": 5,
             "timeOut": 25,
@@ -1041,20 +1046,20 @@
         "canrx_prefixes_used": [
             "CANRX_"
         ],
-        "files_processed": 2978,
-        "files_with_matches": 2978,
+        "files_processed": 2826,
+        "files_with_matches": 2826,
         "global_mappings": {
-            "canrx_mappings": 163,
-            "canrx_timeouts": 154,
-            "canrx_types": 66,
-            "constants": 271,
+            "canrx_mappings": 164,
+            "canrx_timeouts": 155,
+            "canrx_types": 67,
+            "constants": 268,
             "struct_members": 0,
-            "variable_types": 316
+            "variable_types": 314
         },
         "prefixes_used": [
             "CMR_CANID_",
             "CAN_ID_"
         ],
-        "total_canids": 113
+        "total_canids": 111
     }
 }

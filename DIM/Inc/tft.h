@@ -121,12 +121,6 @@ typedef enum {
 } SBG_status_t;
 
 typedef enum {
-    MEMORATOR_NOT_CONNECTED = 0,   /** @brief Memorator not connected/not sending info */
-    MEMORATOR_CONNECTED_BAD_STATE, /** @brief Memorator transmitting, but not sending correctly */
-    MEMORATOR_CONNECTED_STATE_OK   /** @brief Memorator transmitting correctly */
-} memorator_status_t;
-
-typedef enum {
     FL = 0,
     FR,
     RL,
