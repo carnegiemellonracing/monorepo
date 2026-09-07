@@ -160,7 +160,7 @@ static void motorsCommand (
         
         cmr_canState_t state = getCurrentExternalState();
 
-        switch (vsmToCANState[state]) {
+        switch (state) {
             // Drive the vehicle in RTD
             case CMR_CAN_AS_DRIVING:
             case CMR_CAN_RTD: {

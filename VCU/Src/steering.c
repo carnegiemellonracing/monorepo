@@ -117,7 +117,6 @@ void runSteering() {
     volatile cmr_canDIMRequest_t                *reqDIM       = canVehicleGetPayload(CANRX_VEH_REQUEST_DIM);
     volatile cmr_canAutonomousControlAction_t   *controlAction= canDAQGetPayload(CANRX_DAQ_AUTONOMOUS_ACTION);
 
-    cmr_canState_t state = vsmToCANState[state];
     cmr_canGear_t  gear  = reqDIM->requestedGear;
 
     if (state != CMR_CAN_AS_DRIVING) {

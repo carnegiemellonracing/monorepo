@@ -79,6 +79,8 @@ static void updateErrors(cmr_canError_t *errors, TickType_t lastWakeTime) {
     }
 
     static cmr_canState_t prevStateVSM = CMR_CAN_ERROR;
+
+    //get current state
     volatile cmr_canHeartbeat_t *heartbeatVSM = canVehicleGetPayload(CANRX_VEH_HEARTBEAT_VSM);
 
     // Reset DTI timeouts upon transition to HV_EN to prevent immediate timeout error

@@ -739,6 +739,7 @@ void runControls (
     int32_t dtiERPM_RL = getDTIERPM(CANRX_TRAC_RL_ERPM);
     int32_t dtiERPM_RR = getDTIERPM(CANRX_TRAC_RR_ERPM);
 
+    //get external state
     volatile cmr_canHeartbeat_t   *heartbeatVSM = canVehicleGetPayload(CANRX_VEH_HEARTBEAT_VSM);
 
     const int32_t avgMotorSpeed_RPM = (

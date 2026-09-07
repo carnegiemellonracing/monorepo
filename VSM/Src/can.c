@@ -477,12 +477,13 @@ uint8_t getASMSState() {
 	return (dataFSM->AS_Status);
 }
 
+//TODO: Once merge, sendheartbeat called in both 100 and 200Hz,and then 
 /**
  * @brief Sets up VSM CAN heartbeat with current errors and warnings, then sends it.
  *
  * @param lastWakeTime Pass in from canTX100Hz. Used to update lastStateChangeTime and errors/warnings.
  */
-static void sendHeartbeat(TickType_t lastWakeTime) {
+static void sendVSMHeartbeat(TickType_t lastWakeTime) {
     updateErrorsAndWarnings(lastWakeTime);
 
     cmr_canVSMState_t vsmState = getCurrentState();

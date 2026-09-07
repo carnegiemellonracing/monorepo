@@ -848,7 +848,6 @@ static void canTX100Hz(void *pvParameters) {
     (void) pvParameters;    // Placate compiler.
 
     volatile cmr_canHeartbeat_t *heartbeatVSM = canVehicleGetPayload(CANRX_VEH_HEARTBEAT_VSM);
-    cmr_canMovellaStatus_t *movellaStatus = canDAQGetPayload(CANRX_DAQ_MOVELLA_STATUS);
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
@@ -861,7 +860,8 @@ static void canTX100Hz(void *pvParameters) {
     }
 }
 
-static void sendHeartbeat(TickType_t lastWakeTime) {
+//check if CANTX task 
+static void sendDCMHeartbeat(TickType_t lastWakeTime) {
     cmr_canHeartbeat_t heartbeat = {0};
 
     heartbeat.state = getCurrentExternalState(lastWakeTime);
@@ -890,8 +890,6 @@ static cmr_task_t canTX200Hz_task;
  */
 static void canTX200Hz(void *pvParameters) {
     (void) pvParameters;    // Placate compiler.
-
-    volatile cmr_canHeartbeat_t *heartbeatVSM = canVehicleGetPayload(CANRX_VEH_HEARTBEAT_VSM);
 
     const cmr_DTI_RX_Message_t *dtiSetpointsFL = getDTISetpoints(MOTOR_FL);
     const cmr_DTI_RX_Message_t *dtiSetpointsFR = getDTISetpoints(MOTOR_FR);

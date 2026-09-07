@@ -105,16 +105,9 @@ static cmr_adc_t adc;
 
  //TODO: Once board is finalized, implement this
 uint32_t adcRead(adcChannel_t channel) {
-    if (channel is VSM) {
-        return cmr_adcRead(&adc, channel);
-    }
-    else if (channel is DCM) {
-        return adcChannels[ch].value;
-    }
+    return cmr_adcRead(&adc, channel);
 }
 
-
-/**
  * @brief Initializes the ADC interface.
  */
 void adcInit(void) {
@@ -124,14 +117,5 @@ void adcInit(void) {
         &adc, ADC1,
         adcChannels, sizeof(adcChannels) / sizeof(adcChannels[0]),
         sampleTime_ms
-    );
-}
-
-void adcInit(void) {
-    // ADC initialization and channel configuration.
-    cmr_adcInit(
-        &adc, ADC3,
-        adcChannels, sizeof(adcChannels) / sizeof(adcChannels[0]),
-        10
     );
 }
