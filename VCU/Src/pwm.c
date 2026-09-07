@@ -16,6 +16,8 @@
  * @see `CMR/pwm.h` for various initialization values.
  */
 
+
+ //DCM Pins
 static cmr_pwmPin_t pwmPinConfigs[PWM_LEN] = {
     [PWM_PUMP_LEFT] = {
         .pwmPinConfig = {
@@ -37,6 +39,50 @@ static cmr_pwmPin_t pwmPinConfigs[PWM_LEN] = {
             .timer = TIM23
         }
     },
+};
+
+//VSM Pins
+static cmr_pwmPin_t pwmPinConfigs[PWM_LEN] = {
+    [PWM_GREEN] = {
+        .pwmPinConfig = {
+            .port = GPIOA,
+            .pin = GPIO_PIN_10,
+            .channel = TIM_CHANNEL_3,
+            .presc = 10000,
+            .period_ticks = 3200,
+            .timer = TIM1
+        }
+    },
+    [PWM_RED] = {
+        .pwmPinConfig = {
+            .port = GPIOA,
+            .pin = GPIO_PIN_9,
+            .channel = TIM_CHANNEL_2,
+            .presc = 10000,
+            .period_ticks = 3200,
+            .timer = TIM1
+        }
+    },
+    [PWM_YELLOW] = {
+        .pwmPinConfig = {
+            .port = GPIOA,
+            .pin = GPIO_PIN_11,
+            .channel = TIM_CHANNEL_4,
+            .presc = 10000,
+            .period_ticks = 3200,
+            .timer = TIM1
+        }
+    },
+    [PWM_BLUE] = {
+        .pwmPinConfig = {
+            .port = GPIOB,
+            .pin = GPIO_PIN_10,
+            .channel = TIM_CHANNEL_3,
+            .presc = 10000,
+            .period_ticks = 3200,
+            .timer = TIM2
+        }
+    }
 };
 
 /**
