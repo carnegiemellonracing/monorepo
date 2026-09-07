@@ -81,10 +81,10 @@ static void updateErrors(cmr_canError_t *errors, TickType_t lastWakeTime) {
     static cmr_canState_t prevStateVSM = CMR_CAN_ERROR;
 
     //get current state
-    volatile cmr_canHeartbeat_t *heartbeatVSM = canVehicleGetPayload(CANRX_VEH_HEARTBEAT_VSM);
+    cmr_canState_t state = getCurrentExternalState();
 
     // Reset DTI timeouts upon transition to HV_EN to prevent immediate timeout error
-    if (prevStateVSM == CMR_CAN_GLV_ON && heartbeatVSM->state == CMR_CAN_HV_EN) {
+    if (prevStateVSM == CMR_CAN_GLV_ON && state == CMR_CAN_HV_EN) {
         for (size_t i = 0; i < CANRX_TRAC_LEN; i++) {
             canTractiveRXMeta[i].lastReceived_ms = lastWakeTime;
         }
@@ -101,7 +101,7 @@ static void updateErrors(cmr_canError_t *errors, TickType_t lastWakeTime) {
     }
 
     // Tractive CAN timeout errors (only occur in HV_EN and RTD when DTI is on)
-    if (heartbeatVSM->state == CMR_CAN_HV_EN || heartbeatVSM->state == CMR_CAN_RTD) {
+    if (state == CMR_CAN_HV_EN || state == CMR_CAN_RTD) {
         for (size_t i = 0; i < CANRX_TRAC_LEN; i++) {
             if (cmr_canRXMetaTimeoutError(&(canTractiveRXMeta[i]), lastWakeTime) < 0) {
                 *errors |= canTractiveRXMeta[i].errorFlag;
@@ -127,7 +127,7 @@ static void updateErrors(cmr_canError_t *errors, TickType_t lastWakeTime) {
     //     dti_in_error = false;
     // }
 
-    prevStateVSM = heartbeatVSM->state;
+    prevStateVSM = state;
 }
 
 /**
@@ -228,10 +228,10 @@ static void updateDTITimeouts(TickType_t lastWakeTime) {
         dtiTimeouts[i] = false;
     }
 
-    volatile cmr_canHeartbeat_t *heartbeatVSM = canVehicleGetPayload(CANRX_VEH_HEARTBEAT_VSM);
+    cmr_canState_t state = getCurrentExternalState();
 
     // Set timeouts as needed
-    if (heartbeatVSM->state == CMR_CAN_HV_EN || heartbeatVSM->state == CMR_CAN_RTD) {
+    if (state == CMR_CAN_HV_EN || state == CMR_CAN_RTD) {
         if (cmr_canRXMetaTimeoutError(dtiErpmFL, lastWakeTime) < 0 &&
             cmr_canRXMetaTimeoutError(dtiCurrentFL, lastWakeTime) < 0 &&
             cmr_canRXMetaTimeoutError(dtiTempFaultFL, lastWakeTime) < 0 &&
@@ -291,13 +291,13 @@ static void updateDTIErrors(void) {
         dtiErrors[i] = false;
     }
 
-    volatile cmr_canHeartbeat_t *heartbeatVSM = canVehicleGetPayload(CANRX_VEH_HEARTBEAT_VSM);
+    cmr_canState_t state = getCurrentExternalState();
 
     // Set error statuses as needed
-    if (heartbeatVSM->state == CMR_CAN_HV_EN || 
-        heartbeatVSM->state == CMR_CAN_RTD || 
-        heartbeatVSM->state == CMR_CAN_AS_READY ||
-        heartbeatVSM->state == CMR_CAN_AS_DRIVING) {
+    if (state == CMR_CAN_HV_EN || 
+        state == CMR_CAN_RTD || 
+        state == CMR_CAN_AS_READY ||
+        state == CMR_CAN_AS_DRIVING) {
 
         dtiErrors[MOTOR_FL] = !!(dtiTempFaultFL->fault_code);
         dtiErrors[MOTOR_RL] = !!(dtiTempFaultRL->fault_code);

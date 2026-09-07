@@ -739,8 +739,7 @@ void runControls (
     int32_t dtiERPM_RL = getDTIERPM(CANRX_TRAC_RL_ERPM);
     int32_t dtiERPM_RR = getDTIERPM(CANRX_TRAC_RR_ERPM);
 
-    //get external state
-    volatile cmr_canHeartbeat_t   *heartbeatVSM = canVehicleGetPayload(CANRX_VEH_HEARTBEAT_VSM);
+    volatile cmr_canState_t state = getCurrentExternalState();
 
     const int32_t avgMotorSpeed_RPM = (
         + (int32_t)(dtiERPM_FL / pole_pairs)
@@ -867,12 +866,12 @@ void runControls (
             static bool inspectionStarted = false;
             static TickType_t inspectionStartTime = 0;
             TickType_t now = xTaskGetTickCount();
-            if(!inspectionStarted && heartbeatVSM->state == CMR_CAN_AS_DRIVING) {
+            if(!inspectionStarted && state == CMR_CAN_AS_DRIVING) {
                 inspectionStarted = true;
                 inspectionStartTime = now;
             }
             if(inspectionStarted 
-            && heartbeatVSM->state == CMR_CAN_AS_DRIVING
+            && state == CMR_CAN_AS_DRIVING
             && now - inspectionStartTime < INSPECTION_MISSION_TIME_MS){
                 setVelocityInt16All(maxSlowSpeed_rpm);
                 float torque = maxSlowTorque_Nm; 
