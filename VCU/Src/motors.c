@@ -124,7 +124,6 @@ static void motorsCommand (
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        volatile cmr_canHeartbeat_t      *heartbeatVSM = canVehicleGetPayload(CANRX_VEH_HEARTBEAT_VSM);
         volatile cmr_canDIMRequest_t     *reqDIM       = canVehicleGetPayload(CANRX_VEH_REQUEST_DIM);
         volatile cmr_canFSMData_t        *dataFSM      = canVehicleGetPayload(CANRX_VEH_DATA_FSM);
         volatile cmr_canFSMSWAngle_t     *swangleFSM   = canVehicleGetPayload(CANRX_VEH_SWANGLE_FSM);
@@ -132,6 +131,8 @@ static void motorsCommand (
         volatile cmr_canHVCPackCurrent_t *currentHVC   = canVehicleGetPayload(CANRX_VEH_CURRENT_HVC);
         volatile cmr_canVSMStatus_t      *vsm          = canVehicleGetPayload(CANRX_VSM_STATUS);
         volatile cmr_canDIMActions_t     *actions      = canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON);
+
+        volatile cmr_canState_t state = getCurrentExternalState();
 
         //transmit Coulombs using HVI sense
         integrateCurrent();
@@ -257,14 +258,14 @@ static void motorsCommand (
         }
 
         // Update gear in transition from HV_EN to RTD
-        if ((prevState == CMR_CAN_HV_EN && heartbeatVSM->state == CMR_CAN_RTD)
-            || (prevState == CMR_CAN_AS_READY && heartbeatVSM->state == CMR_CAN_AS_DRIVING)) {
+        if ((prevState == CMR_CAN_HV_EN && state == CMR_CAN_RTD)
+            || (prevState == CMR_CAN_AS_READY && state == CMR_CAN_AS_DRIVING)) {
             gear = reqDIM->requestedGear;
             resetRetroactiveLimitFilters();
             initControls();
         }
 
-        prevState = heartbeatVSM->state;
+        prevState = state;
         vTaskDelayUntil(&lastWakeTime, motorsCommand_period_ms);
     }
 }

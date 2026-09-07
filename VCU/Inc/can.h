@@ -5,6 +5,9 @@
  * @author Carnegie Mellon Racing
  */
 
+#ifndef CAN_H
+#define CAN_H
+
 #pragma once
 
 #include <CMR/can.h>      // CMR CAN interface
@@ -48,6 +51,37 @@ typedef enum {
     CANRX_VEH_AS_TANK_PRESSURE,
     CANRX_VEH_LEN                   /**< @brief Number of periodic CAN messages. */
 } canVehicleRX_t;
+
+//TODO: Rename these VSM indices based on CAN placement
+typedef enum {
+    CANRX_HEARTBEAT_HVC = 0,  /**< @brief HVC heartbeat. */
+    CANRX_HEARTBEAT_DCM,      /**< @brief DCM heartbeat. */
+    CANRX_HEARTBEAT_DIM,      /**< @brief DIM heartbeat. */
+    CANRX_HEARTBEAT_HVBMS,    /**< @brief HVBMS heartbeat. */
+    CANRX_HEARTBEAT_COMPUTE,
+    CANRX_FSM_DATA,           /**< @brief FSM data. */
+    CANRX_CUBEMARS_DATA,
+    CANRX_FSM_SWANGLE,
+    CANRX_DIM_REQUEST,        /**< @brief DIM state request. */
+    CANRX_RES,                /**< @brief RES */
+    CANRX_AS_PRESSURE_READING,/**< @brief Autonomous Pressure Readings */
+    CANRX_DTI_ERROR_CODE,     /**< @brief Inverter Fault Codes*/
+    CANRX_FL_TEMPFAULT,       /**< @brief Front Left Inverter Fault */
+    CANRX_FR_TEMPFAULT,       /**< @brief Front Right Inverter Fault */
+    CANRX_RL_TEMPFAULT,       /**< @brief Rear Left Inverter Fault */
+    CANRX_RR_TEMPFAULT,       /**< @brief Rear Right Inverter Fault */
+    CANRX_FL_IO_STATUS,       /**< @brief Front Left Inverter Status */
+    CANRX_FR_IO_STATUS,       /**< @brief Front Right Inverter Status */
+    CANRX_RL_IO_STATUS,       /**< @brief Rear Left Inverter Status */
+    CANRX_RR_IO_STATUS,       /**< @brief Rear Right Inverter Status */
+    CANRX_FL_ERPM,
+    CANRX_FR_ERPM,
+    CANRX_RL_ERPM,
+    CANRX_RR_ERPM,
+    CANRX_AS_MISSION_FINISHED,
+    CANRX_AMS_ERROR,
+    CANRX_LEN     /**< @brief Number of periodic CAN messages. */
+} canRX_t;
 
 /**
  * @brief Tractive CAN receive metadata indices.
@@ -229,3 +263,17 @@ int16_t getDTIDCCurrent_dA(canTractiveRX_t rxMsg);
 int16_t getDTICtlrTemp_dC(canTractiveRX_t rxMsg);
 int16_t getDTIMotorTemp_dC(canTractiveRX_t rxMsg);
 void setPowerLimit(bool all, motorLocation_t motor, float powerLimit_kw);
+
+//VSM Functions:
+//extern volatile TickType_t lastStateChangeTime;
+extern cmr_canRXMeta_t canRXMeta[];
+extern const cmr_canVSMTimeoutErrorSource_t vsmErrorSourceFlags[];
+
+void canInit(void);
+int canTX(cmr_canID_t id, const void *data, size_t len, TickType_t timeout);
+cmr_canState_t getModuleState(canRX_t module);
+uint8_t getASMSState(void);
+void sendFirstError(uint8_t error_code);
+void resetError();
+
+#endif /* CAN_H */
