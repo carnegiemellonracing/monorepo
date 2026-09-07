@@ -1,1 +1,0 @@
-cmd='/opt/homebrew/bin/cmake;-DCMAKE_BUILD_TYPE:STRING=;-GNinja;-S;<SOURCE_DIR><SOURCE_SUBDIR>;-B;<BINARY_DIR>'
