@@ -242,6 +242,21 @@ typedef enum {
 } cmr_canDrsMode_t;
 
 // ------------------------------------------------------------------------------------------------
+// RAM (Live Telemetry Model)
+
+/** @brief RAM error bit vector definitions. */
+typedef enum {
+    CMR_CAN_RAM_ERROR_NONE          = 0x0000,    /**< @brief No errors detected. */
+
+    // SD errors
+    CMR_CAN_RAM_ERROR_SD_MOUNT      = (1 << 0),    /**< @brief SD mount failed. */
+    CMR_CAN_RAM_ERROR_SD_UNMOUNT    = (1 << 1),    /**< @brief SD unmount failed. */
+    CMR_CAN_RAM_ERROR_SD_WRITE      = (1 << 2),    /**< @brief SD write failed. */
+    CMR_CAN_RAM_ERROR_FILE_OPEN     = (1 << 3),    /**< @brief File open failed. */
+    CMR_CAN_RAM_ERROR_FILE_CLOSE    = (1 << 4),    /**< @brief SD write failed. */
+} cmr_canRAMError_t;
+
+// ------------------------------------------------------------------------------------------------
 // Vehicle Safety Module
 
 /** @brief Vehicle Safety Module internal states. */
@@ -1501,6 +1516,22 @@ typedef struct {
 typedef struct {
     uint8_t state;
 } cmr_canMemoratorHeartbeat_t;
+
+typedef enum {
+    MEMO_WARN_NONE = 0,
+    MEMO_WARN_SD_FULL,
+    MEMO_WARN_SD_NOT_IN
+} cmr_canMemoWarnMode_t; 
+
+typedef enum {
+    MEMORATOR_NOT_CONNECTED = 0,   /** @brief Memorator not connected/not sending info */
+    MEMORATOR_CONNECTED_BAD_STATE, /** @brief Memorator transmitting, but not sending correctly */
+    MEMORATOR_CONNECTED_STATE_OK   /** @brief Memorator transmitting correctly */
+} memorator_status_t;
+
+typedef struct {
+    uint8_t warnings; 
+} cmr_canMemoratorWarnings_t; 
 
 typedef struct {
 	uint8_t test_id;

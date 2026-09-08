@@ -124,16 +124,7 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
 			.Speed = GPIO_SPEED_FREQ_LOW
 		}
 	},
-	// // OLD DIM PINS
-	// [GPIO_LED_IMD] = {
-	// 	.port = GPIOA,
-	// 	.init = {
-	// 		.Pin = GPIO_PIN_8,
-	// 		.Mode = GPIO_MODE_OUTPUT_PP,
-	// 		.Pull = GPIO_PULLUP,
-	// 		.Speed = GPIO_SPEED_FREQ_LOW
-	// 	}
-	// },
+	
 	[GPIO_LED_BSPD] = {
 		.port = GPIOA,
 		.init = {

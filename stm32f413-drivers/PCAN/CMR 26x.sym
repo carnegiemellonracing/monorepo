@@ -86,10 +86,15 @@ enum HVCState(0="HVC_STATE_ERROR", 1="HVC_STATE_DISCHARGE",
     10="HVC_STATE_CHARGE_CONSTANT_VOLTAGE", 11="HVC_STATE_CLEAR_ERROR",
     12="HVC_STATE_UNKNOWN")
 enum LRUDButtons(1="DIM_LEFT", 2="DIM_RIGHT", 4="DIM_UP", 8="DIM_DOWN")
+enum MemoWarnMode(0="MEMO_WARN_NONE", 1="MEMO_WARN_SD_FULL",
+    2="MEMO_WARN_SD_NOT_IN")
 enum MovellaFilterMode(0="Without_GNSS_filter_profile_is_in_VRU_mode",
     1="Coasting_mode_GNSS_has_been_lost_less_than_60_sec_ago",
     3="With_GNSS_default_mode")
 enum PumpState(0="OFF", 1="ON")
+enum RAMError(0="RAM_ERROR_NONE", 1="RAM_ERROR_SD_MOUNT",
+    2="RAM_ERROR_SD_UNMOUNT", 4="RAM_ERROR_SD_WRITE",
+    8="RAM_ERROR_FILE_OPEN", 16="RAM_ERROR_FILE_CLOSE")
 enum RES(1="TRIG", 4="GO")
 enum SBG_Solution_Status_Mode(0="Uninitialized",
     1="Vertical_Gyro_Only", 2="Orientation_Only", 3="Nav_Velocity",
@@ -634,6 +639,13 @@ CycleTime=10
 TimeOut=50
 Var=LV_BMS_HEARTBEAT_state unsigned 0,8 /e:State
 
+[MEMORATOR_HEARTBEAT]
+ID=109h
+DLC=5
+CycleTime=10
+TimeOut=50
+Var=MEMORATOR_HEARTBEAT_state unsigned 0,8 /e:State
+
 [VSM_HEARTBEAT]
 ID=100h
 DLC=5
@@ -782,6 +794,13 @@ CycleTime=10
 TimeOut=50
 Var=CELL_balanceRequest unsigned 0,8 /e:HVC_Balance_State
 Var=CELL_threshold unsigned 8,16
+
+[MEMORATOR_WARNINGS]
+ID=520h
+DLC=1
+CycleTime=800
+TimeOut=4000
+Var=WARNINGS_warnings unsigned 0,8
 
 [MOTORPOWER_STATE]
 ID=52Eh
@@ -1473,10 +1492,6 @@ Var=Max_Mains_Current unsigned 8,16 -m /u:A /f:0.1
 Var=Requested_Voltage unsigned 24,16 -m /u:V /f:0.1
 Var=Requested_Current unsigned 40,16 -m /u:A /f:0.1
 
-[BRUSA_Charger_Status]
-ID=520h
-DLC=8
-
 [BRUSA_Charger_Temp]
 ID=523h
 DLC=8
@@ -2039,11 +2054,6 @@ Var=Data0 char 8,8
 Var=Data1 char 16,8
 Var=Data2 char 24,8
 Var=Data3 char 32,8
-
-[Memorator_Heartbeat]
-ID=109h
-DLC=1
-Var=State unsigned 0,8
 
 [HVI_Heartbeat]
 ID=106h

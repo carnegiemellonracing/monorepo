@@ -48,7 +48,7 @@ extern volatile bool redraw_new_driver_profiles;
 
 // Sizes for displaying to screen
 #define GEARDISPLAYLEN 10
-#define STATEDISPLAYLEN 13
+#define STATEDISPLAYLEN 12
 #define DRSDISPLAYLEN 7
 
 // Indices for accessing RAM Buffer + their lengths
@@ -65,12 +65,6 @@ void tftDL_RTDUpdate(
     int32_t hvVoltage_mV,
     int32_t power_kW,
     uint32_t speed_kph,
-    bool motorTemp_yellow,
-    bool motorTemp_red,
-    bool acTemp_yellow,
-    bool acTemp_red,
-    bool mcTemp_yellow,
-    bool mcTemp_red,
     int32_t motorTemp_C,
     int32_t acTemp_C,
     int32_t mcTemp_C,

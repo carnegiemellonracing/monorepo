@@ -32,9 +32,9 @@
 /** @brief  Experimentally determined right TPOS ADC Maximum*/
 #define RIGHT_TPOS_MAX_ADC 1180
 
-#define LEFT_SWANGLE_MIN_ADC 244.0f
-#define CENTER_SWANGLE_ADC 1555.0f
-#define RIGHT_SWANGLE_MAX_ADC 2878.0f
+#define LEFT_SWANGLE_MIN_ADC 132.0f
+#define CENTER_SWANGLE_ADC 1584.0f
+#define RIGHT_SWANGLE_MAX_ADC 2943.0f
 
 #define MAX_OUTER_WHEEL_ANGLE_MILLIDEG 25282.0f
 #define MAX_INNER_WHEEL_ANGLE_MILLIDEG 30139.0f
@@ -324,6 +324,7 @@ static uint32_t sampleBrakeImplaus(const cmr_sensor_t *sensor) {
  */
 
 int32_t sampleBrakeSensorImplaus(const cmr_sensor_t *sensor, uint32_t reading) {
+    (void) sensor; //Placate compiler
     return reading < LOWER_BRAKES_IMPLAUS_THRESHOLD || reading > UPPER_BRAKES_IMPLAUS_THRESHOLD ;
 }
 
