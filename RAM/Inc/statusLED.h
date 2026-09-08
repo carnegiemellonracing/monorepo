@@ -21,4 +21,4 @@ typedef enum {
 
 void statusLEDInit(void);
 
-static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN];
+extern const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN];
