@@ -127,37 +127,8 @@ static void canTX1Hz(void *pvParameters) {
     }
 }
 
-/** @brief CAN 10 Hz TX priority. */
-// static const uint32_t canTX10Hz_priority = 4;
-
 /** @brief CAN 10 Hz TX period (milliseconds). */
-static const TickType_t canTX10Hz_period_ms = 100;
-
-/** @brief CAN 10 Hz TX task. */
-// static cmr_task_t canTX10Hz_task;
-
-/**
- * @brief Task for sending CAN messages at 10 Hz.
- *
- * @param pvParameters Ignored.
- *
- * @return Does not return.
- */
-/*
-static void canTX10Hz(void *pvParameters) {
-    (void) pvParameters;    // Placate compiler.
-
-    TickType_t lastWakeTime = xTaskGetTickCount();
-    while (1) {
-        // BRUSA Charger decided by state machine 
-        // sendBRUSAChargerControl();
-
-        // BMB Voltage Status 
-
-        vTaskDelayUntil(&lastWakeTime, canTX10Hz_period_ms);
-    }
-}
-*/
+static const TickType_t canTX10Hz_period_ms = cd0cd0;
 
 /** @brief CAN 100 Hz TX priority. */
 static const uint32_t canTX100Hz_priority = 5;
@@ -270,13 +241,6 @@ void canInit(void) {
         canTX1Hz,
         NULL
     );
-    // cmr_taskInit(
-    //     &canTX10Hz_task,
-    //     "CAN TX 10Hz",
-    //     canTX10Hz_priority,
-    //     canTX10Hz,
-    //     NULL
-    // );
     cmr_taskInit(
         &canTX200Hz_task,
         "CAN TX 200Hz",
@@ -462,7 +426,6 @@ static void sendBMSMinMaxCellTemp(void) {
     canTX(CMR_CANID_HVBMS_MIN_MAX_CELL_TEMPERATURE, &BMSBMBMinMaxTemperature, sizeof(BMSBMBMinMaxTemperature), canTX10Hz_period_ms);
 }
 
-
 /**
  * @brief Sets up BMS Master CAN heartbeat with current errors and warnings, then sends it.
  *
@@ -487,7 +450,6 @@ static void checkClearErr(void){
     if(hvcheartbeat->hvcState==CMR_CAN_HVC_STATE_CLEAR_ERROR){
         clearHVBMSErrorReg(); 
     }
-
 }
 
 
