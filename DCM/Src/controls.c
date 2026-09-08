@@ -20,9 +20,8 @@
 #include "safety_filter.h"
 #include "../optimizer/optimizer.h"
 #include "26x_sensors.h"
-#include "sensors.h"s
+#include "sensors.h"
 #include "lut.h"
-#include "constants.h"
 
 #define PI 3.1415926535897932384626f
 
@@ -859,14 +858,12 @@ void runControls (
         }
         case CMR_CAN_GEAR_TEST: {
             disableTorqueMode();
-            setPowerLimit(false, MOTOR_FL, 40.0 * front_bias);
-            setPowerLimit(false, MOTOR_FR, 40.0 * front_bias);
-            setPowerLimit(false, MOTOR_RL, 40.0 * (1 - front_bias));
-            setPowerLimit(false, MOTOR_RR, 40.0 * (1 - front_bias));
-            // float target_speed_mps = 5.0f;
-            // getProcessedValue(&target_speed_mps, SLOW_SPEED_INDEX, float_1_decimal);
-            // set_motor_speed(throttlePos_u8, target_speed_mps, false);
-            set_manual_cruise_control(throttlePos_u8);
+            setFastTorqueWithPhantomDiff(throttlePos_u8, swAngle_millideg, front_bias, maxPhantomDiffScalingFactor);
+
+            setPowerLimit(false, MOTOR_FL, maxPowerPerMotor_kW * front_bias);
+            setPowerLimit(false, MOTOR_FR, maxPowerPerMotor_kW * front_bias);
+            setPowerLimit(false, MOTOR_RL, maxPowerPerMotor_kW * (1 - front_bias));
+            setPowerLimit(false, MOTOR_RR, maxPowerPerMotor_kW * (1 - front_bias));
             break;
         }
 
@@ -1094,6 +1091,66 @@ void setFastTorqueWithBias (uint8_t throttlePos_u8, float front_bias) {
    setTorqueLimsUnprotected(MOTOR_RR, reqTorque_rear, 0.0f);
    setTorqueLimsUnprotected(MOTOR_RL, reqTorque_rear, 0.0f);
    setVelocityInt16All(maxFastSpeed_rpm);
+}
+
+void setFastTorqueWithPhantomDiff(
+    uint8_t throttlePos_u8,
+    int32_t swAngle_millideg,
+    float front_bias,
+    float phantom_diff_scaling_factor
+)
+{
+    const float reqTorque =
+        maxFastTorque_Nm * (float)throttlePos_u8 / (float)UINT8_MAX;
+
+    // Compute a base set of torques with persistent front-rear bias.
+    const float reqTorque_front =
+        reqTorque * front_bias / (1.0f - front_bias);
+    const float reqTorque_rear = reqTorque;
+
+    const float clamped_swAngle_millideg =
+        CLAMP(
+            -swAngleMax_millideg,
+            swAngle_millideg,
+            swAngleMax_millideg
+        );
+
+    // Phantom torque differential is expressed linearly as a percentage of the
+    // steering angle beyond the turning threshold.
+    const float steering_progress =
+        CLAMP(
+            0.0f,
+            (fabsf(clamped_swAngle_millideg) - swAngleTurningThreshold_millideg) /
+                (swAngleMax_millideg - swAngleTurningThreshold_millideg),
+            1.0f
+        );
+
+    const float outer_torque_fraction = 1.0f + phantom_diff_scaling_factor * steering_progress;
+    const float inner_torque_fraction = 1.0f - phantom_diff_scaling_factor * steering_progress;
+
+    // If we are turning right, left wheels are treated as outer and right wheels as inner.
+    if (clamped_swAngle_millideg > swAngleTurningThreshold_millideg) {
+        setTorqueLimsUnprotected(MOTOR_FL, reqTorque_front * outer_torque_fraction, 0.0f);
+        setTorqueLimsUnprotected(MOTOR_RL, reqTorque_rear * outer_torque_fraction, 0.0f);
+        setTorqueLimsUnprotected(MOTOR_FR, reqTorque_front * inner_torque_fraction, 0.0f);
+        setTorqueLimsUnprotected(MOTOR_RR, reqTorque_rear * inner_torque_fraction, 0.0f);
+    }
+    // If we are turning left, right wheels are treated as outer and left wheels as inner.
+    else if (clamped_swAngle_millideg < -swAngleTurningThreshold_millideg) {
+        setTorqueLimsUnprotected(MOTOR_FL, reqTorque_front * inner_torque_fraction, 0.0f);
+        setTorqueLimsUnprotected(MOTOR_RL, reqTorque_rear * inner_torque_fraction, 0.0f);
+        setTorqueLimsUnprotected(MOTOR_FR, reqTorque_front * outer_torque_fraction, 0.0f);
+        setTorqueLimsUnprotected(MOTOR_RR, reqTorque_rear * outer_torque_fraction, 0.0f);
+    }
+    else
+    {
+        setTorqueLimsUnprotected(MOTOR_FL, reqTorque_front, 0.0f);
+        setTorqueLimsUnprotected(MOTOR_FR, reqTorque_front, 0.0f);
+        setTorqueLimsUnprotected(MOTOR_RL, reqTorque_rear, 0.0f);
+        setTorqueLimsUnprotected(MOTOR_RR, reqTorque_rear, 0.0f);
+    }
+
+    setVelocityInt16All(maxFastSpeed_rpm);
 }
 
 void setRegenTorques (uint8_t regen_pct) {
