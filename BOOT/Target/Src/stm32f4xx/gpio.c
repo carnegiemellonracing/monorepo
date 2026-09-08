@@ -10,12 +10,15 @@
 #include "types.h"
 #include "timer.h"
 
+/** @brief Board-specific pin configuration, populated at runtime from board info. */
+cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN];
+
 /**
  * @brief Initializes the GPIO interface.
  */
 void gpioInit(void) {
     cmr_gpioPin_t status_gpio = cmr_getBootloaderStatusLedPin();
-    const cmr_gpioPinConfig_t ledConfig = { 
+    gpioPinConfigs[GPIO_LED_STATUS] = (cmr_gpioPinConfig_t) { 
         .port = status_gpio.port,
         .init = {
             .Pin = status_gpio.pin,
@@ -25,7 +28,7 @@ void gpioInit(void) {
         }
     };
     cmr_gpioPinInit(
-        &ledConfig, 1
+        gpioPinConfigs, sizeof(gpioPinConfigs) / sizeof(gpioPinConfigs[0])
     );
 }
 
@@ -34,18 +37,8 @@ void gpioInit(void) {
  * @brief Deinitializes the GPIO interface.
  */
 void gpioDeinit(void) {
-    cmr_gpioPin_t status_gpio = cmr_getBootloaderStatusLedPin();
-    const cmr_gpioPinConfig_t ledConfig = { 
-        .port = status_gpio.port,
-        .init = {
-            .Pin = status_gpio.pin,
-            .Mode = GPIO_MODE_OUTPUT_PP,
-            .Pull = GPIO_NOPULL,
-            .Speed = GPIO_SPEED_FREQ_LOW
-        }
-    };
     cmr_gpioPinDeInit(
-        &ledConfig, 1
+        gpioPinConfigs, sizeof(gpioPinConfigs) / sizeof(gpioPinConfigs[0])
     );
 }
 

@@ -60,6 +60,9 @@ static void statusLED(void *pvParameters) {
 }
 
 void statusLEDInit(){
+    cmr_gpioPinInit(
+        gpioPinConfigs, sizeof(gpioPinConfigs) / sizeof(gpioPinConfigs[0])
+    );
     cmr_taskInit(
         &statusLED_task,
         "statusLED",
