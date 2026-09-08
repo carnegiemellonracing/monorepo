@@ -30,6 +30,8 @@ void gpioInit(void) {
     cmr_gpioPinInit(
         gpioPinConfigs, sizeof(gpioPinConfigs) / sizeof(gpioPinConfigs[0])
     );
+    /* Write */
+    cmr_gpioWrite(GPIO_LED_STATUS, 1);
 }
 
 
@@ -52,6 +54,7 @@ void timedLedToggle(void)
   static int32_t nextBlinkEvent = 0;
 
   /* check for blink event */
+
   if (TimerGet() >= nextBlinkEvent)
   {
     cmr_gpioToggle(GPIO_LED_STATUS);

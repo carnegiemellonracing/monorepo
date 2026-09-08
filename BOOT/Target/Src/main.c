@@ -32,6 +32,9 @@
 #include "boot.h"                                /* bootloader generic header          */
 #include "setup.h"
 
+#include <CMR/gpio.h>
+#include "gpio.h"
+
 /************************************************************************************//**
 ** \brief     This is the entry point for the bootloader application and is called
 **            by the reset interrupt vector after the C-startup routines executed.
@@ -46,8 +49,7 @@ int main(void)
   Init();
   /* initialize the bootloader */
   BootInit();
-  /* Write pin high*/
-    
+
   /* start the infinite program loop */
   while (1)
   {
