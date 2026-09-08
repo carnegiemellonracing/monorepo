@@ -154,7 +154,6 @@ target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
     $<$<COMPILE_LANGUAGE:CXX>: ${symbols_cxx_SYMB}>
     $<$<COMPILE_LANGUAGE:ASM>: ${symbols_asm_SYMB}>
     PROJECT_${PROJECT_NAME_UPPER}
-    USER_VECT_TAB_ADDRESS
 
     # Configuration specific
     $<$<CONFIG:Debug>:DEBUG>
