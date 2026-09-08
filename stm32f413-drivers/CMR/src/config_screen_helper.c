@@ -84,18 +84,18 @@ volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
         .min = 0,
         .max = 255,
     },
-    [TC_LUT_X_SCALE_INDEX] = {
-        .name = "TC LUT Vert Scl",
-        .ESE_background_color_variable = ESE_TC_LUT_X_SCALE_BOX,
-        .ESE_value_color_variable = ESE_TC_LUT_X_SCALE_COLOR,
-        .ESE_value_variable = ESE_TC_LUT_X_SCALE_VAL,
-        .ESE_context_text_variable = "Traction Control LUT Vert Scale",
+    [PHANTOM_DIFF_CONSTANT_INDEX] = {
+        .name = "Phantom Diff",
+        .ESE_background_color_variable = PHANTOM_DIFF_CONSTANT_BOX,
+        .ESE_value_color_variable = PHANTOM_DIFF_CONSTANT_COLOR,
+        .ESE_value_variable = PHANTOM_DIFF_CONSTANT_VAL,
+        .ESE_context_text_variable = "Phantom Diff Constant",
         .value = {
             .type = float_2_decimal,
-            .value = 100
+            .value = 0.25
         },
         .min = 0,
-        .max = 255,
+        .max = 1,
     },
     [PEDAL_REGEN_STRENGTH_INDEX] = {
         .name = "Pedal Regen Str",
