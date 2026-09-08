@@ -21,7 +21,6 @@
 // Project headers
 #include "can.h"        // Board-specific CAN interface
 #include "config.h"     // Previous flash configuration
-#include "gpio.h"       // Board-specific GPIO interface
 #include "memorator.h"  // Board-specific GPIO interface
 #include "parser.h"     // JSON configuration
 #include "sample.h"     // CBOR encoding
@@ -46,7 +45,6 @@ int main(void) {
 
     // Peripheral configuration.
     uartInit();
-    gpioInit();
     canInit();
     statusLEDInit();
     //memoratorInit();

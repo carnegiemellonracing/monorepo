@@ -32,6 +32,7 @@
  *           might need adjustment to make sure the bootloader doesn't get overwritten.
  */
 static const tFlashSector flashLayout[] =
+
 #ifdef F413
 {
   /* space is reserved for a bootloader configuration with all supported communication
@@ -50,18 +51,6 @@ static const tFlashSector flashLayout[] =
   { 0x080A0000, 0x20000,  9},           /* flash sector  9 - 128kb                     */
   { 0x080C0000, 0x20000, 10},           /* flash sector 10 - 128kb                     */
   { 0x080E0000, 0x20000, 11},           /* flash sector 11 - 128kb                     */
-  { 0x08100000, 0x04000, 12},           /* flash sector 12 -  16kb                     */
-  { 0x08104000, 0x04000, 13},           /* flash sector 13 -  16kb                     */
-  { 0x08108000, 0x04000, 14},           /* flash sector 14 -  16kb                     */
-  { 0x0810c000, 0x04000, 15},           /* flash sector 15 -  16kb                     */
-  { 0x08110000, 0x10000, 16},           /* flash sector 16 -  64kb                     */
-  { 0x08120000, 0x20000, 17},           /* flash sector 17 - 128kb                     */
-  { 0x08140000, 0x20000, 18},           /* flash sector 18 - 128kb                     */
-  { 0x08160000, 0x20000, 19},           /* flash sector 19 - 128kb                     */
-  { 0x08180000, 0x20000, 20},           /* flash sector 20 - 128kb                     */
-  { 0x081A0000, 0x20000, 21},           /* flash sector 21 - 128kb                     */
-  { 0x081C0000, 0x20000, 22},           /* flash sector 22 - 128kb                     */
-  { 0x081E0000, 0x20000, 23},           /* flash sector 23 - 128kb                     */
 };
 #elif H725
 {

@@ -16,9 +16,13 @@ $IsDirty = 0
 $GitInfoHex = $Hash
 
 $Content = @"
+#pragma once
+#ifndef GIT_H
+#define GIT_H
 #include <stdint.h>
-const uint32_t GIT_INFO = 0x$GitInfoHex;
-const uint8_t IS_UNCOMMITTED = $IsDirty;
+#define GIT_INFO ((uint32_t)0x$GitInfoHex)
+#define IS_UNCOMMITTED ((uint8_t)$IsDirty)
+#endif
 "@
 Write-Output $Content | Out-File -Encoding ASCII -FilePath ./Inc/gitcommit.h
 

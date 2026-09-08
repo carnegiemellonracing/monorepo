@@ -64,9 +64,9 @@ MEMORY
   SHARED (xrw)   : ORIGIN = 0x20000000, LENGTH = 64
   BTR_RES_RAM (xrw)   : ORIGIN = 0x20000040, LENGTH = 8K-64
   RAM (xrw)      : ORIGIN = 0x20002000, LENGTH = 320K-8K
-  BOARD_INFO (rx) : ORIGIN = 0x8000000, LENGTH = 1K
-  BTR_RES_FLASH (xrw)   : ORIGIN =0x8000400, LENGTH = 64K-1K
-  FLASH    (rx)     : ORIGIN = 0x08010000,   LENGTH = 1536K-64K   /* 1536K - 64K bootloader */
+  BTR_RES_FLASH (xrw)   : ORIGIN =0x8000000, LENGTH = 64K
+  FLASH    (rx)     : ORIGIN = 0x08010000,   LENGTH = 1024K-1K-64K   /* 1024K - 64K bootloader -1K board_info*/
+  BOARD_INFO (rx) : ORIGIN = 0x080FFC00, LENGTH = 1K
 }
 
 /* Define output sections */

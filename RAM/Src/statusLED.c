@@ -7,7 +7,6 @@
 
  #include <CMR/tasks.h>  // Task interface
 #include "statusLED.h"  // interface to implement
-#include "gpio.h"  // gpio for turning LED on
 #include <CMR/gpio.h>   // GPIO interface
 
 

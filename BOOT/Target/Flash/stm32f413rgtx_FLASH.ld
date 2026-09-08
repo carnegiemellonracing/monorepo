@@ -63,8 +63,8 @@ MEMORY
 {
 SHARED (xrw)   : ORIGIN = 0x20000000, LENGTH = 64
 RAM (xrw)      : ORIGIN = 0x20000040, LENGTH = 8k-64
-BOARD_INFO (rx)      : ORIGIN = 0x8000000, LENGTH = 1K
-FLASH (rx)      : ORIGIN = 0x8000400, LENGTH = 64K-1K
+FLASH (rx)      : ORIGIN = 0x8000000, LENGTH = 64K
+BOARD_INFO (rx)      : ORIGIN = 0x080FFC00, LENGTH = 1K
 }
 
 /* Define output sections */

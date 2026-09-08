@@ -18,7 +18,11 @@ IS_DIRTY=0
 GIT_INFO_HEX="$HASH"
 
 cat > ./Inc/gitcommit.h <<EOF
+#pragma once
+#ifndef GIT_H
+#define GIT_H
 #include <stdint.h>
-const uint32_t GIT_INFO = 0x$GIT_INFO_HEX;
-const uint8_t IS_UNCOMMITTED = $IS_DIRTY;
+#define GIT_INFO ((uint32_t)0x$GIT_INFO_HEX)
+#define IS_UNCOMMITTED ((uint8_t)$IS_DIRTY)
+#endif
 EOF

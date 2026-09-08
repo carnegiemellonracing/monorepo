@@ -57,6 +57,7 @@ set(link_LIBS
 set(TARGET_MCU "STM32F413" CACHE STRING "Target MCU: STM32F413 or STM32H725")
 message("MCU target: " ${TARGET_MCU})
 
+set(TARGET_MCU "STM32F413")
 # Processor configuration for stm32f413-drivers
 set(PROCESSOR F413)
 set(PROCESSOR_FAM F4XX)
@@ -93,7 +94,7 @@ set(FREERTOS_PORT "GCC_ARM_CM4F" CACHE STRING "" FORCE)
 # flash_layout.c is #included directly by another .c file — exclude it.
 file(GLOB_RECURSE local_SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/Src/*.c"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Startup/*.s"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Startup/startup_stm32f413rgtx.s"
 )
 # Don't include flash_layout.c since it's #included directly by another .c file
 list(FILTER local_SRCS EXCLUDE REGEX "flash_layout\\.c")

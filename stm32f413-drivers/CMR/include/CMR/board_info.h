@@ -21,7 +21,7 @@ typedef struct {
     cmr_gpioPinConfig_t* led_pin;
 } board_info_t;
 
-#define BOARD_INFO ((const board_info_t *)0x8000000)
+#define BOARD_INFO ((const board_info_t *)0x080FFC00)
 #define BOARD_INFO_MAGIC 0xB0A1D0A1
 
 // Get the current board info

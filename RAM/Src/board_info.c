@@ -1,7 +1,7 @@
 
 #include <CMR/board_info.h>
 #include "gitcommit.h"
-#include "gpio.h"
+#include "statusLED.h"
 #include "can.h"
 
 __attribute__((section(".board_info")))
