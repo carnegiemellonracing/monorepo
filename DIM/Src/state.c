@@ -73,6 +73,8 @@ bool ackButtonPressed;
 
 uint8_t switchValues;
 
+bool cntrl_button_long_pressed(void);
+
 
 /** @brief DIM state. */
 static volatile struct {
@@ -339,7 +341,7 @@ static cmr_state getNextState(void) {
             if(getASMS()) {
                 nextState = AUTON;
             }
-            else if(!cmr_gpioRead(GPIO_CTRL_SWITCH) && (stateGetVSM() == CMR_CAN_GLV_ON || stateGetVSM() == CMR_CAN_HV_EN)) {
+            else if(cntrl_button_long_pressed() && (stateGetVSM() == CMR_CAN_GLV_ON || stateGetVSM() == CMR_CAN_HV_EN)) {
                 nextState = CONFIG;
                 flush_config_screen_to_dcm = false;
             }
@@ -348,7 +350,7 @@ static cmr_state getNextState(void) {
             }
             break;
         case CONFIG:
-            if(cmr_gpioRead(GPIO_CTRL_SWITCH)) {
+            if(cntrl_button_long_pressed()) {
                 nextState = NORMAL;
                 flush_config_screen_to_dcm = true;
             }
@@ -702,6 +704,41 @@ uint8_t getLVSoC(float voltage) {
     }
     // if we get to end of loop, voltage is less than lowest voltage in lut
     return 0;
+}
+
+/**
+ * @brief Checks if the CNTRL Button has been long pressed
+ * 
+ * @return 1 iff control button has been pressed for a significantly long amount of time
+ */
+bool cntrl_button_long_pressed(void){
+	static TickType_t last_pressed_time_ms = 0;
+	static bool button_registered = false;
+    static bool long_press_registered = false; 
+
+	bool button_pressed = !cmr_gpioRead(GPIO_BUTTON_SW_RIGHT);
+
+	if (!button_pressed){
+        button_registered = false; 
+        long_press_registered = false; 
+		return false;
+	}
+	
+	if(button_pressed && !button_registered){
+		button_registered = true;
+		last_pressed_time_ms = xTaskGetTickCount();
+		return false;
+	}
+
+	TickType_t current_time_ms = xTaskGetTickCount();
+	TickType_t button_long_press_thresh_ms = 1000;
+	if(!long_press_registered && button_registered && button_pressed && 
+        current_time_ms - last_pressed_time_ms > button_long_press_thresh_ms){
+        long_press_registered = true; 
+		return true;
+	}
+
+	return false;
 }
 
 cmr_canState_t vsmStateGlobal;
