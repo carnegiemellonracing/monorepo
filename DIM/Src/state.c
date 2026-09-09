@@ -25,7 +25,7 @@
 static const uint32_t stateMachine_priority = 4;
 
 /** @brief Button input task period (milliseconds). */
-static const TickType_t stateMachine_period = 1000;
+static const TickType_t stateMachine_period = 100;
 
 /** @brief Button input task task. */
 static cmr_task_t stateMachine_task;
@@ -366,18 +366,18 @@ static cmr_state getNextState(void) {
                 nextState = CONFIG;
                 buttonStates[RIGHT].isPressed = false; 
             }
-            else if(buttonStates[UP].isPressed) {
-                //move up on screen
-                config_move_request = -CONFIG_SCREEN_NUM_COLS;
-                nextState = CONFIG;
-                buttonStates[UP].isPressed = false; 
-            }
-            else if(buttonStates[DOWN].isPressed) {
-                //move down on screen
-                config_move_request = CONFIG_SCREEN_NUM_COLS;
-                nextState = CONFIG;
-                buttonStates[DOWN].isPressed = false; 
-            }
+            // else if(buttonStates[UP].isPressed) {
+            //     //move up on screen
+            //     config_move_request = -CONFIG_SCREEN_NUM_COLS;
+            //     nextState = CONFIG;
+            //     buttonStates[UP].isPressed = false; 
+            // }
+            // else if(buttonStates[DOWN].isPressed) {
+            //     //move down on screen
+            //     config_move_request = CONFIG_SCREEN_NUM_COLS;
+            //     nextState = CONFIG;
+            //     buttonStates[DOWN].isPressed = false; 
+            // }
             else{
                 nextState = CONFIG;
             }
@@ -555,6 +555,9 @@ static volatile int requestedGear;
 *
 */
 void reqGear(void) {
+    if (currState == CONFIG) {
+        return; 
+    }
     bool canChangeGear = ((stateGetVSM() == CMR_CAN_GLV_ON) 
                        || (stateGetVSM() == CMR_CAN_HV_EN));
     if(getASMS()/* && cmr_gpioRead(GPIO_CTRL_SWITCH)*/) {
@@ -600,6 +603,9 @@ void reqGear(void) {
 }
 
 void reqDRS(void) {
+    if (currState == CONFIG) {
+        return; 
+    }
     if(buttonStates[SW_RIGHT].isPressed) {
         state.drsReq = CMR_CAN_DRSM_OPEN;
         buttonStates[SW_RIGHT].isPressed = false; 
@@ -610,6 +616,9 @@ void reqDRS(void) {
 }
 
 void reqDVCtrl(void) {
+    if (currState == CONFIG) {
+        return; 
+    }
     if(buttonStates[UP].isPressed) {
         state.dvCtrlReq = (state.dvCtrlMode + 1) % NUM_DV_MODES;
         buttonStates[UP].isPressed = false; 
@@ -716,7 +725,7 @@ bool cntrl_button_long_pressed(void){
 	static bool button_registered = false;
     static bool long_press_registered = false; 
 
-	bool button_pressed = !cmr_gpioRead(GPIO_BUTTON_SW_RIGHT);
+	bool button_pressed = !cmr_gpioRead(GPIO_BUTTON_RIGHT);
 
 	if (!button_pressed){
         button_registered = false; 
