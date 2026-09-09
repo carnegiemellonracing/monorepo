@@ -862,7 +862,7 @@ void runControls (
             disableTorqueMode();
             maxPhantomDiffScalingFactor = 0.25f;
             getProcessedValue(&maxPhantomDiffScalingFactor, PHANTOM_DIFF_CONSTANT_INDEX, float_2_decimal);
-            canTX(CMR_CAN_BUS_VEH, 0x524, &maxPhantomDiffScalingFactor, sizeof(float), canTX10Hz_period_ms); 
+            canTX(CMR_CAN_BUS_VEH, 0x524, &maxPhantomDiffScalingFactor, sizeof(float), 100); 
             setFastTorqueWithPhantomDiff(throttlePos_u8, swAngle_millideg, front_bias, maxPhantomDiffScalingFactor);
             setPowerLimit(false, MOTOR_FL, maxPowerPerMotor_kW * front_bias);
             setPowerLimit(false, MOTOR_FR, maxPowerPerMotor_kW * front_bias);

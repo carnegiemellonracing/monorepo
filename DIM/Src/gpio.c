@@ -203,7 +203,8 @@ static void gpioReadButtons(void *pvParameters) {
     while (1) {
         uint8_t paddle = adcRead(ADC_PADDLE);
         if(getCurrState() == CONFIG) {
-            if (paddle > 100) config_increment_up_requested = true;
+            if (!cmr_gpioRead(gpioButtonPins[GPIO_BUTTON_UP])) config_increment_up_requested = true;
+			if (!cmr_gpioRead(gpioButtonPins[GPIO_BUTTON_DOWN])) config_increment_down_requested = true;
         }
 
         // Direct assignment for CAN buttons

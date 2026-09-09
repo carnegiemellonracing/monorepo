@@ -33,3 +33,5 @@ tmp/
 
 *.peproj~
 *.pyc
+
+**/.cache/
