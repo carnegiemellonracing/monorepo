@@ -92,10 +92,10 @@ volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
         .ESE_context_text_variable = "Phantom Diff Constant",
         .value = {
             .type = float_2_decimal,
-            .value = 0.25
+            .value = 25
         },
         .min = 0,
-        .max = 1,
+        .max = 100,
     },
     [PEDAL_REGEN_STRENGTH_INDEX] = {
         .name = "Pedal Regen Str",
