@@ -16,7 +16,7 @@
 
 #include "state.h"          // Interface to implement
 #include "error.h"          // updateCurrentErrors, updateCurrentWarnings
-#include "can.h"            // cmr_canRXMeta_t, canRXMeta[], canRX_t,
+#include "can.h"            // cmr_canRXMeta_t, canRXMeta[], canVehicleRX_t,
                             // getPayload(), getModuleState()
 #include "sensors.h"        // Sensors interface
 #include "gpio.h"           // gpio_t

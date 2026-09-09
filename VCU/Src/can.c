@@ -4,7 +4,7 @@
  *
  * Adding a new periodic message struct:
  *
- * 1. Add the corresponding index to the `canRX_t` enum in `can.h`.
+ * 1. Add the corresponding index to the `canVehicleRX_t` enum in `can.h`.
  * 2. Add a configuration entry in `canRXMeta` at that index.
  * 3. Access the message using `canRXMeta[index]`.
  *
@@ -834,7 +834,7 @@ cmr_canRXMeta_t canDaqRXMeta[CANRX_DAQ_LEN] = {
 /**
  * @brief CAN periodic message receive metadata
  *
- * @note Indexed by `canRX_t`.
+ * @note Indexed by `canVehicleRX_t`.
  */
 cmr_canRXMeta_t canRXMeta[] = {
     [CANRX_HEARTBEAT_VSM] = {
@@ -880,7 +880,7 @@ cmr_canRXMeta_t canRXMeta[] = {
  * @details This matrix must be kept up to date with the above canRX meta definitions! Inverters are
  *          labeled as no source because their timeout is handled elsewhere.
  *
- * @note Indexed by `canRX_t`.
+ * @note Indexed by `canVehicleRX_t`.
  */
 const cmr_canVSMTimeoutErrorSource_t vsmErrorSourceFlags[CANRX_LEN] = {
     [CANRX_HEARTBEAT_HVC]       = CMR_CAN_VSM_TIMEOUT_SOURCE_NONE,
@@ -1417,7 +1417,7 @@ static void canTX1Hz(void *pvParameters) {
     }
 }
 
-void *canGetPayload(canRX_t rxMsg) {
+void *canGetPayload(canVehicleRX_t rxMsg) {
     configASSERT(rxMsg < CANRX_LEN);
 
     cmr_canRXMeta_t *rxMeta = &(canRXMeta[rxMsg]);
@@ -1612,21 +1612,21 @@ void canInit(void) {
     //Gotta check the schematic when it's
 
     // Vehicle CAN initialization - CAN1
-    cmr_canInit(&can[CMR_CAN_BUS_VEH], FDCAN1, CMR_CAN_BITRATE_500K, NULL,
+    cmr_canInit(&can[CMR_CAN_BUS_VEH], CAN1, CMR_CAN_BITRATE_500K, NULL,
                   0, &conditionalCallback, GPIOA,
                   GPIO_PIN_11,        // CAN1 RX port/pin.
                   GPIOA, GPIO_PIN_12  // CAN1 TX port/pin.
     );
 
     // Tractive CAN initialization. - CAN3
-    cmr_canInit(&(can[CMR_CAN_BUS_DAQ]), FDCAN2, CMR_CAN_BITRATE_500K, NULL,
+    cmr_canInit(&(can[CMR_CAN_BUS_DAQ]), CAN2, CMR_CAN_BITRATE_500K, NULL,
                   0, &conditionalCallback, GPIOB,
                   GPIO_PIN_12,        // CAN3 RX port/pin.
                   GPIOB, GPIO_PIN_13  // CAN3 TX port/pin.
     );
 
     // DAQ CAN init. - CAN2
-    cmr_canInit(&can[CMR_CAN_BUS_TRAC], FDCAN3, CMR_CAN_BITRATE_500K, NULL,
+    cmr_canInit(&can[CMR_CAN_BUS_TRAC], CAN3, CMR_CAN_BITRATE_500K, NULL,
                   0, &conditionalCallback, GPIOD,
                   GPIO_PIN_12,        // CAN2 RX port/pin.
                   GPIOD, GPIO_PIN_13  // CAN2 TX port/pin.
@@ -1646,7 +1646,7 @@ void canInit(void) {
     const cmr_canFilter_t canVehicleFilters[] = {
         {
             .isMask = true,
-            .rxFIFO = FDCAN_RX_FIFO1,
+            .rxFIFO = CAN_RX_FIFO1,
 
             // Match all even IDs (bottom bit 0, all others don't care).
             .ids = {0x000,0x000}
@@ -1654,14 +1654,14 @@ void canInit(void) {
 
         {
             .isMask = false,
-            .rxFIFO = FDCAN_RX_FIFO0,
+            .rxFIFO = CAN_RX_FIFO0,
             .ids = {CMR_CANID_DCM_RTC_DATA_IN,
                     CMR_CANID_VSM_SENSORS}
         },
 
         {
             .isMask = false,
-            .rxFIFO = FDCAN_RX_FIFO0,
+            .rxFIFO = CAN_RX_FIFO0,
             .ids = {CMR_CANID_AS_PRESSURE_READINGS}
         }
 
@@ -1675,35 +1675,35 @@ void canInit(void) {
         // FR CAN IDs
         {
             .isMask = true,
-            .rxFIFO = FDCAN_RX_FIFO0,
+            .rxFIFO = CAN_RX_FIFO0,
             .ids = {FR_NODE_ID, 0x1F}
         },
         // FL CAN IDs
         {
             .isMask = true,
-            .rxFIFO = FDCAN_RX_FIFO0,
+            .rxFIFO = CAN_RX_FIFO0,
             .ids = {FL_NODE_ID, 0x1F}
         },
         // RL CAN IDs
         {
             .isMask = true,
-            .rxFIFO = FDCAN_RX_FIFO0,
+            .rxFIFO = CAN_RX_FIFO0,
             .ids = {RL_NODE_ID, 0x1F}
         },
         // RR CAN IDs
         {
             .isMask = true,
-            .rxFIFO = FDCAN_RX_FIFO0,
+            .rxFIFO = CAN_RX_FIFO0,
             .ids = {RR_NODE_ID, 0x1F}
         },
         {
             .isMask = false,
-            .rxFIFO = FDCAN_RX_FIFO0,
+            .rxFIFO = CAN_RX_FIFO0,
             .ids = {CMR_CANID_IVT_CURRENT, CMR_CANID_IVT_VOLTAGE}
         },
         {
             .isMask = false,
-            .rxFIFO = FDCAN_RX_FIFO0,
+            .rxFIFO = CAN_RX_FIFO0,
             .ids = {CMR_CANID_EMD_MEASUREMENT, CMR_CANID_EMD_TEMPERATURE}
         },
     };
@@ -1714,20 +1714,20 @@ void canInit(void) {
     // DAQ CAN filters.
     const cmr_canFilter_t canDaqFilters[] = {
         {.isMask = true,
-         .rxFIFO = FDCAN_RX_FIFO0,
+         .rxFIFO = CAN_RX_FIFO0,
 
          // Match all even IDs (bottom bit 0, all others don't care).
          .ids = {0x000, 0x001}
         },
         {.isMask = true,
-         .rxFIFO = FDCAN_RX_FIFO1,
+         .rxFIFO = CAN_RX_FIFO1,
 
          // Match all odd IDs (bottom bit 1, all others don't care).
          .ids = {0x001, 0x001}
         },
         {.isMask = false,
          .isExtended = true,
-         .rxFIFO = FDCAN_RX_FIFO1,
+         .rxFIFO = CAN_RX_FIFO1,
 
          .ids = {CMR_CANID_EXTENDED_CUBEMARS_DATA}
         }
@@ -2173,7 +2173,7 @@ void setPowerLimit(bool all, motorLocation_t motor, float powerLimit_kw) {
  *
  * @return Pointer to payload, or NULL if rxMsg is invalid.
  */
-void *getPayload(canRX_t rxMsg) {
+void *getPayload(canVehicleRX_t rxMsg) {
     configASSERT((uint16_t) rxMsg < (uint16_t) CANRX_LEN);
 
     cmr_canRXMeta_t *rxMeta = &(canRXMeta[rxMsg]);
@@ -2185,13 +2185,13 @@ void *getPayload(canRX_t rxMsg) {
  * @brief Gets the state from the heartbeat of a module.
  *
  * @param module The module to get the state of. Must be a value of `CANRX_HEARTBEAT_XXX`
- * from canRX_t in can.h, except for CANRX_HEARTBEAT_HVC.
+ * from canVehicleRX_t in can.h, except for CANRX_HEARTBEAT_HVC.
  *
- * @warning Using a non-heartbeat value of canRX_t will result in an undefined value.
+ * @warning Using a non-heartbeat value of canVehicleRX_t will result in an undefined value.
  *
  * @return State of the module when valid, otherwise CMR_CAN_STATE_UNKNOWN.
  */
-cmr_canState_t getModuleState(canRX_t module) {
+cmr_canState_t getModuleState(canVehicleRX_t module) {
     configASSERT((module < CANRX_LEN) && (module != CANRX_HEARTBEAT_HVC));
 
     cmr_canHeartbeat_t *heartbeat = getPayload(module);
