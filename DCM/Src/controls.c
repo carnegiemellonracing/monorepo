@@ -37,6 +37,8 @@ volatile cmr_can_controls_pid_debug_t yrcDebug;
 float yrc_pers = 120.0f;
 float bias_margin = 12.0f; 
 static float yrc_kp;
+/// The maximum scaling factor applied to the phantom differential when turning.
+static float maxPhantomDiffScalingFactor; 
 
 /** @brief CAN data for traction control */
 volatile cmr_can_front_slip_ratio_data_t frontSlipRatios;
@@ -858,8 +860,10 @@ void runControls (
         }
         case CMR_CAN_GEAR_TEST: {
             disableTorqueMode();
+            maxPhantomDiffScalingFactor = 0.25f;
+            getProcessedValue(&maxPhantomDiffScalingFactor, PHANTOM_DIFF_CONSTANT_INDEX, float_2_decimal);
+            canTX(CMR_CAN_BUS_VEH, 0x524, &maxPhantomDiffScalingFactor, sizeof(float), canTX10Hz_period_ms); 
             setFastTorqueWithPhantomDiff(throttlePos_u8, swAngle_millideg, front_bias, maxPhantomDiffScalingFactor);
-
             setPowerLimit(false, MOTOR_FL, maxPowerPerMotor_kW * front_bias);
             setPowerLimit(false, MOTOR_FR, maxPowerPerMotor_kW * front_bias);
             setPowerLimit(false, MOTOR_RL, maxPowerPerMotor_kW * (1 - front_bias));
