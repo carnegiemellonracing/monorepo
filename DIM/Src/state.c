@@ -342,6 +342,7 @@ static cmr_state getNextState(void) {
                 nextState = AUTON;
             }
             else if(cntrl_button_long_pressed() && (stateGetVSM() == CMR_CAN_GLV_ON || stateGetVSM() == CMR_CAN_HV_EN)) {
+                state.gearReq--; 
                 nextState = CONFIG;
                 flush_config_screen_to_dcm = false;
             }

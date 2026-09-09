@@ -131,7 +131,7 @@ volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
         .ESE_context_text_variable = "FFLaunch",
         .ESE_string_len = 4, // including null terminator
         .value = {
-            .type = float_1_decimal,
+            .type = float_2_decimal,
             .value = 0
         },
         .min = 0,

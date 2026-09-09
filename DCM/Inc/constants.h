@@ -20,11 +20,6 @@ static const float front_bias_endurance = 0.25f;
 static const int32_t swAngleTurningThreshold_millideg = 4000;
 /// The maximum steering wheel angle.
 static const int32_t swAngleMax_millideg = 27000;
-<<<<<<< HEAD
-/// The maximum scaling factor applied to the phantom differential when turning.
-static const float maxPhantomDiffScalingFactor = 0.25f;
-=======
->>>>>>> 0392e3b7fb030784b60f669a07fa4580965bbd0c
 /// Power limit setpoint per DTI motor. Two motors per inverter provide a combined limit of 70 KW.
 static const float maxPowerPerMotor_kW = 35.0f;
 

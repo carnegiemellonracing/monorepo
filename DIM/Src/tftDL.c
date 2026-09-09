@@ -7,6 +7,7 @@
 
 
 
+#include <stdint.h>
 #include <stdio.h>   // snprintf
 #include <string.h>  // memcpy()
 
@@ -783,20 +784,20 @@ void setConfigContextString(int8_t scroll_index) {
 }
 
 // implements wraparound. Can't use modulo since it's min is not always 0. Could do (val % max-min) + min but that's less readable
-uint8_t configValueIncrementer(uint8_t value, uint8_t value_min, uint8_t value_max, bool up_requested, bool down_requested) {
+uint8_t configValueIncrementer(uint8_t value, uint8_t value_min, uint8_t value_max, uint8_t increment_amount, bool up_requested, bool down_requested) {
     uint8_t new_value = value;
     if (up_requested) {
-        if (value + 1 > value_max) {
+        if (value + increment_amount > value_max) {
             new_value = value_min;
         } else {
-            new_value++;
+            new_value += increment_amount;
         }
     }
     if (down_requested) {
-        if (value - 1 < value_min) {
+        if (value - increment_amount < value_min) {
             new_value = value_max;
         } else {
-            new_value--;
+            new_value -= increment_amount;
         }
     }
     return new_value;
@@ -826,7 +827,7 @@ void setConfigIncrementValue(int8_t scroll_index, bool up_requested, bool down_r
         case unsigned_integer:
             // treat it like an integer
         case integer:
-            value = configValueIncrementer(value, value_min, value_max, up_requested, down_requested);
+            value = configValueIncrementer(value, value_min, value_max, 1, up_requested, down_requested);
             snprintf((char *)value_address_pointer, 4, "%3d", value);
             break;
         case boolean:
@@ -836,7 +837,7 @@ void setConfigIncrementValue(int8_t scroll_index, bool up_requested, bool down_r
             sprintf((char *)value_address_pointer, config_boolean_string_lut[value]);
             break;
         case float_1_decimal:
-            value = configValueIncrementer(value, value_min, value_max, up_requested, down_requested);
+            value = configValueIncrementer(value, value_min, value_max, 1, up_requested, down_requested);
             snprintf(buffer, 5, "%4d", value);
             buffer[0] = buffer[1];
             buffer[1] = buffer[2];
@@ -844,7 +845,7 @@ void setConfigIncrementValue(int8_t scroll_index, bool up_requested, bool down_r
             sprintf((char *)value_address_pointer, buffer);
             break;
         case float_2_decimal:
-            value = configValueIncrementer(value, value_min, value_max, up_requested, down_requested);
+            value = configValueIncrementer(value, value_min, value_max, 5, up_requested, down_requested);
             snprintf(buffer, 5, "%4d", value);
             buffer[0] = buffer[1];
             buffer[1] = '.';
@@ -852,7 +853,7 @@ void setConfigIncrementValue(int8_t scroll_index, bool up_requested, bool down_r
             break;
         case custom_enum:
             // -1 since index off of 0
-            value = configValueIncrementer(value, value_min, value_max - 1, up_requested, down_requested);
+            value = configValueIncrementer(value, value_min, value_max - 1, 1, up_requested, down_requested);
             size_t len = config_menu_main_array[scroll_index].ESE_string_len;
 
             memcpy((void *)value_address_pointer, (void *)custom_enum_lut[value], len);
