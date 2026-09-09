@@ -11,7 +11,7 @@
 #include "error.h"      // Interface to implement
 
 #include "can.h"        // cmr_canRXMeta_t, cmr_canState_t, cmr_canHVCHeartbeat, cmr_canHVCMode_t,
-                        // canRX_t, canRXMeta[], getPayload(), getModuleState()
+                        // canVehicleRX_t, canRXMeta[], getPayload(), getModuleState()
 #include "gpio.h"       // gpio_t
 #include "sensors.h"    // sensorChannel_t, sensors[]
 
@@ -29,7 +29,7 @@ const uint16_t brakePressureThreshold_PSI = 40;
 static const TickType_t badStateThres_ms = 1000;
 
 // Forward declarations
-static int getBadModuleState(canRX_t module, cmr_canVSMState_t vsmState, TickType_t lastWakeTime);
+static int getBadModuleState(canVehicleRX_t module, cmr_canVSMState_t vsmState, TickType_t lastWakeTime);
 static bool getASEmergency();
 bool getAMSError();
 
@@ -50,7 +50,7 @@ void updateCurrentErrors(volatile vsmStatus_t *vsmStatus, TickType_t lastWakeTim
     uint8_t latchMatrix = CMR_CAN_VSM_LATCH_NONE;
 
     // Check for timeout errors
-    for (canRX_t i = 0; i < CANRX_LEN; i++) {
+    for (canVehicleRX_t i = 0; i < CANRX_LEN; i++) {
         cmr_canRXMeta_t *rxMeta = &(canRXMeta[i]);
 
         if (cmr_canRXMetaTimeoutError(rxMeta, lastWakeTime) < 0 &&
@@ -212,7 +212,7 @@ void updateCurrentWarnings(volatile vsmStatus_t *vsmStatus, TickType_t lastWakeT
     cmr_canWarn_t heartbeatWarnings = CMR_CAN_WARN_NONE;
 
     // Check for timeout warnings
-    for (canRX_t i = 0; i < CANRX_LEN; i++) {
+    for (canVehicleRX_t i = 0; i < CANRX_LEN; i++) {
         cmr_canRXMeta_t *rxMeta = &(canRXMeta[i]);
 
         if (cmr_canRXMetaTimeoutWarn(rxMeta, lastWakeTime) < 0) {
@@ -243,10 +243,10 @@ void updateCurrentWarnings(volatile vsmStatus_t *vsmStatus, TickType_t lastWakeT
  * @param vsmState The current VSM internal state.
  * @param lastWakeTime pass in from updateCurrentErrors. Used to check for state change timeouts.
  *
- * @warning Using a non-heartbeat value of canRX_t will result in an undefined value.
+ * @warning Using a non-heartbeat value of canVehicleRX_t will result in an undefined value.
  *
  * @return 0 when module state is correct, and -1 when incorrect. */
-static int getBadModuleState(canRX_t module, cmr_canVSMState_t vsmState, TickType_t lastWakeTime) {
+static int getBadModuleState(canVehicleRX_t module, cmr_canVSMState_t vsmState, TickType_t lastWakeTime) {
     bool wrongState = false;
 
     // Check HVC mode
