@@ -16,7 +16,9 @@
 #include <math.h>
 #include "constants.h"
 #include "controls.h"
+#include "controls_helper.h"
 #include "motors.h"
+#include "motors_helper.h"
 #include "safety_filter.h"
 #include "../optimizer/optimizer.h"
 #include "26x_sensors.h"
@@ -858,7 +860,11 @@ void runControls (
         }
         case CMR_CAN_GEAR_TEST: {
             disableTorqueMode();
-            setFastTorqueWithPhantomDiff(throttlePos_u8, swAngle_millideg, front_bias, maxPhantomDiffScalingFactor);
+
+            const float vehicle_speed_mps =
+                motorSpeedToWheelLinearSpeed_mps(getTotalMotorSpeed_radps() * 0.25f);
+
+            setFastTorqueWithPhantomDiff(throttlePos_u8, swAngle_millideg, vehicle_speed_mps, front_bias);
 
             setPowerLimit(false, MOTOR_FL, maxPowerPerMotor_kW * front_bias);
             setPowerLimit(false, MOTOR_FR, maxPowerPerMotor_kW * front_bias);
@@ -1096,8 +1102,8 @@ void setFastTorqueWithBias (uint8_t throttlePos_u8, float front_bias) {
 void setFastTorqueWithPhantomDiff(
     uint8_t throttlePos_u8,
     int32_t swAngle_millideg,
-    float front_bias,
-    float phantom_diff_scaling_factor
+    float vehicle_speed_mps,
+    float front_bias
 )
 {
     const float reqTorque =
@@ -1114,40 +1120,61 @@ void setFastTorqueWithPhantomDiff(
             swAngle_millideg,
             swAngleMax_millideg
         );
+    
+    const float swangle_rad = swAngleMillidegToSteeringAngleRad(clamped_swAngle_millideg);
 
     // Phantom torque differential is expressed linearly as a percentage of the
     // steering angle beyond the turning threshold.
-    const float steering_progress =
+    /// UPDATED: a_y approximated as V^2 * swangle * (k) / wheelbase
+    /// Phantom diff scales with lateral load transfer: dFz/Fz_static = 2*cg_ht*V^2*swangle*k/(t*g*L)
+    /// NOTE: the 2 above is because of the assumption that Fz is evenly distributed across all 4 wheels
+    /// Ideally, we would compute the Fz_static for front and rear separately (diff gains for front and rear)
+    const float phantom_diff_scaling_factor = 
         CLAMP(
             0.0f,
-            (fabsf(clamped_swAngle_millideg) - swAngleTurningThreshold_millideg) /
-                (swAngleMax_millideg - swAngleTurningThreshold_millideg),
+            phantomDiffGain * vehicle_speed_mps * vehicle_speed_mps * fabsf(swangle_rad),
+            maxPhantomDiffScalingFactor
+        );
+
+    // Commented out because likely not needed
+    const float continuity_ramp_under_threshold =
+        CLAMP(
+            0.0f,
+            1.0f,//fabsf((float)swAngle_millideg/(float)swAngleTurningThreshold_millideg),
             1.0f
         );
 
-    const float outer_torque_fraction = 1.0f + phantom_diff_scaling_factor * steering_progress;
-    const float inner_torque_fraction = 1.0f - phantom_diff_scaling_factor * steering_progress;
+    const float outer_torque_fraction = 1.0f + phantom_diff_scaling_factor * continuity_ramp_under_threshold;
+    const float inner_torque_fraction = 1.0f - phantom_diff_scaling_factor * continuity_ramp_under_threshold;
 
     // If we are turning right, left wheels are treated as outer and right wheels as inner.
-    if (clamped_swAngle_millideg > swAngleTurningThreshold_millideg) {
-        setTorqueLimsUnprotected(MOTOR_FL, reqTorque_front * outer_torque_fraction, 0.0f);
-        setTorqueLimsUnprotected(MOTOR_RL, reqTorque_rear * outer_torque_fraction, 0.0f);
+    /// perhaps clamp needed here (for the outer wheels as if req_torque is near limits this is not ideal)
+    const float reqTorque_rear_outer = 
+        CLAMP(
+            reqTorque_rear,
+            reqTorque_rear * outer_torque_fraction,
+            maxFastTorque_Nm
+        );
+    
+    const float reqTorque_front_outer =
+        CLAMP(
+            reqTorque_front,
+            reqTorque_front * outer_torque_fraction,
+            maxFastTorque_Nm
+        );
+    
+    if (clamped_swAngle_millideg >= 0) {
+        setTorqueLimsUnprotected(MOTOR_FL, reqTorque_front_outer, 0.0f);
+        setTorqueLimsUnprotected(MOTOR_RL, reqTorque_rear_outer, 0.0f);
         setTorqueLimsUnprotected(MOTOR_FR, reqTorque_front * inner_torque_fraction, 0.0f);
         setTorqueLimsUnprotected(MOTOR_RR, reqTorque_rear * inner_torque_fraction, 0.0f);
     }
     // If we are turning left, right wheels are treated as outer and left wheels as inner.
-    else if (clamped_swAngle_millideg < -swAngleTurningThreshold_millideg) {
+    else {
         setTorqueLimsUnprotected(MOTOR_FL, reqTorque_front * inner_torque_fraction, 0.0f);
         setTorqueLimsUnprotected(MOTOR_RL, reqTorque_rear * inner_torque_fraction, 0.0f);
-        setTorqueLimsUnprotected(MOTOR_FR, reqTorque_front * outer_torque_fraction, 0.0f);
-        setTorqueLimsUnprotected(MOTOR_RR, reqTorque_rear * outer_torque_fraction, 0.0f);
-    }
-    else
-    {
-        setTorqueLimsUnprotected(MOTOR_FL, reqTorque_front, 0.0f);
-        setTorqueLimsUnprotected(MOTOR_FR, reqTorque_front, 0.0f);
-        setTorqueLimsUnprotected(MOTOR_RL, reqTorque_rear, 0.0f);
-        setTorqueLimsUnprotected(MOTOR_RR, reqTorque_rear, 0.0f);
+        setTorqueLimsUnprotected(MOTOR_FR, reqTorque_front_outer, 0.0f);
+        setTorqueLimsUnprotected(MOTOR_RR, reqTorque_rear_outer, 0.0f);
     }
 
     setVelocityInt16All(maxFastSpeed_rpm);
