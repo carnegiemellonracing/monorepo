@@ -227,12 +227,11 @@ static void motorsCommand (
             case CMR_CAN_AS_FINISHED:
             case CMR_CAN_GLV_ON: {
                 // pumpsOn();
-                float maxPhantomDiffScalingFactor = 0.25f;
-                getProcessedValue(&maxPhantomDiffScalingFactor, PHANTOM_DIFF_CONSTANT_INDEX, float_2_decimal);
                 //for now, for testing purposes 
-                int send = (int)(maxPhantomDiffScalingFactor * 100.0f); 
+                float maxPhantomDiffScalingFactor_test = 0.25f;
+                getProcessedValue(&maxPhantomDiffScalingFactor_test, PHANTOM_DIFF_CONSTANT_INDEX, float_2_decimal);
+                int send = (int)(maxPhantomDiffScalingFactor_test * 100.0f); 
                 canTX(CMR_CAN_BUS_VEH, 0x526, &send, sizeof(int), 200); 
-
                 pumpsOff();
             	mcCtrlOff();
 

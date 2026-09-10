@@ -367,18 +367,6 @@ static cmr_state getNextState(void) {
                 nextState = CONFIG;
                 buttonStates[RIGHT].isPressed = false; 
             }
-            // else if(buttonStates[UP].isPressed) {
-            //     //move up on screen
-            //     config_move_request = -CONFIG_SCREEN_NUM_COLS;
-            //     nextState = CONFIG;
-            //     buttonStates[UP].isPressed = false; 
-            // }
-            // else if(buttonStates[DOWN].isPressed) {
-            //     //move down on screen
-            //     config_move_request = CONFIG_SCREEN_NUM_COLS;
-            //     nextState = CONFIG;
-            //     buttonStates[DOWN].isPressed = false; 
-            // }
             else{
                 nextState = CONFIG;
             }

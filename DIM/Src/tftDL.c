@@ -803,7 +803,7 @@ uint8_t configValueIncrementer(uint8_t value, uint8_t value_min, uint8_t value_m
     return new_value;
 }
 
-void setConfigIncrementValue(int8_t scroll_index, bool up_requested, bool down_requested) {
+void setConfigScreenValues(int8_t scroll_index, bool up_requested, bool down_requested) {
     // calculate the varoius addresses to modify
     uint32_t value_address_offset = config_menu_main_array[scroll_index].ESE_value_variable;
     uint32_t *value_address_pointer = (void *)(tftDL_configData + value_address_offset);
@@ -881,7 +881,7 @@ void setConfigSelectionColor(int8_t scroll_index, int8_t restore_index) {
 void drawLatestConfigValues() {
     // loop through all the elements of the array and appropriately render the variables
     for (int i = 0; i < MAX_MENU_ITEMS; i++) {
-        setConfigIncrementValue(i, false, false);
+        setConfigScreenValues(i, false, false);
     }
 }
 
@@ -917,22 +917,6 @@ void tftDL_configUpdate() {
             } else {
                 current_scroll_index = MAX_MENU_ITEMS - 1;
             }
-        // } else if (config_move_request == CONFIG_SCREEN_NUM_COLS &&
-        //            current_scroll_index >= MAX_MENU_ITEMS - CONFIG_SCREEN_NUM_COLS) {
-        //     // if we're in the bottom row and go down, we go to driver square
-        //     current_scroll_index = DRIVER_PROFILE_INDEX;
-        // } else if (config_move_request == -CONFIG_SCREEN_NUM_COLS &&
-        //            current_scroll_index <= CONFIG_SCREEN_NUM_COLS) {
-        //     // if we're in the top row and go up, we go to the driver square
-        //     current_scroll_index = DRIVER_PROFILE_INDEX;
-        // } else if (((current_scroll_index - 1) % CONFIG_SCREEN_NUM_COLS) == 0 &&
-        //            config_move_request == -1) {
-        //     // if we're at the left and go left, we wrap around to the right
-        //     current_scroll_index += CONFIG_SCREEN_NUM_COLS - 1;
-        // } else if (((current_scroll_index - 1) % CONFIG_SCREEN_NUM_COLS) == CONFIG_SCREEN_NUM_COLS - 1 &&
-        //            config_move_request == 1) {
-        //     // if we're at the right and go right, we wrap around to the left
-        //     current_scroll_index -= CONFIG_SCREEN_NUM_COLS - 1;
         } else {
             // standard logic accounting for driver profile sqaure
             current_scroll_index += config_move_request;
@@ -963,13 +947,13 @@ void tftDL_configUpdate() {
             }
 
             // Change driver
-            // setConfigIncrementValue(current_scroll_index, config_increment_up_requested, config_increment_down_requested);
+            // setConfigScreenValues(current_scroll_index, config_increment_up_requested, config_increment_down_requested);
             // waiting_for_dcm_new_driver_config = true;
             // while (waiting_for_dcm_new_driver_config) {
             //     // wait for the new driver to be selected
             // }
         } else {
-            setConfigIncrementValue(current_scroll_index, config_increment_up_requested, config_increment_down_requested);
+            setConfigScreenValues(current_scroll_index, config_increment_up_requested, config_increment_down_requested);
         }
 
         config_increment_up_requested = false;
@@ -986,7 +970,7 @@ void tftDL_configUpdate() {
         if (config_paddle_left_request > 0) {
             // Handle left paddle request
             if (!paddle_prev_active) {
-                setConfigIncrementValue(current_scroll_index, false, true);
+                setConfigScreenValues(current_scroll_index, false, true);
                 paddle_prev_active = true;
                 paddle_time_since_change = 0;
             } else {
@@ -995,14 +979,14 @@ void tftDL_configUpdate() {
                 // increment count relative to display update period (ie period of this function)
                 float increment_count = (float)TFT_UPDATE_PERIOD_MS / increment_freq;
                 if ((float)paddle_time_since_change >= increment_count) {
-                    setConfigIncrementValue(current_scroll_index, false, true);
+                    setConfigScreenValues(current_scroll_index, false, true);
                     paddle_time_since_change = 0;
                 }
             }
         } else if (config_paddle_right_request > 0) {
             // Handle right paddle request
             if (!paddle_prev_active) {
-                setConfigIncrementValue(current_scroll_index, true, false);
+                setConfigScreenValues(current_scroll_index, true, false);
                 paddle_prev_active = true;
                 paddle_time_since_change = 0;
             } else {
@@ -1011,7 +995,7 @@ void tftDL_configUpdate() {
                 // increment count relative to display update period (ie period of this function)
                 float increment_count = (float)TFT_UPDATE_PERIOD_MS / increment_freq;
                 if ((float)paddle_time_since_change >= increment_count) {
-                    setConfigIncrementValue(current_scroll_index, true, false);
+                    setConfigScreenValues(current_scroll_index, true, false);
                     paddle_time_since_change = 0;
                 }
             }
