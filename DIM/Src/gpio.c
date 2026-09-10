@@ -213,7 +213,8 @@ static void gpioReadButtons(void *pvParameters) {
             }
             buttonStates[i].prevState = buttonStates[i].gpioState;
         }
-
+		
+		//TODO: change to using sw buttons for increment decrement so up down can be used to move around
 		if(getCurrState() == CONFIG) {
             if (buttonStates[UP].isPressed) {
 				config_increment_up_requested = true;

@@ -917,6 +917,23 @@ void tftDL_configUpdate() {
             } else {
                 current_scroll_index = MAX_MENU_ITEMS - 1;
             }
+        //TODO: bring back once sw buttons fixed, currently only allow left/right movement 
+        // } else if (config_move_request == CONFIG_SCREEN_NUM_COLS &&
+        //            current_scroll_index >= MAX_MENU_ITEMS - CONFIG_SCREEN_NUM_COLS) {
+        //     // if we're in the bottom row and go down, we go to driver square
+        //     current_scroll_index = DRIVER_PROFILE_INDEX;
+        // } else if (config_move_request == -CONFIG_SCREEN_NUM_COLS &&
+        //            current_scroll_index <= CONFIG_SCREEN_NUM_COLS) {
+        //     // if we're in the top row and go up, we go to the driver square
+        //     current_scroll_index = DRIVER_PROFILE_INDEX;
+        // } else if (((current_scroll_index - 1) % CONFIG_SCREEN_NUM_COLS) == 0 &&
+        //            config_move_request == -1) {
+        //     // if we're at the left and go left, we wrap around to the right
+        //     current_scroll_index += CONFIG_SCREEN_NUM_COLS - 1;
+        // } else if (((current_scroll_index - 1) % CONFIG_SCREEN_NUM_COLS) == CONFIG_SCREEN_NUM_COLS - 1 &&
+        //            config_move_request == 1) {
+        //     // if we're at the right and go right, we wrap around to the left
+        //     current_scroll_index -= CONFIG_SCREEN_NUM_COLS - 1;
         } else {
             // standard logic accounting for driver profile sqaure
             current_scroll_index += config_move_request;
