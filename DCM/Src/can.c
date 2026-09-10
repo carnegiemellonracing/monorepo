@@ -231,6 +231,11 @@ cmr_canRXMeta_t canVehicleRXMeta[CANRX_VEH_LEN] = {
         .canID = CMR_CANID_AS_PRESSURE_READINGS,
         .timeoutError_ms = 2000,
         .timeoutWarn_ms = 1000
+    },
+    [CANRX_VEH_VSM_FIRST_ERROR] = {
+        .canID = CMR_CANID_VSM_FIRST_ERROR,
+        .timeoutError_ms = UINT32_MAX,
+        .timeoutWarn_ms = UINT32_MAX
     }
 };
 
@@ -732,6 +737,7 @@ static cmr_can_t can[CMR_CAN_BUS_NUM];
 
 static void transmitCDC_DIMconfigMessages();
 static bool inverterMessagesValid();
+static void forwardDVToDAQ(void);
 
 /** @brief CAN 10 Hz TX priority. */
 static const uint32_t canTX10Hz_priority = 3;
@@ -840,6 +846,8 @@ static void canTX10Hz(void *pvParameters) {
         // //powersense is dead, it's voltage * HVI
         // canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_POWER_SENSE, &powerSense, sizeof(powerSense), canTX10Hz_period_ms);
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_COULOMB_COUNTING, &coulombCounting, sizeof(cmr_canCDCKiloCoulombs_t), canTX10Hz_period_ms);
+
+        forwardDVToDAQ();
 
         vTaskDelayUntil(&lastWakeTime, canTX10Hz_period_ms);
     }
@@ -1917,3 +1925,25 @@ void setPowerLimit(bool all, motorLocation_t motor, float powerLimit_kw) {
     }
 }
 
+static void forwardDVToDAQ(void) {
+    //brake pressures and dsms status
+    cmr_canFSMData_t *fsmData = canVehicleGetPayload(CANRX_VEH_DATA_FSM);
+    cmr_canVSMSensors_t *vsmSensors = canVehicleGetPayload(CANRX_VEH_VSM_SENSORS);
+    cmr_canDVPressureReadings_t *dvPressure = canVehicleGetPayload(CANRX_VEH_AS_TANK_PRESSURE);
+    //hv voltage TODO: should be CANRX_VEH_VOLTAGE_HVBMS (need to change some var names as well)
+    cmr_canHVBMSPackVoltage_t *packVoltage = canVehicleGetPayload(CANRX_VEH_VOLTAGE_HVC);
+    //min max cell temps
+    cmr_canBMSMinMaxCellTemperature_t *cellTemps = canVehicleGetPayload(CANRX_VEH_PACK_CELL_TEMP);
+    //path to error
+    uint8_t *firstError = canVehicleGetPayload(CANRX_VEH_VSM_FIRST_ERROR);
+    //res state
+    void *resData = canVehicleGetPayload(CANRX_VEH_AS_RES);
+
+    canTX(CMR_CAN_BUS_DAQ, CMR_CANID_DAQ_FSM_DATA, fsmData, sizeof(cmr_canFSMData_t), canTX10Hz_period_ms);
+    canTX(CMR_CAN_BUS_DAQ, CMR_CANID_DAQ_VSM_SENSORS, vsmSensors, sizeof(cmr_canVSMSensors_t), canTX10Hz_period_ms);
+    canTX(CMR_CAN_BUS_DAQ, CMR_CANID_DAQ_AS_PRESSURE_READINGS, dvPressure, sizeof(cmr_canDVPressureReadings_t), canTX10Hz_period_ms);
+    canTX(CMR_CAN_BUS_DAQ, CMR_CANID_DAQ_AS_RES, resData, sizeof(canVehicleRXMeta[CANRX_VEH_AS_RES].payload), canTX10Hz_period_ms);
+    canTX(CMR_CAN_BUS_DAQ, CMR_CANID_DAQ_VSM_FIRST_ERROR, firstError, sizeof(*firstError), canTX10Hz_period_ms);
+    canTX(CMR_CAN_BUS_DAQ, CMR_CANID_DAQ_HVBMS_PACK_VOLTAGE, packVoltage, sizeof(cmr_canHVBMSPackVoltage_t), canTX10Hz_period_ms);
+    canTX(CMR_CAN_BUS_DAQ, CMR_CANID_DAQ_HVC_MINMAX_CELL_TEMPS, cellTemps, sizeof(cmr_canBMSMinMaxCellTemperature_t), canTX10Hz_period_ms);
+}
