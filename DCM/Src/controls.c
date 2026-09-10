@@ -1148,10 +1148,24 @@ void setFastTorqueWithPhantomDiff(
     const float inner_torque_fraction = 1.0f - phantom_diff_scaling_factor * continuity_ramp_under_threshold;
 
     // If we are turning right, left wheels are treated as outer and right wheels as inner.
-    ///TODO: perhaps clamp needed here (for the outer wheels as if req_torque is near limits this is not ideal)
+    /// perhaps clamp needed here (for the outer wheels as if req_torque is near limits this is not ideal)
+    const float reqTorque_rear_outer = 
+        CLAMP(
+            reqTorque_rear,
+            reqTorque_rear * outer_torque_fraction,
+            maxFastTorque_Nm
+        );
+    
+    const float reqTorque_front_outer =
+        CLAMP(
+            reqTorque_front,
+            reqTorque_front * outer_torque_fraction,
+            maxFastTorque_Nm
+        );
+    
     if (clamped_swAngle_millideg >= 0) {
-        setTorqueLimsUnprotected(MOTOR_FL, reqTorque_front * outer_torque_fraction, 0.0f);
-        setTorqueLimsUnprotected(MOTOR_RL, reqTorque_rear * outer_torque_fraction, 0.0f);
+        setTorqueLimsUnprotected(MOTOR_FL, reqTorque_front_outer, 0.0f);
+        setTorqueLimsUnprotected(MOTOR_RL, reqTorque_rear_outer, 0.0f);
         setTorqueLimsUnprotected(MOTOR_FR, reqTorque_front * inner_torque_fraction, 0.0f);
         setTorqueLimsUnprotected(MOTOR_RR, reqTorque_rear * inner_torque_fraction, 0.0f);
     }
@@ -1159,8 +1173,8 @@ void setFastTorqueWithPhantomDiff(
     else {
         setTorqueLimsUnprotected(MOTOR_FL, reqTorque_front * inner_torque_fraction, 0.0f);
         setTorqueLimsUnprotected(MOTOR_RL, reqTorque_rear * inner_torque_fraction, 0.0f);
-        setTorqueLimsUnprotected(MOTOR_FR, reqTorque_front * outer_torque_fraction, 0.0f);
-        setTorqueLimsUnprotected(MOTOR_RR, reqTorque_rear * outer_torque_fraction, 0.0f);
+        setTorqueLimsUnprotected(MOTOR_FR, reqTorque_front_outer, 0.0f);
+        setTorqueLimsUnprotected(MOTOR_RR, reqTorque_rear_outer, 0.0f);
     }
 
     setVelocityInt16All(maxFastSpeed_rpm);
