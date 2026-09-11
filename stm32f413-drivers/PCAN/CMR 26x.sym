@@ -402,6 +402,23 @@ CycleTime=100
 TimeOut=500
 Var=AS_state unsigned 0,8 /e:State
 
+[DAQ_CDC_COULOMB_COUNTING]
+ID=6F9h
+DLC=4
+CycleTime=100
+TimeOut=500
+Var=CDC_KCoulombs float 0,32
+
+[DAQ_DTI_ERROR_MESSAGES]
+ID=6F2h
+DLC=4
+CycleTime=100
+TimeOut=500
+Var=DTI_fr_fault_code unsigned 0,8
+Var=DTI_fl_fault_code unsigned 8,8
+Var=DTI_rr_fault_code unsigned 16,8
+Var=DTI_rl_fault_code unsigned 24,8
+
 [DAQ_FSM_DATA]
 ID=6F0h
 DLC=7
@@ -414,24 +431,36 @@ Var=FSM_AS_Status unsigned 32,8
 Var=FSM_solonoid_1_current_mA unsigned 40,8
 Var=FSM_solonoid_2_current_mA unsigned 48,8
 
+[DAQ_HVBMS_MINMAX_CELL_TEMPS]
+ID=6F8h
+DLC=8
+CycleTime=100
+TimeOut=500
+Var=HVBMS_minCellTemp_C unsigned 0,16
+Var=HVBMS_maxCellTemp_C unsigned 16,16
+Var=HVBMS_minTempBMBNum unsigned 32,8
+Var=HVBMS_minTempCellNum unsigned 40,8
+Var=HVBMS_maxTempBMBNum unsigned 48,8
+Var=HVBMS_maxTempCellNum unsigned 56,8
+
+[DAQ_HVBMS_MINMAX_CELL_VOLTAGE]
+ID=6F6h
+DLC=8
+CycleTime=100
+TimeOut=500
+Var=HVBMS_minCellVoltage_mV unsigned 0,16 /u:mV
+Var=HVBMS_maxCellVoltage_mV unsigned 16,16 /u:mV
+Var=HVBMS_minVoltageBMBNum unsigned 32,8
+Var=HVBMS_minVoltageCellNum unsigned 40,8
+Var=HVBMS_maxVoltageBMBNum unsigned 48,8
+Var=HVBMS_maxVoltageCellNum unsigned 56,8
+
 [DAQ_HVBMS_PACK_VOLTAGE]
 ID=6F7h
 DLC=4
 CycleTime=100
 TimeOut=500
 Var=HVBMS_battVoltage_mV unsigned 0,32
-
-[DAQ_HVC_MINMAX_CELL_TEMPS]
-ID=6F8h
-DLC=8
-CycleTime=100
-TimeOut=500
-Var=HVC_minCellTemp_C unsigned 0,16
-Var=HVC_maxCellTemp_C unsigned 16,16
-Var=HVC_minTempBMBNum unsigned 32,8
-Var=HVC_minTempCellNum unsigned 40,8
-Var=HVC_maxTempBMBNum unsigned 48,8
-Var=HVC_maxTempCellNum unsigned 56,8
 
 [DAQ_VSM_HEARTBEAT]
 ID=778h
