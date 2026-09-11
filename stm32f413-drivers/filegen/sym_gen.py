@@ -73,14 +73,66 @@ def numbercanids():
     with open(canidfile, "w") as f:
         f.write("".join(lines))
 
+def parse_int_expr(expr, constants):
+    expr = expr.strip().rstrip(',')
+    if expr in constants:
+        return constants[expr]
+    return int(expr, 0)
+
+def packet_node_to_can_id(packet, node):
+    return (packet << 5) | node
+
+def get_can_id_defines(canidfile):
+    constants = {}
+    with open(canidfile, "r") as file:
+        for line in file:
+            define_match = re.match(r'\s*#define\s+(\w+)\s+(.+)', line)
+            if not define_match:
+                continue
+
+            name, value = define_match.groups()
+            if '(' in name:
+                continue
+
+            value = re.sub(r'//.*', '', value).strip()
+            try:
+                constants[name] = int(value, 0)
+            except ValueError:
+                continue
+
+    return constants
+
+def resolve_can_id_expression(expr, constants):
+    expr = re.sub(r'/\*.*?\*/', '', expr)
+    expr = re.sub(r'//.*', '', expr).strip().rstrip(',')
+
+    packet_node_match = re.fullmatch(
+        r'PACKET_NODE_TO_CAN_ID\(([^,]+),\s*([^)]+)\)',
+        expr
+    )
+    if packet_node_match:
+        packet, node = packet_node_match.groups()
+        return packet_node_to_can_id(
+            parse_int_expr(packet, constants),
+            parse_int_expr(node, constants)
+        )
+
+    return int(expr, 0)
+
 def id2hex(id):
     #uses can_ids.h to map id(from canid_type_map) to the hex number
     numbercanids() 
-    with open("stm32f413-drivers/CMR/include/CMR/can_ids.h", "r") as file:
+    canidfile = "stm32f413-drivers/CMR/include/CMR/can_ids.h"
+    constants = get_can_id_defines(canidfile)
+    with open(canidfile, "r") as file:
         for line in file:
             if id in line:
-                hex = re.search(r"0x[0-9A-Fa-f]+", line) 
-                return hex.group().split("x")[1]
+                if '=' not in line:
+                    continue
+
+                value_expr = line.split('=', 1)[1]
+                value = resolve_can_id_expression(value_expr, constants)
+                return f"{value:X}"
 
 def add_mapper_data(canid, cycletime, timeout, structlines):
         name = re.findall(r'CMR_CANID_(\w+)',canid) 
