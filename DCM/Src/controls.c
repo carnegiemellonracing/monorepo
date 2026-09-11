@@ -678,9 +678,12 @@ void setRegenFastTorqueWithPhantomDiff(
     // Decide whether to use regen or phantom diff control
     if (adjusted_throttle < 0) {
         // If the driver has released the pedal enough to start braking, apply regen gain.
-        adjusted_throttle *= one_pedal_regen_gain;
         adjusted_throttle = CLAMP(-1, adjusted_throttle, 1);
-        set_optimal_control(adjusted_throttle, swAngle_millideg_FL, swAngle_millideg_FR, true);
+        adjusted_throttle *= one_pedal_regen_gain;
+        float regen_torque = max_regen_torque_Nm * adjusted_throttle;
+        setTorqueLimsUnprotected(MOTOR_FL, 0.0f, regen_torque);
+        setTorqueLimsUnprotected(MOTOR_FR, 0.0f, regen_torque);
+        setVelocityInt16All(0);
     }
     else {
         adjusted_throttle = CLAMP(0, adjusted_throttle, 1);
@@ -817,15 +820,7 @@ void runControls (
         }
         case CMR_CAN_GEAR_ENDURANCE: {
             disableTorqueMode();
-            uint8_t regen_pct = ((volatile cmr_canDIMActions_t *) canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON))->regenPercent;
-            uint8_t regen_on_threshold = 20;
-            if(regen_pct > regen_on_threshold){
-                setRegenTorques(regen_pct);
-            }
-            else{
-                setFastTorqueWithBias(throttlePos_u8, front_bias_endurance);
-            }
-            setFastTorqueWithBias(throttlePos_u8, front_bias_endurance);
+            setRegenFastTorqueWithPhantomDiff(throttlePos_u8, swAngle_millideg_FL, swAngle_millideg_FR);
             break;
         }
         case CMR_CAN_GEAR_AUTOX: {
