@@ -387,6 +387,52 @@ TimeOut=25
 Var=DATA_motorTemp_C signed 0,8
 Var=DATA_errorCode unsigned 8,8
 
+[DAQ_AS_PRESSURE_READINGS]
+ID=6F4h
+DLC=4
+CycleTime=100
+TimeOut=500
+Var=AS_ebsPressure_1_deci_bar unsigned 0,16
+Var=AS_ebsPressure_2_deci_bar unsigned 16,16
+
+[DAQ_AS_RES]
+ID=6F3h
+DLC=5
+CycleTime=100
+TimeOut=500
+Var=AS_state unsigned 0,8 /e:State
+
+[DAQ_FSM_DATA]
+ID=6F0h
+DLC=7
+CycleTime=100
+TimeOut=500
+Var=FSM_torqueRequested unsigned 0,8
+Var=FSM_throttlePosition unsigned 8,8
+Var=FSM_brakePressureFront_PSI unsigned 16,16 /u:PSI
+Var=FSM_AS_Status unsigned 32,8
+Var=FSM_solonoid_1_current_mA unsigned 40,8
+Var=FSM_solonoid_2_current_mA unsigned 48,8
+
+[DAQ_HVBMS_PACK_VOLTAGE]
+ID=6F7h
+DLC=4
+CycleTime=100
+TimeOut=500
+Var=HVBMS_battVoltage_mV unsigned 0,32
+
+[DAQ_HVC_MINMAX_CELL_TEMPS]
+ID=6F8h
+DLC=8
+CycleTime=100
+TimeOut=500
+Var=HVC_minCellTemp_C unsigned 0,16
+Var=HVC_maxCellTemp_C unsigned 16,16
+Var=HVC_minTempBMBNum unsigned 32,8
+Var=HVC_minTempCellNum unsigned 40,8
+Var=HVC_maxTempBMBNum unsigned 48,8
+Var=HVC_maxTempCellNum unsigned 56,8
+
 [DAQ_VSM_HEARTBEAT]
 ID=778h
 DLC=5
@@ -407,6 +453,18 @@ Var=VSM_WRN_DIM_TIMEOUT bit 35,1
 Var=VSM_WRN_FSM_TIMEOUT bit 36,1
 Var=VSM_WRN_CDC_TIMEOUT bit 37,1
 Var=VSM_WRN_HVC_TIMEOUT bit 38,1
+
+[DAQ_VSM_SENSORS]
+ID=6F1h
+DLC=8
+CycleTime=100
+TimeOut=500
+Var=VSM_brakePressureRear_PSI unsigned 0,16
+Var=VSM_batt_mV unsigned 16,16
+Var=VSM_safetyIn_eight_V unsigned 32,8
+Var=VSM_safetyOut_eight_V unsigned 40,8
+Var=VSM_EAB_pressed unsigned 48,8
+Var=VSM_hv_current_A signed 56,8
 
 [DIM_ACKNOWLEDGE]
 ID=545h
