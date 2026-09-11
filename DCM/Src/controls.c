@@ -678,7 +678,7 @@ void setRegenFastTorqueWithPhantomDiff(
     // Decide whether to use regen or phantom diff control
     if (adjusted_throttle < 0) {
         // If the driver has released the pedal enough to start braking, apply regen gain.
-        adjusted_throttle = CLAMP(-1, adjusted_throttle, 1);
+        adjusted_throttle = CLAMP(-1, adjusted_throttle, 0);
         adjusted_throttle *= one_pedal_regen_gain;
         float regen_torque = max_regen_torque_Nm * adjusted_throttle;
         setTorqueLimsUnprotected(MOTOR_FL, 0.0f, regen_torque);
