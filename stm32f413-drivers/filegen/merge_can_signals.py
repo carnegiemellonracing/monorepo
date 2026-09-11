@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Merges messages from CMR 25e.sym into CMR 26x.sym based on can id
+Merges messages from CMR 25e.sym into CMR 27x.sym based on can id
 Only adds messages with CAN IDs that don't already exist in 26x sym
 """
 
@@ -79,21 +79,21 @@ def parse_sym_file(file_path: str) -> Dict[str, Dict]:
 
 def merge_signals(symv1_path: str, cmr25e_path: str, output_path: str = None) -> None:
     
-    print("Parsing CMR 26x.sym...")
+    print("Parsing CMR 27x.sym...")
     symv1_messages = parse_sym_file(symv1_path)
     
     print("Parsing CMR 25e.sym...")
     cmr25e_messages = parse_sym_file(cmr25e_path)
     
     if not symv1_messages:
-        print("Error: No messages found in CMR 26x.sym")
+        print("Error: No messages found in CMR 27x.sym")
         return
     
     if not cmr25e_messages:
         print("Error: No messages found in CMR 25e.sym")
         return
     
-    print(f"Found {len(symv1_messages)} messages in CMR 26x.sym")
+    print(f"Found {len(symv1_messages)} messages in CMR 27x.sym")
     print(f"Found {len(cmr25e_messages)} messages in CMR 25e.sym")
     
     existing_can_ids = set()
@@ -104,7 +104,7 @@ def merge_signals(symv1_path: str, cmr25e_path: str, output_path: str = None) ->
         else:
             print(f"Warning: No CAN ID found for message {msg_name}")
     
-    print(f"Found {len(existing_can_ids)} unique CAN IDs in CMR 26x.sym")
+    print(f"Found {len(existing_can_ids)} unique CAN IDs in CMR 27x.sym")
     
     new_messages = []
     skipped_messages = []
@@ -171,12 +171,12 @@ def main():
     print("CAN Signal Merger")
     print("="*50)
     
-    symv1_path = os.path.join("stm32f413-drivers", "PCAN", "CMR 26x.sym")
+    symv1_path = os.path.join("stm32f413-drivers", "PCAN", "CMR 27x.sym")
     cmr25e_path = os.path.join("stm32f413-drivers", "PCAN", "CMR 25e.sym")
-    output_path = os.path.join("stm32f413-drivers", "PCAN", "CMR 26x.sym")
+    output_path = os.path.join("stm32f413-drivers", "PCAN", "CMR 27x.sym")
     
     print(f"Source files:")
-    print(f"  CMR 26x.sym: {symv1_path}")
+    print(f"  CMR 27x.sym: {symv1_path}")
     print(f"  CMR 25e.sym: {cmr25e_path}")
     print(f"Output file: {output_path}")
     

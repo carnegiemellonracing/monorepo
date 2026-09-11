@@ -3,7 +3,7 @@ import json
 import math 
 import sys
 
-output = "stm32f413-drivers/PCAN/CMR 26x.sym"
+output = "stm32f413-drivers/PCAN/CMR 27x.sym"
 symlines = [] 
 used_varnames = [] 
 used_canids = [] #delete once canids fixed, shouldn't need 
@@ -338,7 +338,7 @@ def main():
                         symlines.append(line) 
                     symlines.append("\n") 
     #write into symbol file 
-    with open("stm32f413-drivers/PCAN/CMR 26x.sym", "w") as file:
+    with open("stm32f413-drivers/PCAN/CMR 27x.sym", "w") as file:
         file.write("\n".join(symlines)) 
     print("done writing symbols") 
 

@@ -230,7 +230,7 @@ def merge_enums_25e_then_headers(enums_25e, header_files):
 
 def generate_symbol_enums(
     root_dir=".",
-    output_file="stm32f413-drivers/PCAN/CMR 26x.sym",
+    output_file="stm32f413-drivers/PCAN/CMR 27x.sym",
     sym_25e_file=None,
 ):
     #merge in enums from 25e, without replacing existing 26x enums
