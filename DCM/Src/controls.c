@@ -37,6 +37,8 @@ volatile cmr_can_controls_pid_debug_t yrcDebug;
 float yrc_pers = 120.0f;
 float bias_margin = 12.0f; 
 static float yrc_kp;
+/// The maximum scaling factor applied to the phantom differential when turning.
+static float maxPhantomDiffScalingFactor; 
 
 /** @brief CAN data for traction control */
 volatile cmr_can_front_slip_ratio_data_t frontSlipRatios;
@@ -109,6 +111,14 @@ static void initYawRateControl() {
     //REMOVE const bool enable_derivative_separation = false;
 }
 
+void initPhantomDiff(){
+    maxPhantomDiffScalingFactor = 0.25f;
+    getProcessedValue(&maxPhantomDiffScalingFactor, PHANTOM_DIFF_CONSTANT_INDEX, float_2_decimal);
+    //for now, for testing purposes 
+    // int send = (int)(maxPhantomDiffScalingFactor * 100.0f); 
+    // canTX(CMR_CAN_BUS_VEH, 0x526, &send, sizeof(int), 200); 
+}
+
 static void load_solver_settings() {
 	float k_lin = 0, k_yaw = 0, k_tie = 0;
 
@@ -129,6 +139,7 @@ static void load_solver_settings() {
 /** @brief initialize controls */
 void initControls() {
     initYawRateControl();
+    initPhantomDiff(); 
     startTickCount = xTaskGetTickCount();
 	launchControlButtonPressed = false;
 	launchControlActive = false;
@@ -858,8 +869,10 @@ void runControls (
         }
         case CMR_CAN_GEAR_TEST: {
             disableTorqueMode();
-            setFastTorqueWithPhantomDiff(throttlePos_u8, swAngle_millideg, front_bias, maxPhantomDiffScalingFactor);
+            int send = (int)(maxPhantomDiffScalingFactor * 100.0f); 
+            canTX(CMR_CAN_BUS_VEH, 0x526, &send, sizeof(int), 200); 
 
+            setFastTorqueWithPhantomDiff(throttlePos_u8, swAngle_millideg, front_bias, maxPhantomDiffScalingFactor);
             setPowerLimit(false, MOTOR_FL, maxPowerPerMotor_kW * front_bias);
             setPowerLimit(false, MOTOR_FR, maxPowerPerMotor_kW * front_bias);
             setPowerLimit(false, MOTOR_RL, maxPowerPerMotor_kW * (1 - front_bias));
