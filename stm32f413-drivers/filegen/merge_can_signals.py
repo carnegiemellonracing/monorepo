@@ -6,7 +6,7 @@ Only adds messages with CAN IDs that don't already exist in 26x sym
 
 import re
 import os
-from typing import Dict, Set, List, Tuple
+from typing import Dict, Tuple
 
 def parse_can_message(message_block: str) -> Tuple[str, Dict]:
     lines = message_block.strip().split('\n')
@@ -47,7 +47,7 @@ def parse_can_message(message_block: str) -> Tuple[str, Dict]:
     
     return message_name, message_data
 
-def parse_sym_file(file_path: str) -> Dict[str, Dict]:
+def parse_sym_file(file_path: str) -> Tuple[str, Dict[str, Dict]]:
     print(f"Attempting to read: {file_path}")
     print(f"File exists: {os.path.exists(file_path)}")
     
@@ -59,12 +59,17 @@ def parse_sym_file(file_path: str) -> Dict[str, Dict]:
             content = f.read()
     except FileNotFoundError:
         print(f"Error: File {normalized_path} not found.")
-        return {}
+        return "", {}
     except Exception as e:
         print(f"Error reading {normalized_path}: {e}")
-        return {}
+        return "", {}
     
-    message_blocks = re.split(r'\n(?=\[)', content)
+    first_message_match = re.search(r'(?m)^\[', content)
+    if not first_message_match:
+        return content, {}
+
+    preamble = content[:first_message_match.start()]
+    message_blocks = re.split(r'\n(?=\[)', content[first_message_match.start():])
     
     messages = {}
     for block in message_blocks:
@@ -75,15 +80,25 @@ def parse_sym_file(file_path: str) -> Dict[str, Dict]:
         if message_name and message_data:
             messages[message_name] = message_data
     
-    return messages
+    return preamble, messages
+
+def unique_extra_name(message_name: str, existing_names: set) -> str:
+    new_name = f"{message_name}_extra"
+    suffix = 2
+
+    while new_name.casefold() in existing_names:
+        new_name = f"{message_name}_extra_{suffix}"
+        suffix += 1
+
+    return new_name
 
 def merge_signals(symv1_path: str, cmr25e_path: str, output_path: str = None) -> None:
     
     print("Parsing CMR 27x.sym...")
-    symv1_messages = parse_sym_file(symv1_path)
+    symv1_preamble, symv1_messages = parse_sym_file(symv1_path)
     
     print("Parsing CMR 25e.sym...")
-    cmr25e_messages = parse_sym_file(cmr25e_path)
+    _, cmr25e_messages = parse_sym_file(cmr25e_path)
     
     if not symv1_messages:
         print("Error: No messages found in CMR 27x.sym")
@@ -97,6 +112,7 @@ def merge_signals(symv1_path: str, cmr25e_path: str, output_path: str = None) ->
     print(f"Found {len(cmr25e_messages)} messages in CMR 25e.sym")
     
     existing_can_ids = set()
+    existing_names = {msg_name.casefold() for msg_name in symv1_messages}
     for msg_name, msg_data in symv1_messages.items():
         can_id = msg_data.get('can_id')
         if can_id:
@@ -120,15 +136,30 @@ def merge_signals(symv1_path: str, cmr25e_path: str, output_path: str = None) ->
         if cmr_can_id in existing_can_ids:
             skipped_messages.append(f"{cmr_msg_name} (ID: {cmr_can_id})")
         else:
+            if cmr_msg_name.casefold() in existing_names:
+                renamed_msg_name = unique_extra_name(cmr_msg_name, existing_names)
+                print(
+                    f"Renaming duplicate symbol {cmr_msg_name} to "
+                    f"{renamed_msg_name} (ID: {cmr_can_id})"
+                )
+                cmr_msg_data['header'] = f"[{renamed_msg_name}]"
+                cmr_msg_name = renamed_msg_name
+
             new_messages.append(f"{cmr_msg_name} (ID: {cmr_can_id})")
             symv1_messages[cmr_msg_name] = cmr_msg_data
             existing_can_ids.add(cmr_can_id)  # Track that we've added this ID
+            existing_names.add(cmr_msg_name.casefold())
             new_signals_count += len(cmr_msg_data.get('variables', []))
     
     print(f"\nWriting merged file to {output_path}...")
     
     try:
         with open(output_path, 'w', encoding='utf-8') as f:
+            if symv1_preamble:
+                f.write(symv1_preamble)
+                if not symv1_preamble.endswith('\n'):
+                    f.write('\n')
+
             for msg_name, msg_data in symv1_messages.items():
                 f.write(f"{msg_data['header']}\n")
                 
