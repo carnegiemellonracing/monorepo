@@ -99,7 +99,7 @@ def get_cantypes_data(cantype, structs):
     for fields, name in structs:
         if re.search(name, cantype): 
             #find struct declaration with the right can type 
-            return re.findall(r'\b((?:u)?int\d+_t|float|bool|(?:unsigned|signed)?\s*char)\s+([A-Za-z_]\w*[^;]*)', fields) 
+            return re.findall(r'\b((?:u)?int\d+_t|big_endian_16_t|float|bool|(?:unsigned|signed)?\s*char)\s+([A-Za-z_]\w*[^;]*)', fields) 
 
 def check_repeat_varname(name):
     repeat_num = 0
