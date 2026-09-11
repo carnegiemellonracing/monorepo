@@ -27,6 +27,10 @@ static const float maxPowerPerMotor_kW = 35.0f;
 
 static const uint16_t DTI_MAX_DC_CURRENT_PER_MOTOR_DA = 850;
 
+/// One Pedal Regen constants
+static const int one_pedal_regen_max_rpm = 60000; /// The higher this value, the more the driver has to release the pedal for regen braking to kick in
+static const float one_pedal_regen_gain = 0.1; /// Controls how strong the regen braking is
+
 /** @brief Maximum motor speed
  * motor datasheet: "Nominal Speed - 13250 rpm"
  * motor datasheet: "Maximum Speed - 20000 rpm"

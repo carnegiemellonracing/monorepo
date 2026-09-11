@@ -663,23 +663,31 @@ void set_optimal_control_with_regen(
     set_optimal_control(combined_request, swAngle_millideg_FL, swAngle_millideg_FR, true);
 }
 
-static const int regen_max_rpm = 60000; // The higher this value, the more the driver has to release the pedal for regen braking to kick in
-static const float regen_gain = 0.1; // Controls how strong the regen braking is
-
-void set_optimal_control_with_split_one_pedal_regen(
+void setRegenFastTorqueWithPhantomDiff(
 	int throttlePos_u8,
 	int32_t swAngle_millideg_FL,
 	int32_t swAngle_millideg_FR
 ) {
 
-    float throttle = (float)throttlePos_u8 / UINT8_MAX;
+    float throttle = (float) throttlePos_u8 / UINT8_MAX;
 
     float avgMotorRPM = getTotalMotorSpeed_rpm() * 0.25;
-    float k = fmin(fmax(avgMotorRPM / regen_max_rpm, 0) 1);
+    float k = CLAMP(0, avgMotorRPM / one_pedal_regen_max_rpm, 1);
     float adjusted_throttle = throttle * (1.0 + k) - k;
-    if (adjusted_throttle < 0) adjusted_throttle *= regen_gain; // If the driver has released the pedal enough to start braking, apply regen gain
-    adjusted_throttle = fmin(fmax(adjusted_throttle, -1), 1);
-    set_optimal_control(adjusted_throttle, swAngle_millideg_FL, swAngle_millideg_FR, true);
+
+    // Decide whether to use regen or phantom diff control
+    if (adjusted_throttle < 0) {
+        // If the driver has released the pedal enough to start braking, apply regen gain.
+        adjusted_throttle *= one_pedal_regen_gain;
+        adjusted_throttle = CLAMP(-1, adjusted_throttle, 1);
+        set_optimal_control(adjusted_throttle, swAngle_millideg_FL, swAngle_millideg_FR, true);
+    }
+    else {
+        adjusted_throttle = CLAMP(0, adjusted_throttle, 1);
+        int adjusted_throttle_u8 = (int) (adjusted_throttle * UINT8_MAX);
+        int32_t swAngle_millideg = (swAngle_millideg_FL + swAngle_millideg_FR) / 2;
+        setFastTorqueWithPhantomDiff(adjusted_throttle_u8, swAngle_millideg, front_bias, maxPhantomDiffScalingFactor);
+    }
 
 }
 
