@@ -2179,7 +2179,7 @@ DLC=4
 CycleTime=200
 Var=Load_Cell_2 unsigned 0,32
 
-[Cubemars_Data]
+[Cubemars_Data_extra]
 ID=00002900h
 Type=Extended
 DLC=8
