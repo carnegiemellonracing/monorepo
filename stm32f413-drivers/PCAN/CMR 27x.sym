@@ -447,11 +447,53 @@ Var=SOLVER_k_tie unsigned 32,16
 
 [CUBEMARS_DATA]
 ID=6E6h
-DLC=2
+DLC=6
 CycleTime=5
 TimeOut=25
-Var=DATA_motorTemp_C signed 0,8
-Var=DATA_errorCode unsigned 8,8
+Var=DATA_position_deg signed 0,16
+Var=DATA_speed_erpm signed 16,16
+Var=DATA_motorTemp_C signed 32,8
+Var=DATA_errorCode unsigned 40,8
+
+[DAQ_0_LOADCELL]
+ID=650h
+DLC=8
+CycleTime=100
+TimeOut=500
+Var=0_force_output_lb signed 0,16
+Var=0_differential_voltage_uv signed 16,16 /f:0.1
+Var=0_internal_temp signed 32,16 /f:0.1
+Var=0_external_temp signed 48,16 /f:0.1
+
+[DAQ_1_LOADCELL]
+ID=653h
+DLC=8
+CycleTime=100
+TimeOut=500
+Var=1_force_output_lb signed 0,16
+Var=1_differential_voltage_uv signed 16,16 /f:0.1
+Var=1_internal_temp signed 32,16 /f:0.1
+Var=1_external_temp signed 48,16 /f:0.1
+
+[DAQ_2_LOADCELL]
+ID=656h
+DLC=8
+CycleTime=100
+TimeOut=500
+Var=2_force_output_lb signed 0,16
+Var=2_differential_voltage_uv signed 16,16 /f:0.1
+Var=2_internal_temp signed 32,16 /f:0.1
+Var=2_external_temp signed 48,16 /f:0.1
+
+[DAQ_3_LOADCELL]
+ID=659h
+DLC=8
+CycleTime=100
+TimeOut=500
+Var=3_force_output_lb signed 0,16
+Var=3_differential_voltage_uv signed 16,16 /f:0.1
+Var=3_internal_temp signed 32,16 /f:0.1
+Var=3_external_temp signed 48,16 /f:0.1
 
 [DAQ_AS_PRESSURE_READINGS]
 ID=6F4h
@@ -602,10 +644,12 @@ Var=STATE_pwm_right unsigned 24,8
 
 [DTI_FL_TEMPFAULT]
 ID=22h
-DLC=1
+DLC=5
 CycleTime=20
 TimeOut=100
-Var=FL_fault_code unsigned 0,8
+Var=FL_ctlr_temp signed 0,16
+Var=FL_motor_temp signed 16,16
+Var=FL_fault_code unsigned 32,8
 
 [EMD_EBS_PRESSURE]
 ID=500h
@@ -642,11 +686,13 @@ Var=TEMPERATURE_temp5_2C unsigned 56,8
 
 [EXTENDED_CUBEMARS_DATA]
 ID=00000100h
-DLC=2
+DLC=6
 CycleTime=200
 TimeOut=1000
-Var=CUBEMARS_motorTemp_C signed 0,8
-Var=CUBEMARS_errorCode unsigned 8,8
+Var=CUBEMARS_position_deg signed 0,16
+Var=CUBEMARS_speed_erpm signed 16,16
+Var=CUBEMARS_motorTemp_C signed 32,8
+Var=CUBEMARS_errorCode unsigned 40,8
 
 [FRONT_SLIP_RATIOS]
 ID=7E8h
@@ -939,6 +985,46 @@ CycleTime=400
 TimeOut=2000
 Var=VOLTAGE_muxID unsigned 0,8
 Var=VOLTAGE_count_state unsigned 8,8
+
+[LOADCELL_FL]
+ID=7D3h
+DLC=8
+CycleTime=100
+TimeOut=500
+Var=FL_force_output_lb signed 0,16
+Var=FL_differential_voltage_uv signed 16,16 /f:0.1
+Var=FL_internal_temp signed 32,16 /f:0.1
+Var=FL_external_temp signed 48,16 /f:0.1
+
+[LOADCELL_FR]
+ID=7D0h
+DLC=8
+CycleTime=100
+TimeOut=500
+Var=FR_force_output_lb signed 0,16
+Var=FR_differential_voltage_uv signed 16,16 /f:0.1
+Var=FR_internal_temp signed 32,16 /f:0.1
+Var=FR_external_temp signed 48,16 /f:0.1
+
+[LOADCELL_RL]
+ID=7D1h
+DLC=8
+CycleTime=100
+TimeOut=500
+Var=RL_force_output_lb signed 0,16
+Var=RL_differential_voltage_uv signed 16,16 /f:0.1
+Var=RL_internal_temp signed 32,16 /f:0.1
+Var=RL_external_temp signed 48,16 /f:0.1
+
+[LOADCELL_RR]
+ID=7D2h
+DLC=8
+CycleTime=100
+TimeOut=500
+Var=RR_force_output_lb signed 0,16
+Var=RR_differential_voltage_uv signed 16,16 /f:0.1
+Var=RR_internal_temp signed 32,16 /f:0.1
+Var=RR_external_temp signed 48,16 /f:0.1
 
 [LV_CELL_BALANCE_ENABLE]
 ID=136h
@@ -2945,45 +3031,6 @@ CycleTime=100
 Timeout=200
 Var=Linpot_1_1 unsigned 0,32 /u:mm /f:0.0183105
 Var=Linpot_1_2 unsigned 32,32 /u:mm /f:0.0183105
-
-[DAQ_Therm2]
-ID=659h
-CycleTime=100
-Timeout=200
-Var=Linpot_2_1 unsigned 0,32 /u:mm /f:0.0183105
-Var=Linpot_2_2 unsigned 32,32 /f:0.0183105
-
-[IZZE_Loadcell_FR]
-ID=7D0h
-DLC=8
-Var=FR_Pushrod_Load signed 0,16 -h -m /u:lb /f:-0.299565 /o:1015.76
-Var=FR_Calibrated_Output signed 16,16 -m /u:N /f:0.1
-Var=FR_Internal_Temp signed 32,16 -m /u:c /f:0.1
-Var=FR_Opt_External_Temp signed 48,16 -m /u:c /f:0.1
-
-[IZZE_Loadcell_RL]
-ID=7D3h
-DLC=8
-Var=RL_Pushrod_Load signed 0,16 -h -m /u:lb /f:-0.297523 /o:-361.08 /min:-10109.79794925
-Var=RL_Calibrated_Output signed 16,16 -m /u:N /f:0.1
-Var=RL_Internal_Temp signed 32,16 -m /u:c /f:0.1
-Var=RL_Opt_External_Temp signed 48,16 -m /u:c /f:0.1
-
-[IZZE_Loadcell_FL]
-ID=7D2h
-DLC=8
-Var=FL_Pushrod_Load signed 0,16 -h -m /u:lb /f:-0.292984 /o:1082.51 /max:8517.979712
-Var=FL_Calibrated_Output signed 16,16 -m /u:lbf /min:-3276.8 /max:3276.7
-Var=FL_Internal_Temp signed 32,16 -m /u:c /f:0.1
-Var=FL_Opt_External_Temp signed 48,16 -m /u:c /f:0.1
-
-[IZZE_Loadcell_RR]
-ID=7D1h
-DLC=8
-Var=RR_Pushrod_Load signed 0,16 -h -m /u:lb /f:-0.305278 /o:457.1 /min:-9545.914226
-Var=RR_Calibrated_Output signed 16,16 -m /u:N /f:0.1
-Var=RR_Internal_Temp signed 32,16 -m /u:c /f:0.1
-Var=RR_Opt_External_Temp signed 48,16 -m /u:c /f:0.1
 
 [IVT_VOLTAGE_2]
 ID=523h
