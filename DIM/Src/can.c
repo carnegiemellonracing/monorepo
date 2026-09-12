@@ -523,7 +523,7 @@ void ramRxCallback(cmr_can_t *can1, uint16_t canID, const void *data, size_t dat
 
 void ebsRelayCallback(){
     volatile cmr_canVSMStatus_t *statusVSM = getPayload(CANRX_VSM_STATUS);
-    uint8_t internalState = statusVSM->internalState
+    uint8_t internalState = statusVSM->internalState;
     if (statusVSM->internalState == CMR_CAN_VSM_STATE_BRAKE_CHECK) {
         cmr_gpiowrite(GPIO_VALVE_MB1, 1);
         cmr_gpiowrite(GPIO_VALVE_MB2, 0);
