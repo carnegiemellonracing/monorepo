@@ -521,6 +521,13 @@ void ramRxCallback(cmr_can_t *can1, uint16_t canID, const void *data, size_t dat
     }
 }
 
+void ebsRelayCallback(){
+    volatile cmr_canVSMStatus_t *statusVSM = getPayload(CANRX_VSM_STATUS);
+    if (statusVSM->internalState == CMR_CAN_VSM_STATE_BRAKE_CHECK)
+    vsm internal state == brake check 1, mb1 on mb2 off
+    vsm internal state == brake check 2, mb1 off mb1 on
+}
+
 bool verifyData(uint8_t dim_config_data_array_starting_idx, int items_per_struct,  uint8_t *cdc_config_data_arr){
     for (uint8_t i = 0; i < items_per_struct; i++) {
         if(config_menu_main_array[dim_config_data_array_starting_idx + i].value.value != cdc_config_data_arr[i]){
@@ -649,6 +656,10 @@ void canRXCallback(cmr_can_t *can, uint16_t canID, const void *data, size_t data
     if (canID >= CMR_CANID_CDC_CONFIG0_DRV0 &&
         canID <= CMR_CANID_CDC_CONFIG3_DRV3) {
         cdcRXCallback(can, canID, data, dataLen);
+    }
+
+    if (canID == CMR_CANID_VSM_STATUS) {
+        ebsRelayCallback();
     }
 }
 
