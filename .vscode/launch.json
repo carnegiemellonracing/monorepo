@@ -3,18 +3,19 @@
     // Hover to view descriptions of existing attributes.
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     //
-    // Four generic configurations, in two logical pairs:
+    // Four generic ST-Link configurations, in two logical pairs:
     //
     //   * "(CMake target)" - uses whatever target is selected in the CMake Tools
     //                        status bar (Build: [target]). No prompt.
-    //   * "(pick project)" - prompts with a dropdown of the projects defined in
-    //                        the top-level CMakeLists.txt.
+    //   * "(pick project)" - prompts with a dropdown of the CMake projects.
     //
-    // Both pairs assume an STM32F413RGTx. DCM is an H725, so it has its own two
+    // Both pairs assume an STM32F413RGTx. DCM is an H725, so it keeps its own two
     // configurations below until it moves to the F413.
     //
-    // The ELF layout comes straight from CMake:
+    // The ELF path comes straight from CMake:
     //   <cmake build dir>/<TARGET>/src/<TARGET>-build/<TARGET>.elf
+    // ${command:cmake.buildDirectory} follows the active preset, so build/debug vs
+    // build/static needs no edits here.
     "version": "0.2.0",
     "inputs": [
         {
@@ -22,7 +23,6 @@
             "type": "pickString",
             "description": "Which CMake project do you want to debug?",
             "options": [
-                "DCM",
                 "DIM",
                 "HV-BMS",
                 "HVC",
@@ -37,12 +37,12 @@
         //             Selected CMake target (status bar) - STM32F413RGTx
         // ============================================================================
         {
-            "name": "Build & Debug (Current target) - ST-Link",
+            "name": "Build & Debug (CMake target) - ST-Link",
             "cwd": "${workspaceFolder}",
             "type": "cortex-debug",
             "request": "launch",
             "preLaunchTask": "Build project",
-            "executable": "${command:cmake.buildDirectory}/${command:cmake.getBuildTargetName}/src/${command:cmake.getBuildTargetName}-build/${command:cmake.getBuildTargetName}.elf",
+            "executable": "${command:cmake.buildDirectory}/${command:cmake.buildTargetName}/src/${command:cmake.buildTargetName}-build/${command:cmake.buildTargetName}.elf",
             "servertype": "stlink",
             "device": "STM32F413RGTx", //MCU used
             "interface": "swd",
@@ -60,11 +60,11 @@
             //"serverArgs": ["--extload", "path/to/ext/loader.stldr"],
         },
         {
-            "name": "Attach (Current target) - ST-Link",
+            "name": "Attach (CMake target) - ST-Link",
             "cwd": "${workspaceFolder}",
             "type": "cortex-debug",
             "request": "attach",
-            "executable": "${command:cmake.buildDirectory}/${command:cmake.getBuildTargetName}/src/${command:cmake.getBuildTargetName}-build/${command:cmake.getBuildTargetName}.elf",
+            "executable": "${command:cmake.buildDirectory}/${command:cmake.buildTargetName}/src/${command:cmake.buildTargetName}-build/${command:cmake.buildTargetName}.elf",
             "servertype": "stlink",
             "device": "STM32F413RGTx",
             "interface": "swd",

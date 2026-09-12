@@ -9,6 +9,25 @@
         }
     },
     "inputs": [
+<<<<<<< Updated upstream
+=======
+        {
+            "id": "cmakeProject",
+            "type": "pickString",
+            "description": "Which CMake project do you want to build?",
+            "options": [
+                "DCM",
+                "DIM",
+                "HV-BMS",
+                "HVC",
+                "LV-BMS",
+                "RAM",
+                "VSM"
+            ]
+        }
+    ],
+    "tasks": [
+>>>>>>> Stashed changes
         {
             "id": "cmakeProject",
             "type": "pickString",
@@ -79,6 +98,53 @@
             "problemMatcher": ["$gcc"],
             "detail": "CMake template clean rebuild task"
         },
+<<<<<<< Updated upstream
+=======
+
+        // The three build tasks below are the preLaunchTasks used by launch.json.
+        // They go through the CMake Tools "cmake" task type rather than a shell
+        // command on purpose: the ExternalProject sub-builds shell out to
+        // `cube-cmake`, which only exists on PATH inside the STM32 extension's
+        // environment, so a plain `cmake --build` shell task fails with
+        // "'cube-cmake' is not recognized". Going through CMake Tools also keeps
+        // this identical on Windows and macOS.
+        {
+            "type": "cmake",
+            "label": "Build project",
+            "command": "build",
+            // The target currently selected in the CMake Tools status bar.
+            "targets": ["${command:cmake.buildTargetName}"],
+            "preset": "${command:cmake.activeBuildPresetName}",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": ["$gcc"],
+            "detail": "Build the CMake target selected in the status bar"
+        },
+        {
+            "type": "cmake",
+            "label": "Build picked project",
+            "command": "build",
+            "targets": ["${input:cmakeProject}"],
+            "preset": "${command:cmake.activeBuildPresetName}",
+            "group": "build",
+            "problemMatcher": ["$gcc"],
+            "detail": "Pick a CMake project from a dropdown and build it"
+        },
+        {
+            // TEMPORARY: remove once DCM moves to the F413.
+            "type": "cmake",
+            "label": "Build DCM",
+            "command": "build",
+            "targets": ["DCM"],
+            "preset": "${command:cmake.activeBuildPresetName}",
+            "group": "build",
+            "problemMatcher": ["$gcc"],
+            "detail": "Build the DCM target"
+        },
+
+>>>>>>> Stashed changes
         {
             "type": "shell",
             "label": "CubeProg: Flash project (SWD)",
@@ -87,7 +153,11 @@
                 "--connect",
                 "port=swd",
                 "--download",
+<<<<<<< Updated upstream
                 "${command:cmake.buildDirectory}/${command:cmake.getBuildTargetName}/src/${command:cmake.getBuildTargetName}-build/${command:cmake.getBuildTargetName}.elf",
+=======
+                "${command:cmake.buildDirectory}/${command:cmake.buildTargetName}/src/${command:cmake.buildTargetName}-build/${command:cmake.buildTargetName}.elf",
+>>>>>>> Stashed changes
                 "-hardRst", // Hardware reset - if rst pin is connected
                 "-rst", // Software reset (backup)
                 "--start" // Start execution
@@ -102,7 +172,20 @@
             "dependsOrder": "sequence",
             "dependsOn": [
                 "Build project",
+<<<<<<< Updated upstream
                 "CubeProg: Flash project (SWD)"
+=======
+                "CubeProg: Flash project (SWD)",
+            ],
+            "problemMatcher": []
+        },
+        {
+            "type": "cmake",
+            "label": "CMake: clean rebuild",
+            "command": "cleanRebuild",
+            "targets": [
+                "all"
+>>>>>>> Stashed changes
             ],
             "problemMatcher": []
         },
