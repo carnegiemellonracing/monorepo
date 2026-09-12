@@ -523,9 +523,14 @@ void ramRxCallback(cmr_can_t *can1, uint16_t canID, const void *data, size_t dat
 
 void ebsRelayCallback(){
     volatile cmr_canVSMStatus_t *statusVSM = getPayload(CANRX_VSM_STATUS);
-    if (statusVSM->internalState == CMR_CAN_VSM_STATE_BRAKE_CHECK)
-    vsm internal state == brake check 1, mb1 on mb2 off
-    vsm internal state == brake check 2, mb1 off mb1 on
+    uint8_t internalState = statusVSM->internalState
+    if (statusVSM->internalState == CMR_CAN_VSM_STATE_BRAKE_CHECK) {
+        cmr_gpiowrite(GPIO_VALVE_MB1, 1);
+        cmr_gpiowrite(GPIO_VALVE_MB2, 0);
+    } else if (statusVSM->internalState == CMR_CAN_VSM_STATE_BRAKE_CHECK) {
+        cmr_gpiowrite(GPIO_VALVE_MB1, 0);
+        cmr_gpiowrite(GPIO_VALVE_MB2, 1);
+    }
 }
 
 bool verifyData(uint8_t dim_config_data_array_starting_idx, int items_per_struct,  uint8_t *cdc_config_data_arr){
