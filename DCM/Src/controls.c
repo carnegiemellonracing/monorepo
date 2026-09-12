@@ -665,30 +665,32 @@ void set_optimal_control_with_regen(
 
 void setRegenFastTorqueWithPhantomDiff(
 	int throttlePos_u8,
-	int32_t swAngle_millideg_FL,
-	int32_t swAngle_millideg_FR
+	int32_t swAngle_millideg,
+    int32_t avgMotorRPM
 ) {
 
     float throttle = (float) throttlePos_u8 / UINT8_MAX;
 
-    float avgMotorRPM = getTotalMotorSpeed_rpm() * 0.25;
-    float k = CLAMP(0, avgMotorRPM / one_pedal_regen_max_rpm, 1);
-    float adjusted_throttle = throttle * (1.0 + k) - k;
+    float normalized_motor_rpm = CLAMP(0, avgMotorRPM / onePedalRegenMaxRpm, 1);
+    float adjusted_throttle = CLAMP(-1, throttle * (1.0 + normalized_motor_rpm) - normalized_motor_rpm, 1);
 
     // Decide whether to use regen or phantom diff control
     if (adjusted_throttle < 0) {
         // If the driver has released the pedal enough to start braking, apply regen gain.
-        adjusted_throttle = CLAMP(-1, adjusted_throttle, 0);
-        adjusted_throttle *= one_pedal_regen_gain;
-        float regen_torque = max_regen_torque_Nm * adjusted_throttle;
+        float regen_torque = 
+               CLAMP(
+                      -max_regen_torque_Nm,
+                      max_regen_torque_Nm * adjusted_throttle * onePedalRegenGain,
+                      0
+               );
         setTorqueLimsUnprotected(MOTOR_FL, 0.0f, regen_torque);
         setTorqueLimsUnprotected(MOTOR_FR, 0.0f, regen_torque);
+        setTorqueLimsUnprotected(MOTOR_BL, 0.0f, regen_torque);
+        setTorqueLimsUnprotected(MOTOR_BR, 0.0f, regen_torque);
         setVelocityInt16All(0);
     }
     else {
-        adjusted_throttle = CLAMP(0, adjusted_throttle, 1);
         int adjusted_throttle_u8 = (int) (adjusted_throttle * UINT8_MAX);
-        int32_t swAngle_millideg = (swAngle_millideg_FL + swAngle_millideg_FR) / 2;
         setFastTorqueWithPhantomDiff(adjusted_throttle_u8, swAngle_millideg, front_bias, maxPhantomDiffScalingFactor);
     }
 
@@ -820,7 +822,7 @@ void runControls (
         }
         case CMR_CAN_GEAR_ENDURANCE: {
             disableTorqueMode();
-            setRegenFastTorqueWithPhantomDiff(throttlePos_u8, swAngle_millideg_FL, swAngle_millideg_FR);
+            setRegenFastTorqueWithPhantomDiff(throttlePos_u8, swAngle_millideg, avgMotorSpeed_RPM);
             break;
         }
         case CMR_CAN_GEAR_AUTOX: {
