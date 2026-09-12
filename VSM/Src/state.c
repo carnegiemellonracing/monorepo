@@ -30,6 +30,7 @@
 #define FRONT_MINIMUM_BRAKING_PSI 650
 #define REAR_MINIMUM_BRAKING_PSI  400
 
+#define DV_BRAKECHECK_VALVES_WAIT_TIME 5000
 
 /** @brief Mapping of VSM internal states to vehicle states. Indexed by cmr_canVSMState_t. */
 cmr_canState_t vsmToCANState[] = {
@@ -40,6 +41,10 @@ cmr_canState_t vsmToCANState[] = {
     [CMR_CAN_VSM_STATE_RUN_BMS]         = CMR_CAN_GLV_ON,
     [CMR_CAN_VSM_STATE_INVERTER_EN]     = CMR_CAN_GLV_ON,
     [CMR_CAN_VSM_STATE_BRAKE_TEST]      = CMR_CAN_GLV_ON,
+
+    [CMR_CAN_VSM_STATE_BRAKE_CHECK]     = CMR_CAN_GLV_ON,
+    [CMR_CAN_VSM_STATE_BRAKE_CHECK_2]     = CMR_CAN_GLV_ON,
+
     [CMR_CAN_VSM_STATE_HV_EN]           = CMR_CAN_HV_EN,
     [CMR_CAN_VSM_STATE_RTD]             = CMR_CAN_RTD,
     [CMR_CAN_VSM_STATE_AS_READY]        = CMR_CAN_AS_READY,
@@ -122,6 +127,8 @@ static bool AutonomousClear();
 static bool getVehicleFinished();
 static bool getRESGo();
 static bool RESTriggered();
+
+static bool checkHydraulicPressure(float BP3_min, float BP3_max, float BP4_min, float BP4_max);
 
 // ------------------------------------------------------------------------------------------------
 // Interface functions
@@ -329,8 +336,10 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
         
         case CMR_CAN_VSM_STATE_INVERTER_EN: {
             if (invertersPass(lastWakeTime_ms)){
-                if (AutonomousClear()) {
-                    nextState = CMR_CAN_VSM_STATE_AS_READY;
+                if (AutonomousClear()) { //checks TS Active
+                    lastWakeTime_ms = getTime();
+                    nextState = CMR_CAN_VSM_STATE_BRAKE_CHECK
+                    // nextState = CMR_CAN_VSM_STATE_AS_READY;
                 } else if (ASState){ 
                     //Trying to enter DV mode but failed previous conditions
                     nextState = CMR_CAN_VSM_STATE_AS_EMERGENCY;
@@ -346,6 +355,37 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
                 nextState = CMR_CAN_VSM_STATE_INVERTER_EN;
             }
             break;
+        }
+
+        case CMR_CAN_VSM_STATE_BRAKE_CHECK:{ //Toggle one way
+            //DIM reads this state and switches valve
+            if (getTime() - DV_BRAKECHECK_VALVES_WAIT_TIME >= lastWakeTime_ms) {
+                if (checkHydraulicPressure(90, 10000, 0, 1)){ //10000 just a big number, if pressure within bounds then good
+                    lastWakeTime_ms = getTime();
+                    nextState = CMR_CAN_VSM_STATE_BRAKE_CHECK_2; 
+                } else {
+                        nextState = CMR_CAN_VSM_STATE_AS_EMERGENCY;
+                }
+            } else {
+                nextState = CMR_CAN_VSM_STATE_BRAKE_CHECK;
+            }
+            break;
+        }
+
+        case CMR_CAN_VSM_STATE_BRAKE_CHECK_2:{ //Toggle the other way
+            //DIM reads this state and switches valve
+            if (getTime() - DV_BRAKECHECK_VALVES_WAIT_TIME >= lastWakeTime_ms) {
+                if (checkHydraulicPressure(0,1,45,10000)){ //10000 just a big number, if pressure within bounds then good
+                    lastWakeTime_ms = getTime();
+                    nextState = CMR_CAN_VSM_STATE_AS_READY; 
+                } else {
+                    nextState = CMR_CAN_VSM_STATE_AS_EMERGENCY;
+                }
+            } else {
+                nextState = CMR_CAN_VSM_STATE_BRAKE_CHECK_2;
+            }
+            break;
+        }
         }
 
         case CMR_CAN_VSM_STATE_HV_EN: {
@@ -477,7 +517,10 @@ static void setStateOutputs(TickType_t lastWakeTime_ms) {
             hvcModeRequest = CMR_CAN_HVC_MODE_ERROR;
             break;
 
-        case CMR_CAN_VSM_STATE_BRAKE_TEST: //Fallthrough
+        // case CMR_CAN_VSM_STATE_BRAKE_TEST: //Fallthrough
+        case CMR_CAN_VSM_STATE_BRAKE_CHECK: //TODO: Do we need this? 
+        case CMR_CAN_VSM_STATE_BRAKE_CHECK_2:
+
         case CMR_CAN_VSM_STATE_AS_FINISHED:
         case CMR_CAN_VSM_STATE_GLV_ON:
             cmr_gpioWrite(GPIO_OUT_RTD_SIGNAL, 0);
@@ -676,4 +719,26 @@ static inline bool RESCorrect(){
 	uint8_t *data = (uint8_t*)(getPayload(CANRX_RES));
 	bool res_triggered = !(data[7] & CMR_CAN_RES_TRIG);
 	return res_triggered; 
+}
+
+
+/**
+ * @brief Used in DV BRAKECHECK
+ */
+
+static bool checkHydraulicPressure(float BP3_min, float BP3_max, float BP4_min, float BP4_max) {
+    //got this from DVBrakeActive
+    uint32_t brakePressureRear_PSI = cmr_sensorListGetValue(&sensorList, SENSOR_CH_BPRES_PSI);
+    cmr_canFSMData_t *fsmData = getPayload(CANRX_FSM_DATA);
+    uint16_t brakePressureFront_PSI = fsmData->brakePressureFront_PSI;
+
+    // convert BAR VALUES TO PSI 
+    BP3_min *= 14.504;
+    BP3_max *= 14.504;
+    BP4_min *= 14.504;
+    BP4_max *= 14.504;
+    
+    // Is BP3 front wheel? VSM only checks that it's above 45 bar but diagram says 90 bar
+    return BP3_min <= brakePressureFront_PSI && brakePressureFront_PSI <= BP3_max 
+        && BP4_min <= brakePressureRear_PSI && brakePressureRear_PSI <= BP4_max;
 }

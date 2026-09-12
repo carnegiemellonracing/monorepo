@@ -28,7 +28,10 @@ typedef enum {
     GPIO_IN_IMD_ERR_COND_N,     /**< @brief IMD un-latch input signal. */
     GPIO_IN_BSPD_ERR_UNLATCH,   /**< @brief BSPD un-latch input signal. */
     GPIO_IN_EAB,                /**< @brief EAB Signal Input */
-    GPIO_LEN                    /**< @brief Total GPIO pins. */
+    GPIO_LEN,                    /**< @brief Total GPIO pins. */
+
+    GPIO_VALVE_MB1,           /**< @brief Toggle for brake valve MB1 */
+    GPIO_VALVE_MB2,           /**< @brief Toggle for brake valve MB2 */
 } gpio_t;
 
 static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN];

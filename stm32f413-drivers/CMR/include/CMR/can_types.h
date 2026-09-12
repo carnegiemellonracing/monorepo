@@ -253,6 +253,11 @@ typedef enum {
     CMR_CAN_VSM_STATE_RUN_BMS,          /**< @brief Run Battery Management System. */
     CMR_CAN_VSM_STATE_DCDC_EN,          /**< @brief Enable DCDC converters. */
     CMR_CAN_VSM_STATE_INVERTER_EN,      /**< @brief Enable inverter logic power. */
+
+
+    CMR_CAN_VSM_STATE_BRAKE_CHECK
+    CMR_CAN_VSM_STATE_BRAKE_CHECK_2
+
     CMR_CAN_VSM_STATE_BRAKE_TEST,       /**< @brief Check if brakes work*/
     CMR_CAN_VSM_STATE_HV_EN,            /**< @brief Enable high voltage system. */
     CMR_CAN_VSM_STATE_RTD,              /**< @brief Ready to drive. */
