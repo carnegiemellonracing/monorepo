@@ -388,6 +388,69 @@
             "timeOut": 500,
             "type": "cmr_canIZZELoadCell_t"
         },
+        "CMR_CANID_DAQ_AS_PRESSURE_READINGS": {
+            "cycleTime": 100,
+            "timeOut": 500,
+            "type": "cmr_canDVPressureReadings_t"
+        },
+        "CMR_CANID_DAQ_AS_RES": {
+            "cycleTime": 100,
+            "error": {
+                "enumstruct": "cmr_canVSMHeartbeatErr_t cmr_canDIMHeartbeatErr_t cmr_canCDCHeartbeatErr_t cmr_canFSMHeartbeatErr_t cmr_canHV_BMSHeartbeatErr_t"
+            },
+            "state": {
+                "e": "State"
+            },
+            "timeOut": 500,
+            "type": "cmr_canHeartbeat_t",
+            "warning": {
+                "enumstruct": "cmr_canVSMHeartbeatWrn_t cmr_canCDCHeartbeatWrn_t cmr_canFSMHeartbeatWrn_t"
+            }
+        },
+        "CMR_CANID_DAQ_CDC_COULOMB_COUNTING": {
+            "cycleTime": 100,
+            "timeOut": 500,
+            "type": "cmr_canCDCKiloCoulombs_t"
+        },
+        "CMR_CANID_DAQ_DTI_ERROR_MESSAGES": {
+            "cycleTime": 100,
+            "timeOut": 500,
+            "type": "cmr_canDTI_ErrorMessages_t"
+        },
+        "CMR_CANID_DAQ_FSM_DATA": {
+            "brakePressureFront_PSI": {
+                "u": "PSI"
+            },
+            "cycleTime": 100,
+            "timeOut": 500,
+            "type": "cmr_canFSMData_t"
+        },
+        "CMR_CANID_DAQ_HVBMS_MINMAX_CELL_TEMPS": {
+            "cycleTime": 100,
+            "timeOut": 500,
+            "type": "cmr_canBMSMinMaxCellTemperature_t"
+        },
+        "CMR_CANID_DAQ_HVBMS_MINMAX_CELL_VOLTAGE": {
+            "cycleTime": 100,
+            "maxCellVoltage_mV": {
+                "u": "mV"
+            },
+            "minCellVoltage_mV": {
+                "u": "mV"
+            },
+            "timeOut": 500,
+            "type": "cmr_canBMSMinMaxCellVoltage_t"
+        },
+        "CMR_CANID_DAQ_HVBMS_PACK_VOLTAGE": {
+            "cycleTime": 100,
+            "timeOut": 500,
+            "type": "cmr_canHVBMSPackVoltage_t"
+        },
+        "CMR_CANID_DAQ_VSM_FIRST_ERROR": {
+            "cycleTime": 100,
+            "timeOut": 500,
+            "type": "firstError"
+        },
         "CMR_CANID_DAQ_VSM_HEARTBEAT": {
             "cycleTime": 10,
             "error": {
@@ -401,6 +464,11 @@
             "warning": {
                 "enumstruct": "cmr_canVSMHeartbeatWrn_t cmr_canCDCHeartbeatWrn_t cmr_canFSMHeartbeatWrn_t"
             }
+        },
+        "CMR_CANID_DAQ_VSM_SENSORS": {
+            "cycleTime": 100,
+            "timeOut": 500,
+            "type": "cmr_canVSMSensors_t"
         },
         "CMR_CANID_DIM_ACKNOWLEDGE": {
             "cycleTime": 100,
@@ -1046,20 +1114,20 @@
         "canrx_prefixes_used": [
             "CANRX_"
         ],
-        "files_processed": 2735,
-        "files_with_matches": 2735,
+        "files_processed": 2866,
+        "files_with_matches": 2866,
         "global_mappings": {
-            "canrx_mappings": 164,
+            "canrx_mappings": 165,
             "canrx_timeouts": 155,
             "canrx_types": 67,
             "constants": 274,
             "struct_members": 0,
-            "variable_types": 316
+            "variable_types": 317
         },
         "prefixes_used": [
             "CMR_CANID_",
             "CAN_ID_"
         ],
-        "total_canids": 114
+        "total_canids": 124
     }
 }
