@@ -13,7 +13,7 @@ include("cmake/gcc-arm-none-eabi.cmake")
 message("Build CMAKE_MODULE_PATH: " ${CMAKE_MODULE_PATH})
 
 # Core project settings
-project(DCM)
+project(VCU)
 enable_language(C CXX ASM)
 message("Build type: " ${CMAKE_BUILD_TYPE})
 
@@ -54,8 +54,8 @@ set(cpu_PARAMS
 
 # Sources
 set(sources_SRCS)
-set(PROCESSOR H725)
-set(PROCESSOR_FAM H7XX)
+set(PROCESSOR F413)
+set(PROCESSOR_FAM F4XX)
 
 # Include directories for all compilers
 set(include_DIRS
@@ -71,7 +71,7 @@ set(include_asm_DIRS)
 
 # Symbols definition for all compilers
 set(symbols_SYMB
-    STM32H725xx
+    STM32F413xx
     ${PROCESSOR}
 )
 
@@ -129,18 +129,18 @@ link_directories(${CMAKE_PROJECT_NAME} ${link_DIRS})
 # Create an executable object type
 add_executable(${CMAKE_PROJECT_NAME}
     # Project sources
-    ${CMAKE_SOURCE_DIR}/Src/26x_sensors.c
     ${CMAKE_SOURCE_DIR}/Src/adc.c
+    ${CMAKE_SOURCE_DIR}/Src/assi.c
     ${CMAKE_SOURCE_DIR}/Src/brakelight.c
     ${CMAKE_SOURCE_DIR}/Src/can.c
-    ${CMAKE_SOURCE_DIR}/Src/movella.c
     ${CMAKE_SOURCE_DIR}/Src/cmr_error.c
+    ${CMAKE_SOURCE_DIR}/Src/control_sensors.c
     ${CMAKE_SOURCE_DIR}/Src/controls_helper.c
     ${CMAKE_SOURCE_DIR}/Src/controls.c
-    ${CMAKE_SOURCE_DIR}/optimizer/optimizer.c
-    ${CMAKE_SOURCE_DIR}/optimizer/qform.c
+    ${CMAKE_SOURCE_DIR}/Src/dac.c
     ${CMAKE_SOURCE_DIR}/Src/daq.c
     ${CMAKE_SOURCE_DIR}/Src/drs_controls.c
+    ${CMAKE_SOURCE_DIR}/Src/error.c
     ${CMAKE_SOURCE_DIR}/Src/fans.c
     ${CMAKE_SOURCE_DIR}/Src/gpio.c
     ${CMAKE_SOURCE_DIR}/Src/i2c.c
@@ -150,14 +150,20 @@ add_executable(${CMAKE_PROJECT_NAME}
     ${CMAKE_SOURCE_DIR}/Src/motor_efficiency.c
     ${CMAKE_SOURCE_DIR}/Src/motors_helper.c
     ${CMAKE_SOURCE_DIR}/Src/motors.c
+    ${CMAKE_SOURCE_DIR}/Src/movella.c
     ${CMAKE_SOURCE_DIR}/Src/pumps.c
     ${CMAKE_SOURCE_DIR}/Src/safety_filter.c
     ${CMAKE_SOURCE_DIR}/Src/sensoric.c
     ${CMAKE_SOURCE_DIR}/Src/sensors.c
     ${CMAKE_SOURCE_DIR}/Src/servo.c
+    ${CMAKE_SOURCE_DIR}/Src/state.c
+    ${CMAKE_SOURCE_DIR}/Src/statusLED.c
     ${CMAKE_SOURCE_DIR}/Src/steering.c
     ${CMAKE_SOURCE_DIR}/Src/syscalls.c
     ${CMAKE_SOURCE_DIR}/Src/sysmem.c
+    ${CMAKE_SOURCE_DIR}/Src/tssi.c
+    ${CMAKE_SOURCE_DIR}/optimizer/optimizer.c
+    ${CMAKE_SOURCE_DIR}/optimizer/qform.c
 )
 add_dependencies(${CMAKE_PROJECT_NAME} generate_gitcommit)
 # Add sources to executable

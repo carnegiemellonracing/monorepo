@@ -9,15 +9,15 @@ set(cpu_PARAMS ${cpu_PARAMS}
 
     # Other parameters
     # -mcpu, -mfloat, -mfloat-abi, ...
-    -mcpu=cortex-m7
-	-mfpu=fpv5-d16
+    -mcpu=cortex-m4
+	-mfpu=fpv4-sp-d16
 	-mfloat-abi=hard
 
 )
 
 # Linker script
 set(linker_script_SRC ${linker_script_SRC}
-    ${CMAKE_CURRENT_SOURCE_DIR}/STM32H725ZGTX_FLASH.ld
+    ${CMAKE_CURRENT_SOURCE_DIR}/stm32f413rgtx_FLASH.ld
 )
 
 # Sources
@@ -26,7 +26,7 @@ set(sources_SRCS ${sources_SRCS}
 	${CMAKE_CURRENT_SOURCE_DIR}/Src/main.c
 	${CMAKE_CURRENT_SOURCE_DIR}/Src/syscalls.c
 	${CMAKE_CURRENT_SOURCE_DIR}/Src/sysmem.c
-	${CMAKE_CURRENT_SOURCE_DIR}/Startup/startup_stm32h725xx.s
+	${CMAKE_CURRENT_SOURCE_DIR}/Startup/startup_stm32f413rgtx.s
 )
 
 # Include directories
