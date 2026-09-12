@@ -685,8 +685,8 @@ void setRegenFastTorqueWithPhantomDiff(
                );
         setTorqueLimsUnprotected(MOTOR_FL, 0.0f, regen_torque);
         setTorqueLimsUnprotected(MOTOR_FR, 0.0f, regen_torque);
-        setTorqueLimsUnprotected(MOTOR_BL, 0.0f, regen_torque);
-        setTorqueLimsUnprotected(MOTOR_BR, 0.0f, regen_torque);
+        setTorqueLimsUnprotected(MOTOR_RL, 0.0f, regen_torque);
+        setTorqueLimsUnprotected(MOTOR_RR, 0.0f, regen_torque);
         setVelocityInt16All(0);
     }
     else {
