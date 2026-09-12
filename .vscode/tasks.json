@@ -8,7 +8,77 @@
             }
         }
     },
+    "inputs": [
+        {
+            "id": "cmakeProject",
+            "type": "pickString",
+            "description": "Which CMake project do you want to build?",
+            "options": [
+                "DCM",
+                "DIM",
+                "HV-BMS",
+                "HVC",
+                "LV-BMS",
+                "RAM",
+                "VSM"
+            ]
+        }
+    ],
     "tasks": [
+        // The three build tasks below are the preLaunchTasks used by launch.json.
+        // They all go through the CMake Tools "cmake" task type rather than a
+        // shell command: the ExternalProject sub-builds shell out to `cube-cmake`,
+        // which only exists on PATH inside the STM32 extension's environment, so a
+        // plain `cmake --build` from a shell task fails. Going through CMake Tools
+        // also keeps this working identically on Windows and macOS.
+        {
+            "type": "cmake",
+            "label": "Build project",
+            "command": "build",
+            // The target currently selected in the CMake Tools status bar.
+            "targets": ["${command:cmake.getBuildTargetName}"],
+            "preset": "${command:cmake.activeBuildPresetName}",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": ["$gcc"],
+            "detail": "Build the CMake target selected in the status bar"
+        },
+        {
+            "type": "cmake",
+            "label": "Build picked project",
+            "command": "build",
+            "targets": ["${input:cmakeProject}"],
+            "preset": "${command:cmake.activeBuildPresetName}",
+            "group": "build",
+            "problemMatcher": ["$gcc"],
+            "detail": "Pick a CMake project from a dropdown and build it"
+        },
+        {
+            // TEMPORARY: remove once DCM moves to the F413 and can use the
+            // generic configurations.
+            "type": "cmake",
+            "label": "Build DCM",
+            "command": "build",
+            "targets": ["DCM"],
+            "preset": "${command:cmake.activeBuildPresetName}",
+            "group": "build",
+            "problemMatcher": ["$gcc"],
+            "detail": "Build the DCM target"
+        },
+        {
+            "type": "cmake",
+            "label": "CMake: clean rebuild",
+            "command": "cleanRebuild",
+            "targets": [
+                "all"
+            ],
+            "preset": "${command:cmake.activeBuildPresetName}",
+            "group": "build",
+            "problemMatcher": ["$gcc"],
+            "detail": "CMake template clean rebuild task"
+        },
         {
             "type": "shell",
             "label": "CubeProg: Flash project (SWD)",
@@ -17,8 +87,7 @@
                 "--connect",
                 "port=swd",
                 "--download",
-                "${command:cmake.launchTargetPath}",
-                // Let CMake extension decide executable: "${command:cmake.launchTargetPath}",
+                "${command:cmake.buildDirectory}/${command:cmake.getBuildTargetName}/src/${command:cmake.getBuildTargetName}-build/${command:cmake.getBuildTargetName}.elf",
                 "-hardRst", // Hardware reset - if rst pin is connected
                 "-rst", // Software reset (backup)
                 "--start" // Start execution
@@ -32,21 +101,10 @@
             "label": "Build + Flash",
             "dependsOrder": "sequence",
             "dependsOn": [
-                "CMake: clean rebuild",
-                "CubeProg: Flash project (SWD)",
-            ]
-        },
-                {
-            "type": "cmake",
-            "label": "CMake: clean rebuild",
-            "command": "cleanRebuild",
-            "targets": [
-                "all"
+                "Build project",
+                "CubeProg: Flash project (SWD)"
             ],
-            "preset": "${command:cmake.activeBuildPresetName}",
-            "group": "build",
-            "problemMatcher": [],
-            "detail": "CMake template clean rebuild task"
+            "problemMatcher": []
         },
         {
             "type": "shell",
