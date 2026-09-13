@@ -158,8 +158,8 @@ enum Warn(0="NONE", 1="VSM_TIMEOUT", 2="BUS_VOLTAGE", 4="BUS_CURRENT",
 [AS_PRESSURE_READINGS]
 ID=191h
 DLC=4
-CycleTime=10
-TimeOut=50
+CycleTime=400
+TimeOut=2000
 Var=ebsPressure_1_deci_bar unsigned 0,16
 Var=ebsPressure_2_deci_bar unsigned 16,16
 
@@ -411,18 +411,11 @@ Var=VSM_WRN_FSM_TIMEOUT bit 36,1
 Var=VSM_WRN_CDC_TIMEOUT bit 37,1
 Var=VSM_WRN_HVC_TIMEOUT bit 38,1
 
-[DIM_ACKNOWLEDGE]
-ID=545h
-DLC=1
-CycleTime=100
-TimeOut=500
-Var=ACKNOWLEDGE_acknowledge unsigned 0,8
-
 [DIM_ACTIONS]
 ID=515h
 DLC=5
-CycleTime=10
-TimeOut=50
+CycleTime=20
+TimeOut=100
 Var=ACTIONS_buttonStates unsigned 0,8
 Var=ACTIONS_regenPercent unsigned 8,8
 Var=ACTIONS_paddle unsigned 16,8
@@ -534,23 +527,6 @@ Var=DATA_AS_Status unsigned 32,8
 Var=DATA_solonoid_1_current_mA unsigned 40,8
 Var=DATA_solonoid_2_current_mA unsigned 48,8
 
-[FSM_PEDALS_ADC]
-ID=533h
-DLC=6
-CycleTime=100
-TimeOut=500
-Var=PEDALS_throttleLeftADC unsigned 0,16
-Var=PEDALS_throttleRightADC unsigned 16,16
-Var=PEDALS_brakePedalADC unsigned 32,16
-
-[FSM_SENSORS_ADC]
-ID=543h
-DLC=4
-CycleTime=100
-TimeOut=500
-Var=SENSORS_brakePressureFrontADC unsigned 0,16
-Var=SENSORS_steeringWheelAngleADC unsigned 16,16
-
 [FSM_SWANGLE]
 ID=135h
 DLC=8
@@ -582,14 +558,6 @@ DLC=5
 CycleTime=5
 TimeOut=25
 Var=COMPUTE_HEARTBEAT_state unsigned 0,8 /e:State
-
-[DIM_HEARTBEAT]
-ID=104h
-DLC=5
-CycleTime=10
-TimeOut=50
-Var=DIM_HEARTBEAT_state unsigned 0,8 /e:State
-Var=DIM_ERR_VSM_TIMEOUT bit 8,1
 
 [HVC_HEARTBEAT]
 ID=101h
@@ -901,15 +869,6 @@ Var=IMU_gyro_x_rads signed 0,16 /u:rad
 Var=IMU_gyro_y_rads signed 16,16 /u:rad
 Var=IMU_gyro_z_rads signed 32,16 /u:rad
 
-[SENSORIC_DIST]
-ID=601h
-DLC=8
-CycleTime=10
-TimeOut=50
-Var=DIST_dist_A signed 0,32
-Var=DIST_radius signed 32,16
-Var=DIST_acc_C signed 48,16
-
 [SENSORIC_VEL_ANG]
 ID=600h
 DLC=8
@@ -1097,6 +1056,23 @@ Var=FSM_WRN_SSBots bit 32,1
 Var=FSM_WRN_BrakePressureOOR bit 34,1
 Var=FSM_WRN_SWAngleOOR bit 33,1
 
+[FSM_PedalsADC]
+ID=533h
+DLC=6
+CycleTime=100
+Timeout=1000
+Var=FSM_throttlePosLeftADC unsigned 0,16
+Var=FSM_throttlePosRightADC unsigned 16,16
+Var=FSM_brakePosADC unsigned 32,16
+
+[FSM_SensorsADC]
+ID=543h
+DLC=0
+CycleTime=100
+Timeout=1000
+Var=FSM_brakePressureFrontADC unsigned 0,16
+Var=FSM_steeringWheelAngleADC unsigned 16,16
+
 [FSM_PowerDiagnostic]
 ID=553h
 DLC=4
@@ -1105,6 +1081,14 @@ Timeout=1000
 Var=FSM_busVoltage unsigned 0,16 /u:mV
 Var=FSM_busCurrent unsigned 16,16 /u:mA
 
+[DIM_Heartbeat]
+ID=104h
+DLC=5
+CycleTime=10
+Timeout=100
+Var=DIM_state unsigned 0,8 /e:State
+Var=DIM_ERR_VSMTimeout unsigned 8,1
+
 [DIM_PowerDiagnostic]
 ID=535h
 DLC=4
@@ -1112,6 +1096,13 @@ CycleTime=100
 Timeout=1000
 Var=DIM_busVoltage unsigned 0,16 /u:mV
 Var=DIM_busCurrent unsigned 16,16 /u:mA
+
+[DIM_Acknowledge]
+ID=545h
+DLC=4
+CycleTime=1000
+Timeout=10000
+Var=DIM_Acknowledge unsigned 0,8
 
 [PTC_Heartbeat]
 ID=105h
@@ -1760,6 +1751,16 @@ Var=RTC_Date_In unsigned 24,8 /u:day
 Var=RTC_Month_In unsigned 32,8 /u:month
 Var=RTC_Year_In unsigned 40,8 /u:year
 Var=RTC_Error_In unsigned 48,8	// For interpreting this, see comments in code.
+
+[DIM_Config1_Drv0]
+ID=601h
+DLC=4
+CycleTime=1000
+Timeout=10000
+Var=DIM_config1_drv0_config_val_1 unsigned 0,8
+Var=DIM_config1_drv0_config_val_2 unsigned 8,8
+Var=DIM_config1_drv0_config_val_3 unsigned 16,8
+Var=DIM_config1_drv0_config_val_4 unsigned 24,8
 
 [DIM_Config2_Drv0]
 ID=602h
