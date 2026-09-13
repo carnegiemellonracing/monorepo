@@ -674,6 +674,39 @@ void set_optimal_control_with_regen(
     set_optimal_control(combined_request, swAngle_millideg_FL, swAngle_millideg_FR, true);
 }
 
+void setRegenFastTorqueWithPhantomDiff(
+	int throttlePos_u8,
+	int32_t swAngle_millideg,
+    int32_t avgMotorRPM
+) {
+
+    float throttle = (float) throttlePos_u8 / UINT8_MAX;
+
+    float normalized_motor_rpm = CLAMP(0, avgMotorRPM / onePedalRegenMaxRpm, 1);
+    float adjusted_throttle = CLAMP(-1, throttle * (1.0 + normalized_motor_rpm) - normalized_motor_rpm, 1);
+
+    // Decide whether to use regen or phantom diff control
+    if (adjusted_throttle < 0) {
+        // If the driver has released the pedal enough to start braking, apply regen gain.
+        float regen_torque = 
+               CLAMP(
+                      -max_regen_torque_Nm,
+                      max_regen_torque_Nm * adjusted_throttle * onePedalRegenGain,
+                      0
+               );
+        setTorqueLimsUnprotected(MOTOR_FL, 0.0f, regen_torque);
+        setTorqueLimsUnprotected(MOTOR_FR, 0.0f, regen_torque);
+        setTorqueLimsUnprotected(MOTOR_RL, 0.0f, regen_torque);
+        setTorqueLimsUnprotected(MOTOR_RR, 0.0f, regen_torque);
+        setVelocityInt16All(0);
+    }
+    else {
+        int adjusted_throttle_u8 = (int) (adjusted_throttle * UINT8_MAX);
+        setFastTorqueWithPhantomDiff(adjusted_throttle_u8, swAngle_millideg, front_bias, maxPhantomDiffScalingFactor);
+    }
+
+}
+
 static void set_regen(uint8_t throttlePos_u8) {
     uint8_t paddle_pressure = ((volatile cmr_canDIMActions_t *) canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON))->regenPercent;
 
@@ -800,15 +833,11 @@ void runControls (
         }
         case CMR_CAN_GEAR_ENDURANCE: {
             disableTorqueMode();
-            uint8_t regen_pct = ((volatile cmr_canDIMActions_t *) canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON))->regenPercent;
-            uint8_t regen_on_threshold = 20;
-            if(regen_pct > regen_on_threshold){
-                setRegenTorques(regen_pct);
-            }
-            else{
-                setFastTorqueWithBias(throttlePos_u8, front_bias_endurance);
-            }
-            setFastTorqueWithBias(throttlePos_u8, front_bias_endurance);
+            setRegenFastTorqueWithPhantomDiff(throttlePos_u8, swAngle_millideg, avgMotorSpeed_RPM);
+            setPowerLimit(false, MOTOR_FL, maxPowerPerMotor_kW * front_bias);
+            setPowerLimit(false, MOTOR_FR, maxPowerPerMotor_kW * front_bias);
+            setPowerLimit(false, MOTOR_RL, maxPowerPerMotor_kW * (1 - front_bias));
+            setPowerLimit(false, MOTOR_RR, maxPowerPerMotor_kW * (1 - front_bias));
             break;
         }
         case CMR_CAN_GEAR_AUTOX: {

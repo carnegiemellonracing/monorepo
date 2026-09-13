@@ -25,6 +25,11 @@ static const float maxPowerPerMotor_kW = 35.0f;
 
 static const uint16_t DTI_MAX_DC_CURRENT_PER_MOTOR_DA = 850;
 
+/// The maximum motor rpm used when reinterpreting the driver's throttle input during one pedal regen. This value determines how fast the car is going relative to its max speed, the higher this value, the more the driver has to release the pedal for regen braking to kick in.
+static const int onePedalRegenMaxRpm = 60000;
+// Multiplier used to control regen strength while in one pedal regen mode.
+static const float onePedalRegenGain = 0.1;
+
 /** @brief Maximum motor speed
  * motor datasheet: "Nominal Speed - 13250 rpm"
  * motor datasheet: "Maximum Speed - 20000 rpm"
