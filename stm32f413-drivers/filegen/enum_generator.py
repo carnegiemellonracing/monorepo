@@ -1,5 +1,6 @@
 import os
 import re
+import canmatrix.formats
 
 def _find_matching_paren(sym_section, open_paren_idx):
     #Find the right paren that closes left paren at open_paren_idx
@@ -228,6 +229,18 @@ def merge_enums_25e_then_headers(enums_25e, header_files):
     return {t: v for t, v in by_key.values()}
 
 
+def generate_dbc_from_sym(
+    sym_file="stm32f413-drivers/PCAN/CMR 27x.sym",
+    output_file=None,
+):
+    if output_file is None:
+        output_file = os.path.splitext(sym_file)[0] + ".dbc"
+
+    dbs = canmatrix.formats.loadp(sym_file)
+    canmatrix.formats.dumpp(dbs, output_file)
+    print(f"Successfully wrote DBC to {output_file}")
+
+
 def generate_symbol_enums(
     root_dir=".",
     output_file="stm32f413-drivers/PCAN/CMR 27x.sym",
@@ -354,3 +367,4 @@ def generate_symbol_enums(
 
 if __name__ == "__main__":
     generate_symbol_enums()
+    generate_dbc_from_sym()
