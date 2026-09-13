@@ -12,6 +12,7 @@ This repository consolidates individual board codebases into a single, unified s
 - **RAM**: Remote Access Module
 - **VSM**: Vehicle Safety Module
 - **LV-BMS** : Low Voltage Batttery Management System
+- **DAQ_board**: Data Acquisition (thermistors + Izze CAN sensors)
 
 ---
 

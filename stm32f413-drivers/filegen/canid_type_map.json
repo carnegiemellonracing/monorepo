@@ -346,6 +346,11 @@
             "timeOut": 500,
             "type": "cmr_canIZZELoadCell_t"
         },
+        "CMR_CANID_DAQ_0_THERMISTOR": {
+            "cycleTime": 100,
+            "timeOut": 500,
+            "type": "cmr_canDAQTherm_t"
+        },
         "CMR_CANID_DAQ_1_LOADCELL": {
             "cycleTime": 100.0,
             "differential_voltage_uv": {
@@ -1017,13 +1022,13 @@
         "canrx_prefixes_used": [
             "CANRX_"
         ],
-        "files_processed": 2826,
-        "files_with_matches": 2826,
+        "files_processed": 2714,
+        "files_with_matches": 2714,
         "global_mappings": {
             "canrx_mappings": 193,
-            "canrx_timeouts": 183,
+            "canrx_timeouts": 184,
             "canrx_types": 64,
-            "constants": 269,
+            "constants": 270,
             "struct_members": 0,
             "variable_types": 331
         },
@@ -1031,6 +1036,6 @@
             "CMR_CANID_",
             "CAN_ID_"
         ],
-        "total_canids": 110
+        "total_canids": 111
     }
 }

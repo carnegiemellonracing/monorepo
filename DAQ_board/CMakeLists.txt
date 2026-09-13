@@ -4,16 +4,14 @@ cmake_minimum_required(VERSION 3.24)
 # User is free to modify the file as much as necessary
 #
 set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
-set(CMAKE_COLOR_MAKEFILE ON)
-# list(APPEND CMAKE_MODULE_PATH "C:/Users/user1/Downloads/CmakeTestProject/cmake")
+
 list(APPEND CMAKE_MODULE_PATH "{{sr:cmake_path}}")
 message("Build CMAKE_MODULE_PATH: " ${CMAKE_MODULE_PATH})
-#Why does vscode read this when its included here?
 include("cmake/gcc-arm-none-eabi.cmake")
 message("Build CMAKE_MODULE_PATH: " ${CMAKE_MODULE_PATH})
 
 # Core project settings
-project(DIM)
+project(DAQ_board)
 enable_language(C CXX ASM)
 message("Build type: " ${CMAKE_BUILD_TYPE})
 
@@ -26,19 +24,27 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS ON)
 set(CMAKE_COLOR_DIAGNOSTICS ON)
 
+if(CMAKE_HOST_WIN32)
+add_custom_target(generate_gitcommit ALL
+    COMMAND powershell -ExecutionPolicy Bypass -File ${CMAKE_CURRENT_SOURCE_DIR}/export_git.ps1
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    COMMENT "Generating gitcommit.h using PowerShell"
+)
+elseif(CMAKE_HOST_UNIX)
+    add_custom_target(generate_gitcommit ALL
+        COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/export_git.sh
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        COMMENT "Generating gitcommit.h on Linux/Unix"
+    )
+endif()
+
 # Core MCU flags, CPU type, instruction set and FPU setup
 set(cpu_PARAMS
-
-    # Other parameters
-    # -mthumb
-    # -mcpu, -mfloat, -mfloat-abi, ...
     -mcpu=cortex-m4
     -mthumb
     -mfpu=fpv4-sp-d16
     -mfloat-abi=hard
-
 )
-
 
 # Sources
 set(sources_SRCS)
@@ -48,6 +54,7 @@ set(PROCESSOR_FAM F4XX)
 # Include directories for all compilers
 set(include_DIRS
     ${CMAKE_SOURCE_DIR}/Inc
+    ${CMAKE_SOURCE_DIR}/mlx90640-library/headers
 )
 
 # Include directories for each compiler
@@ -65,9 +72,7 @@ add_library(freertos_config INTERFACE)
 target_include_directories(freertos_config SYSTEM
     INTERFACE
     ${CMAKE_SOURCE_DIR}/Inc
-    ${CMAKE_SOURCE_DIR}/mlx90640-library
     ${CMAKE_SOURCE_DIR}/../stm32f413-drivers/CMR/include) # The config file directory
-
 target_compile_definitions(freertos_config
     INTERFACE
     configASSERT
@@ -91,9 +96,6 @@ set(link_LIBS
 set(linker_script_SRC)
 
 # Compiler options
-
-set (compiler_OPTS)
-
 set(compiler_OPTS
     -mfp16-format=ieee
     --specs=nano.specs
@@ -103,11 +105,7 @@ set(compiler_OPTS
 set(linker_OPTS)
 
 # Now call generated cmake
-# This will add script generated
-# information to the project
-
 include("cmake/vscode_generated.cmake")
-# TODO We should really add Target groups or something
 
 # Link directories setup
 # Must be before executable is added
@@ -116,18 +114,17 @@ link_directories(${CMAKE_PROJECT_NAME} ${link_DIRS})
 # Create an executable object type
 add_executable(${CMAKE_PROJECT_NAME}
     # Project sources
-    ${CMAKE_CURRENT_SOURCE_DIR}/Src/adc.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/Src/MLX90640_API.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/Src/can.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/Src/gpio.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/Src/i2c.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/Src/main.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/Src/mlx90640.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/Src/syscall.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/Src/sysmem.c
-
+    ${CMAKE_SOURCE_DIR}/Src/main.c
+    ${CMAKE_SOURCE_DIR}/Src/gpio.c
+    ${CMAKE_SOURCE_DIR}/Src/adc.c
+    ${CMAKE_SOURCE_DIR}/Src/can.c
+    ${CMAKE_SOURCE_DIR}/Src/i2c.c
+    ${CMAKE_SOURCE_DIR}/Src/mlx90640.c
+    ${CMAKE_SOURCE_DIR}/mlx90640-library/functions/MLX90640_API.c
+    ${CMAKE_SOURCE_DIR}/Src/syscall.c
+    ${CMAKE_SOURCE_DIR}/Src/sysmem.c
 )
-
+add_dependencies(${CMAKE_PROJECT_NAME} generate_gitcommit)
 # Add sources to executable
 target_sources(${CMAKE_PROJECT_NAME} PUBLIC ${sources_SRCS})
 
@@ -169,7 +166,6 @@ target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
     -Wdouble-promotion # Doubles do not natively use the FPU on a Cortex-M4F
     -fno-common # Do not allow common global symbols
     -Wundef # Detects undefined macros which would silently evaluate to 0
-    -Wimplicit-function-declaration
     $<$<COMPILE_LANGUAGE:C>:
     -ffunction-sections # Place each function in its own section in .text
     -fdata-sections
