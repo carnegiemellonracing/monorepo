@@ -1,5 +1,5 @@
 name: Build
-run-name: ${{ github.actor }}-${{ github.repository }} Build
+run-name: ${{ github.actor }}-${{ github.repository }} Build 🚀
 
 on:
   push:
@@ -34,4 +34,4 @@ jobs:
         run: cmake --preset debug --fresh
 
       - name: Build Project
-        run: cmake --build --preset debug --verbose
+        uses: threeal/cmake-action@main
