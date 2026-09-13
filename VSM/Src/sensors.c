@@ -107,7 +107,7 @@ static int32_t adc_to_hv_current(const cmr_sensor_t *sensor, uint32_t value) {
     float mcu_volts_no_offset = value * mcu_volts_per_adc;
     float mcu_volts = mcu_volts_no_offset - offset_mcu_volts;
     float sensor_volts = mcu_volts * sensor_volts_per_mcu_volt;
-    return (int8_t) (amps_per_sensor_volt * sensor_volts);
+    return (amps_per_sensor_volt * sensor_volts);
 }
 
 
