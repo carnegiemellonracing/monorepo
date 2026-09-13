@@ -30,6 +30,14 @@ jobs:
           arm-none-eabi-gcc -dumpmachine
           cmake --version
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install build dependencies
+        run: pip install canmatrix
+
       - name: Configure CMake
         run: cmake --preset debug --fresh
 
