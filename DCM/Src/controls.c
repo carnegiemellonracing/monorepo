@@ -1125,10 +1125,16 @@ void setFastTorqueWithPhantomDiff(
 
     // Phantom torque differential is expressed linearly as a percentage of the
     // steering angle beyond the turning threshold.
-    /// UPDATED: a_y approximated as V^2 * swangle * (k) / wheelbase
-    /// Phantom diff scales with lateral load transfer: dFz/Fz_static = 2*cg_ht*V^2*swangle*k/(t*g*L)
-    /// NOTE: the 2 above is because of the assumption that Fz is evenly distributed across all 4 wheels
-    /// Ideally, we would compute the Fz_static for front and rear separately (diff gains for front and rear)
+    /// Lateral acceleration is approximated as (velocity)^2 * swangle * (k) / wheelbase, where
+    /// k is a swangle → curvature kinematic conversion factor. 
+    ///
+    /// Phantom diff scales with the estimated lateral load transfer, which is the transfer of
+    /// vertical tire load from the inside wheels to the outside wheels during cornering.
+    /// The fractional load transfer is approximated as:
+    ///     dFz/Fz_static = 2 * cg_ht * V^2 * swangle * k / (t * g * L)
+    ///
+    /// phantomDiffGain absorbs the constant vehicle-specific terms and maps the V^2 * swangle
+    /// dependence of estimated lateral load transfer into the desired phantom diff scaling.
     const float phantom_diff_scaling_factor = 
         CLAMP(
             0.0f,
