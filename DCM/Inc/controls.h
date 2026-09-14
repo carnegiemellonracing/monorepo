@@ -31,8 +31,8 @@ void setFastTorqueWithBias(uint8_t throttlePos_u8, float front_bias);
 void setFastTorqueWithPhantomDiff(
     uint8_t throttlePos_u8,
     int32_t swAngle_millideg,
-    float front_bias,
-    float phantom_diff_scaling_factor
+    float vehicle_speed_mps,
+    float front_bias
 );
 float getYawRateControlLeftRightBias(int32_t swAngle_millideg);
 void setTractionControl(uint8_t throttlePos_u8, uint16_t brakePressurePsi_u8, int32_t swAngle_millideg, float leftRightBias_Nm,
