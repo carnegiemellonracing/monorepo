@@ -871,16 +871,13 @@ void runControls (
         }
         case CMR_CAN_GEAR_TEST: {
             disableTorqueMode();
-<<<<<<< HEAD
 
             const float vehicle_speed_mps =
                 motorSpeedToWheelLinearSpeed_mps(getTotalMotorSpeed_radps() * 0.25f);
 
             setFastTorqueWithPhantomDiff(throttlePos_u8, swAngle_millideg, vehicle_speed_mps, front_bias);
-=======
             int send = (int)(maxPhantomDiffScalingFactor * 100.0f); 
             canTX(CMR_CAN_BUS_VEH, 0x526, &send, sizeof(int), 200); 
->>>>>>> main
 
             setFastTorqueWithPhantomDiff(throttlePos_u8, swAngle_millideg, front_bias, maxPhantomDiffScalingFactor);
             setPowerLimit(false, MOTOR_FL, maxPowerPerMotor_kW * front_bias);
