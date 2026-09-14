@@ -158,8 +158,10 @@ static void writeToSDCard(void *pvParameters)
         oldBufferLocation = bufferLocation;
         switchBuffer();
         check_new_testID(); 
+        taskEXIT_CRITICAL();
         if(cmr_SDIO_mount() != FR_OK) {
             errorRegister |= CMR_CAN_RAM_ERROR_SD_MOUNT;
+            
         }
         //check_new_testID(); //write new names from DAQ live 
         res = cmr_SDIO_openFile(&filObj, filename);
@@ -177,7 +179,6 @@ static void writeToSDCard(void *pvParameters)
         if(cmr_SDIO_unmount() != FR_OK) {
             errorRegister |= CMR_CAN_RAM_ERROR_SD_UNMOUNT;
         }
-        taskEXIT_CRITICAL();
         sendHeartbeat(errorRegister);
         vTaskDelayUntil(&lastWakeTime, memorator_period_ms);
     }

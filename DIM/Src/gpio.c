@@ -202,9 +202,6 @@ static void gpioReadButtons(void *pvParameters) {
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
         uint8_t paddle = adcRead(ADC_PADDLE);
-        if(getCurrState() == CONFIG) {
-            if (paddle > 100) config_increment_up_requested = true;
-        }
 
         // Direct assignment for CAN buttons
 
@@ -215,6 +212,20 @@ static void gpioReadButtons(void *pvParameters) {
                 buttonStates[i].isPressed = buttonStates[i].gpioState;
             }
             buttonStates[i].prevState = buttonStates[i].gpioState;
+        }
+		
+		//TODO: change to using sw buttons for increment decrement so up down can be used to move around
+		if(getCurrState() == CONFIG) {
+            if (buttonStates[UP].isPressed) {
+				config_increment_up_requested = true;
+				buttonStates[UP].isPressed = false; 
+				
+			} 
+			if (buttonStates[DOWN].isPressed) {
+				config_increment_down_requested = true;
+				buttonStates[DOWN].isPressed = false; 
+				
+			} 
         }
         vTaskDelayUntil(&lastWakeTime, 100);
     }
