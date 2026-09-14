@@ -35,28 +35,7 @@ void setFastTorqueWithPhantomDiff(
     float phantom_diff_scaling_factor
 );
 float getYawRateControlLeftRightBias(int32_t swAngle_millideg);
-void setTractionControl(uint8_t throttlePos_u8, uint16_t brakePressurePsi_u8, int32_t swAngle_millideg, float leftRightBias_Nm,
-    bool assumeNoTurn, bool ignoreYawRate, bool allowRegen, float critical_speed_mps);
-void setYawRateControl (
-    uint8_t throttlePos_u8,
-    uint16_t brakePressurePsi_u8,
-    int32_t swAngle_deg,
-    bool clampbyside
-);
-void setYawRateAndTractionControl(uint8_t throttlePos_u8, uint16_t brakePressurePsi_u8, int32_t swAngle_millideg,
-    bool assumeNoTurn, bool ignoreYawRate, bool allowRegen, float critical_speed_mps);
-void setCruiseControlTorque(uint8_t throttlePos_u8, uint16_t brakePressurePsi_u8, int32_t avgMotorSpeed_RPM);
-void setEnduranceTorque(int32_t avgMotorSpeed_RPM, uint8_t throttlePos_u8, int32_t swAngle_millideg,
-    int32_t battVoltage_mV, int32_t battCurrent_mA, uint16_t brakePressurePsi_u8);
-void setEnduranceTestTorque(
-    int32_t avgMotorSpeed_RPM,
-    uint8_t throttlePos_u8,
-    int32_t swAngle_millideg,
-    int32_t battVoltage_mV,
-    int32_t battCurrent_mA,
-    uint16_t brakePressurePsi_u8,
-    bool clampbyside
-);
+float calculatePersistentYRCmreq(int32_t swAngle_millideg, float bias_margin, float yrc_pers); 
 
 // ------------------------------------------------------------------------------------------------
 // Public functions
