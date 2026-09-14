@@ -1150,19 +1150,10 @@ void setFastTorqueWithPhantomDiff(
             maxPhantomDiffScalingFactor
         );
 
-    // Commented out because likely not needed
-    const float continuity_ramp_under_threshold =
-        CLAMP(
-            0.0f,
-            1.0f,//fabsf((float)swAngle_millideg/(float)swAngleTurningThreshold_millideg),
-            1.0f
-        );
-
-    const float outer_torque_fraction = 1.0f + phantom_diff_scaling_factor * continuity_ramp_under_threshold;
-    const float inner_torque_fraction = 1.0f - phantom_diff_scaling_factor * continuity_ramp_under_threshold;
+    const float outer_torque_fraction = 1.0f + phantom_diff_scaling_factor;
+    const float inner_torque_fraction = 1.0f - phantom_diff_scaling_factor;
 
     // If we are turning right, left wheels are treated as outer and right wheels as inner.
-    /// perhaps clamp needed here (for the outer wheels as if req_torque is near limits this is not ideal)
     const float reqTorque_rear_outer = 
         CLAMP(
             reqTorque_rear,
