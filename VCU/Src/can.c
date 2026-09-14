@@ -311,78 +311,6 @@ cmr_canRXMeta_t canVehicleRXMeta[CANRX_VEH_LEN] = {
         .timeoutWarn_ms = 75,
         .warnFlag = CMR_CAN_WARN_NONE
     },
-    [CANRX_FL_TEMPFAULT] = {
-        .canID = CMR_CANID_DTI_FL_TEMPFAULT,
-        .timeoutError_ms = 100,
-        .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_NONE,
-    },
-    [CANRX_FR_TEMPFAULT] = {
-        .canID = CMR_CANID_DTI_FR_TEMPFAULT,
-        .timeoutError_ms = 100,
-        .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_NONE,
-    },
-    [CANRX_RL_TEMPFAULT] = {
-        .canID = CMR_CANID_DTI_RL_TEMPFAULT,
-        .timeoutError_ms = 100,
-        .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_NONE,
-    },
-    [CANRX_RR_TEMPFAULT] = {
-        .canID = CMR_CANID_DTI_RR_TEMPFAULT,
-        .timeoutError_ms = 100,
-        .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_NONE,
-    },
-    [CANRX_FL_IO_STATUS] = {
-        .canID = CMR_CANID_DTI_FL_IO_STATUS,
-        .timeoutError_ms = 100,
-        .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_NONE,
-    },
-    [CANRX_FR_IO_STATUS] = {
-        .canID = CMR_CANID_DTI_FR_IO_STATUS,
-        .timeoutError_ms = 100,
-        .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_NONE,
-    },
-    [CANRX_RL_IO_STATUS] = {
-        .canID = CMR_CANID_DTI_RL_IO_STATUS,
-        .timeoutError_ms = 100,
-        .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_NONE,
-    },
-    [CANRX_RR_IO_STATUS] = {
-        .canID = CMR_CANID_DTI_RR_IO_STATUS,
-        .timeoutError_ms = 100,
-        .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_NONE,
-    },
-    [CANRX_FL_ERPM] = {
-        .canID = CMR_CANID_DTI_FL_ERPM,
-        .timeoutError_ms = 100,
-        .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_NONE,
-    },
-    [CANRX_FR_ERPM] = {
-        .canID = CMR_CANID_DTI_FR_ERPM,
-        .timeoutError_ms = 100,
-        .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_NONE,
-    },
-    [CANRX_RL_ERPM] = {
-        .canID = CMR_CANID_DTI_RL_ERPM,
-        .timeoutError_ms = 100,
-        .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_NONE,
-    },
-    [CANRX_RR_ERPM] = {
-        .canID = CMR_CANID_DTI_RR_ERPM,
-        .timeoutError_ms = 100,
-        .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_NONE,
-    },
     [CANRX_AS_MISSION_FINISHED] = {
         .canID = CMR_CANID_AS_MISSION_FINISHED,
     },
@@ -880,7 +808,7 @@ cmr_canRXMeta_t canRXMeta[] = {
  * @details This matrix must be kept up to date with the above canRX meta definitions! Inverters are
  *          labeled as no source because their timeout is handled elsewhere.
  *
- * @note Indexed by `canRX_t`.
+ * @note Indexed by `canVehicleRX_t`.
  */
 const cmr_canVSMTimeoutErrorSource_t vsmErrorSourceFlags[CANRX_LEN] = {
     [CANRX_HEARTBEAT_HVC]       = CMR_CAN_VSM_TIMEOUT_SOURCE_NONE,
@@ -1417,7 +1345,7 @@ static void canTX1Hz(void *pvParameters) {
     }
 }
 
-void *canGetPayload(canRX_t rxMsg) {
+void *canGetPayload(canVehicleRX_t rxMsg) {
     configASSERT(rxMsg < CANRX_LEN);
 
     cmr_canRXMeta_t *rxMeta = &(canRXMeta[rxMsg]);
@@ -2173,7 +2101,7 @@ void setPowerLimit(bool all, motorLocation_t motor, float powerLimit_kw) {
  *
  * @return Pointer to payload, or NULL if rxMsg is invalid.
  */
-void *getPayload(canRX_t rxMsg) {
+void *getPayload(canVehicleRX_t rxMsg) {
     configASSERT((uint16_t) rxMsg < (uint16_t) CANRX_LEN);
 
     cmr_canRXMeta_t *rxMeta = &(canRXMeta[rxMsg]);
@@ -2185,13 +2113,13 @@ void *getPayload(canRX_t rxMsg) {
  * @brief Gets the state from the heartbeat of a module.
  *
  * @param module The module to get the state of. Must be a value of `CANRX_HEARTBEAT_XXX`
- * from canRX_t in can.h, except for CANRX_HEARTBEAT_HVC.
+ * from canVehicleRX_t in can.h, except for CANRX_HEARTBEAT_HVC.
  *
- * @warning Using a non-heartbeat value of canRX_t will result in an undefined value.
+ * @warning Using a non-heartbeat value of canVehicleRX_t will result in an undefined value.
  *
  * @return State of the module when valid, otherwise CMR_CAN_STATE_UNKNOWN.
  */
-cmr_canState_t getModuleState(canRX_t module) {
+cmr_canState_t getModuleState(canVehicleRX_t module) {
     configASSERT((module < CANRX_LEN) && (module != CANRX_HEARTBEAT_HVC));
 
     cmr_canHeartbeat_t *heartbeat = getPayload(module);
