@@ -244,20 +244,11 @@ Var=ACTION_rearTorque_mNm signed 16,16
 Var=steeringAngle_centi_deg signed 32,16
 Var=maxVelocity_decimeters_s unsigned 48,16
 
-[CDC_COG_VELOCITY]
-ID=2C2h
-DLC=8
-CycleTime=5
-TimeOut=25
-Var=COG_cog_x_mps signed 0,16 /u:mps /f:0.01
-Var=COG_cog_y_mps signed 16,16 /u:mps /f:0.01
-Var=COG_slip_angle float 32,32
-
 [CDC_CONTROLS_STATUS]
 ID=6D2h
 DLC=2
-CycleTime=1000
-TimeOut=5000
+CycleTime=800
+TimeOut=4000
 Var=CONTROLS_tcOn unsigned 0,8
 Var=CONTROLS_yrcOn unsigned 8,8
 
@@ -268,129 +259,6 @@ CycleTime=100
 TimeOut=500
 Var=COULOMB_KCoulombs float 0,32
 
-[CDC_FRONT_VELOCITY]
-ID=2D2h
-DLC=8
-CycleTime=5
-TimeOut=25
-Var=FRONT_fl_x signed 0,16 /f:0.01
-Var=FRONT_fl_y signed 16,16 /f:0.01
-Var=FRONT_fr_x signed 32,16 /f:0.01
-Var=FRONT_fr_y signed 48,16 /f:0.01
-
-[CDC_ODOMETER]
-ID=6C2h
-DLC=4
-CycleTime=1000
-TimeOut=5000
-Var=ODOMETER_odometer_km float 0,32 /u:km
-
-[CDC_POSE_ORIENTATION]
-ID=292h
-DLC=8
-CycleTime=100
-TimeOut=500
-Var=POSE_roll_deg signed 0,16 /u:deg /f:0.1
-Var=POSE_pitch_deg signed 16,16 /u:deg /f:0.1
-Var=POSE_yaw_deg signed 32,16 /u:deg /f:0.1
-Var=POSE_velocity_deg signed 48,16 /u:deg /f:0.1
-
-[CDC_POSE_POSITION]
-ID=282h
-DLC=8
-CycleTime=100
-TimeOut=500
-Var=POSE_latitude_deg float 0,32 /u:deg
-Var=POSE_longitude_deg float 32,32 /u:deg
-
-[CDC_POSE_VELOCITY]
-ID=2A2h
-DLC=6
-CycleTime=100
-TimeOut=500
-Var=POSE_longitudinalVel_mps signed 0,16 /u:mps /f:0.01
-Var=POSE_lateralVel_mps signed 16,16 /u:mps /f:0.01
-Var=POSE_verticalVel_mps signed 32,16 /u:mps /f:0.01
-
-[CDC_POWER_LOG]
-ID=6E4h
-DLC=4
-CycleTime=1000
-TimeOut=5000
-Var=POWER_power_limit_W float 0,32 /u:W /f:0.001
-
-[CDC_POWER_SENSE]
-ID=305h
-DLC=8
-CycleTime=100
-TimeOut=500
-Var=POWER_packCurrent_dA signed 0,16 /u:dA
-Var=POWER_packVoltage_cV unsigned 16,16 /u:cV
-Var=POWER_packPower_W signed 32,32 /u:W
-
-[CDC_REAR_VELOCITY]
-ID=2E2h
-DLC=8
-CycleTime=5
-TimeOut=25
-Var=REAR_rl_x signed 0,16 /f:0.01
-Var=REAR_rl_y signed 16,16 /f:0.01
-Var=REAR_rr_x signed 32,16 /f:0.01
-Var=REAR_rr_y signed 48,16 /f:0.01
-
-[CDC_RTC_DATA_OUT]
-ID=6A2h
-DLC=7
-CycleTime=1000
-TimeOut=5000
-Var=RTC_seconds unsigned 0,8
-Var=RTC_minutes unsigned 8,8
-Var=RTC_hours unsigned 16,8
-Var=RTC_date unsigned 24,8
-Var=RTC_month unsigned 32,8
-Var=RTC_year unsigned 40,8
-Var=RTC_err unsigned 48,8
-
-[CDC_WHEEL_SPEED_FEEDBACK]
-ID=232h
-DLC=8
-CycleTime=5
-TimeOut=25
-Var=WHEEL_frontLeft_rpm signed 0,16 /u:rpm /f:0.1
-Var=WHEEL_frontRight_rpm signed 16,16 /u:rpm /f:0.1
-Var=WHEEL_rearLeft_rpm signed 32,16 /u:rpm /f:0.1
-Var=WHEEL_rearRight_rpm signed 48,16 /u:rpm /f:0.1
-
-[CDC_WHEEL_SPEED_SETPOINT]
-ID=252h
-DLC=8
-CycleTime=5
-TimeOut=25
-Var=WHEEL_frontLeft_rpm1 signed 0,16 /u:rpm /f:0.1
-Var=WHEEL_frontRight_rpm1 signed 16,16 /u:rpm /f:0.1
-Var=WHEEL_rearLeft_rpm1 signed 32,16 /u:rpm /f:0.1
-Var=WHEEL_rearRight_rpm1 signed 48,16 /u:rpm /f:0.1
-
-[CDC_WHEEL_TORQUE_FEEDBACK]
-ID=262h
-DLC=8
-CycleTime=5
-TimeOut=25
-Var=WHEEL_frontLeft_Nm signed 0,16 /u:Nm /f:0.1
-Var=WHEEL_frontRight_Nm signed 16,16 /u:Nm /f:0.1
-Var=WHEEL_rearLeft_Nm signed 32,16 /u:Nm /f:0.1
-Var=WHEEL_rearRight_Nm signed 48,16 /u:Nm /f:0.1
-
-[CDC_WHEEL_TORQUE_SETPOINT]
-ID=272h
-DLC=8
-CycleTime=5
-TimeOut=25
-Var=WHEEL_frontLeft_Nm1 signed 0,16 /u:Nm /f:0.1
-Var=WHEEL_frontRight_Nm1 signed 16,16 /u:Nm /f:0.1
-Var=WHEEL_rearLeft_Nm1 signed 32,16 /u:Nm /f:0.1
-Var=WHEEL_rearRight_Nm1 signed 48,16 /u:Nm /f:0.1
-
 [CELL_BALANCE_ENABLE]
 ID=134h
 DLC=3
@@ -398,52 +266,6 @@ CycleTime=10
 TimeOut=50
 Var=BALANCE_balanceRequest unsigned 0,8 /e:HVC_Balance_State
 Var=BALANCE_threshold unsigned 8,16
-
-[CONTROLS_PID_IO]
-ID=7E5h
-DLC=8
-CycleTime=5
-TimeOut=25
-Var=PID_controls_current_yaw_rate signed 0,16 /f:0.01 /p:2
-Var=PID_controls_target_yaw_rate signed 16,16 /f:0.01 /p:2
-Var=PID_controls_bias signed 32,16 /f:0.01 /p:2
-Var=PID_controls_pid signed 48,16 /f:0.01 /p:2
-
-[CONTROLS_SOLVER_AUX]
-ID=7FFh
-DLC=4
-CycleTime=10
-TimeOut=50
-Var=combined_normalized_throttle signed 0,16
-Var=SOLVER_allow_regen unsigned 16,8
-Var=SOLVER_placeholder unsigned 24,8
-
-[CONTROLS_SOLVER_INPUTS]
-ID=7E6h
-DLC=8
-CycleTime=10
-TimeOut=50
-Var=SOLVER_moment_req_Nm float 0,32 /u:Nm
-Var=SOLVER_lin_accel_Nm float 32,32 /u:Nm
-
-[CONTROLS_SOLVER_OUTPUTS]
-ID=7F0h
-DLC=8
-CycleTime=10
-TimeOut=50
-Var=SOLVER_frontLeft_Nm signed 0,16 /u:Nm /f:0.1
-Var=SOLVER_frontRight_Nm signed 16,16 /u:Nm /f:0.1
-Var=SOLVER_rearLeft_Nm signed 32,16 /u:Nm /f:0.1
-Var=SOLVER_rearRight_Nm signed 48,16 /u:Nm /f:0.1
-
-[CONTROLS_SOLVER_SETTINGS]
-ID=7EEh
-DLC=6
-CycleTime=10
-TimeOut=50
-Var=SOLVER_k_lin unsigned 0,16
-Var=SOLVER_k_yaw unsigned 16,16
-Var=SOLVER_k_tie unsigned 32,16
 
 [CUBEMARS_DATA]
 ID=6E6h
@@ -635,12 +457,22 @@ Var=REQUEST_requestedDVCtrl unsigned 32,8
 [DRS_STATE]
 ID=52Ch
 DLC=4
-CycleTime=100
-TimeOut=500
+CycleTime=800
+TimeOut=4000
 Var=STATE_state unsigned 0,8
 Var=STATE_angle unsigned 8,8
 Var=STATE_pwm_left unsigned 16,8
 Var=STATE_pwm_right unsigned 24,8
+
+[DTI_ERROR_MESSAGES]
+ID=305h
+DLC=4
+CycleTime=100
+TimeOut=500
+Var=ERROR_fr_fault_code unsigned 0,8
+Var=ERROR_fl_fault_code unsigned 8,8
+Var=ERROR_rr_fault_code unsigned 16,8
+Var=ERROR_rl_fault_code unsigned 24,8
 
 [DTI_FL_TEMPFAULT]
 ID=441h
@@ -720,30 +552,6 @@ Var=CUBEMARS_position_deg signed 0,16
 Var=CUBEMARS_speed_erpm signed 16,16
 Var=CUBEMARS_motorTemp_C signed 32,8
 Var=CUBEMARS_errorCode unsigned 40,8
-
-[FRONT_SLIP_RATIOS]
-ID=7E8h
-DLC=8
-CycleTime=100
-TimeOut=500
-Var=SLIP_slipRatio_FL float 0,32
-Var=SLIP_slipRatio_FR float 32,32
-
-[FRONT_WHL_SETPOINTS]
-ID=7EAh
-DLC=8
-CycleTime=100
-TimeOut=500
-Var=WHL_slipRatio_FL float 0,32
-Var=WHL_slipRatio_FR float 32,32
-
-[FRONT_WHL_VELS]
-ID=7ECh
-DLC=8
-CycleTime=100
-TimeOut=500
-Var=WHL_v_whl_fl float 0,32
-Var=WHL_v_whl_fr float 32,32
 
 [FSM_DATA]
 ID=133h
@@ -1047,116 +855,6 @@ CycleTime=800
 TimeOut=4000
 Var=WARNINGS_warnings unsigned 0,8
 
-[MOTORPOWER_STATE]
-ID=52Eh
-DLC=8
-CycleTime=5
-TimeOut=25
-Var=STATE_motor_power_FL unsigned 0,16
-Var=STATE_motor_power_FR unsigned 16,16
-Var=STATE_motor_power_RL unsigned 32,16
-Var=STATE_motor_power_RR unsigned 48,16
-
-[MOVELLA_STATUS]
-ID=772h
-DLC=4
-CycleTime=10
-TimeOut=50
-Var=STATUS_filter_mode_1 unsigned 0,2
-Var=STATUS_have_gnss_time_pulse unsigned 2,1
-Var=STATUS_rtk_status unsigned 3,2
-Var=STATUS_reserved_4 unsigned 5,3
-Var=STATUS_clipflag_mag_z unsigned 8,1
-Var=STATUS_reserved_2 unsigned 9,2
-Var=STATUS_clipping_indication unsigned 11,1
-Var=STATUS_reserved_3 unsigned 12,1
-Var=STATUS_sync_in_marker unsigned 13,1
-Var=STATUS_sync_out_marker unsigned 14,1
-Var=STATUS_filter_mode_2 unsigned 15,1
-Var=STATUS_clipflag_acc_x unsigned 16,1
-Var=STATUS_clipflag_acc_y unsigned 17,1
-Var=STATUS_clipflag_acc_z unsigned 18,1
-Var=STATUS_clipflag_gyr_x unsigned 19,1
-Var=STATUS_clipflag_gyr_y unsigned 20,1
-Var=STATUS_clipflag_gyr_z unsigned 21,1
-Var=STATUS_clipflag_mag_x unsigned 22,1
-Var=STATUS_clipflag_mag_y unsigned 23,1
-Var=STATUS_self_test unsigned 24,1
-Var=STATUS_filter_valid unsigned 25,1
-Var=STATUS_gnss_fix unsigned 26,1
-Var=STATUS_no_rotation_update unsigned 27,2
-Var=STATUS_representative_motion unsigned 29,1
-Var=STATUS_clock_bias_estimation unsigned 30,1
-Var=STATUS_reserved_1 unsigned 31,1
-
-[REAR_SLIP_RATIOS]
-ID=7E9h
-DLC=8
-CycleTime=100
-TimeOut=500
-Var=SLIP_slipRatio_RL float 0,32
-Var=SLIP_slipRatio_RR float 32,32
-
-[REAR_WHL_SETPOINTS]
-ID=7EBh
-DLC=8
-CycleTime=100
-TimeOut=500
-Var=WHL_omega_RL float 0,32
-Var=WHL_omega_RR float 32,32
-
-[REAR_WHL_VELS]
-ID=7EDh
-DLC=8
-CycleTime=100
-TimeOut=500
-Var=WHL_v_whl_rl float 0,32
-Var=WHL_v_whl_rr float 32,32
-
-[SBG_BODY_VEL]
-ID=729h
-DLC=6
-CycleTime=400
-TimeOut=2000
-Var=BODY_velocity_forward signed 0,16
-Var=BODY_velocity_right signed 16,16
-Var=BODY_velocity_down signed 32,16
-
-[SBG_EKF_ORIENT]
-ID=722h
-DLC=6
-CycleTime=400
-TimeOut=2000
-Var=EKF_roll signed 0,16
-Var=EKF_pitch signed 16,16
-Var=EKF_yaw signed 32,16
-
-[SBG_EKF_POS]
-ID=724h
-DLC=8
-CycleTime=400
-TimeOut=2000
-Var=EKF_latitude signed 0,32
-Var=EKF_longitude signed 32,32
-
-[SBG_EKF_VEL]
-ID=727h
-DLC=6
-CycleTime=400
-TimeOut=2000
-Var=EKF_velocity_n signed 0,16
-Var=EKF_velocity_e signed 16,16
-Var=EKF_velocity_d signed 32,16
-
-[SBG_IMU_GYRO]
-ID=712h
-DLC=6
-CycleTime=400
-TimeOut=2000
-Var=IMU_gyro_x_rads signed 0,16 /u:rad
-Var=IMU_gyro_y_rads signed 16,16 /u:rad
-Var=IMU_gyro_z_rads signed 32,16 /u:rad
-
 [SENSORIC_DIST]
 ID=601h
 DLC=8
@@ -1175,17 +873,6 @@ Var=VEL_vel_X signed 0,16
 Var=VEL_vel_Y signed 16,16
 Var=VEL_vel_A signed 32,16
 Var=VEL_ang_S signed 48,16
-
-[SF_STATE]
-ID=52Dh
-DLC=8
-CycleTime=10
-TimeOut=50
-Var=power_limit_max_violation_W float 0,32 /u:W
-Var=longest_power_violation_ms unsigned 32,8 /u:ms
-Var=STATE_over_voltage_count unsigned 40,8
-Var=STATE_under_voltage_count unsigned 48,8
-Var=STATE_over_temp_count unsigned 56,8
 
 [VSM_LATCHED_STATUS]
 ID=510h
@@ -1316,6 +1003,66 @@ Var=RUN_ERROR_GateDrBoard3_OverTemp bit 56,1
 Var=RUN_ERROR_CurrSensFault bit 57,1
 Var=RUN_ERROR_ResolverDisconnected bit 62,1
 Var=RUN_ERROR_InvtrDischargeActive bit 63,1
+
+[CDC_WheelVelocityFeedback]
+ID=232h
+DLC=8
+CycleTime=100
+Var=CDC_FLWheel_Vel_Feedback signed 0,16 /u:rpm /f:0.1 /max:3276.7 /d:0
+Var=CDC_FRWheel_Vel_Feedback signed 16,16 /u:rpm /f:0.1 /max:3276.7 /d:0
+Var=CDC_RLWheel_Vel_Feedback signed 32,16 /u:rpm /f:0.1 /max:3276.7 /d:0
+Var=CDC_RRWheel_Vel_Feedback signed 48,16 /u:rpm /f:0.1 /max:3276.7 /d:0
+
+[CDC_WheelVelocitySetpoint]
+ID=252h
+DLC=8
+CycleTime=100
+Var=CDC_FLWheel_Vel_Setpoint signed 0,16 /u:rpm /f:0.1 /max:3276.7 /d:0
+Var=CDC_FRWheel_Vel_Setpoint signed 16,16 /u:rpm /f:0.1 /max:3276.7 /d:0
+Var=CDC_RLWheel_Vel_Setpoint signed 32,16 /u:rpm /f:0.1 /max:3276.7 /d:0
+Var=CDC_RRWheel_Vel_Setpoint signed 48,16 /u:rpm /f:0.1 /max:3276.7 /d:0
+
+[CDC_WheelTorqueFeedback]
+ID=262h
+DLC=8
+CycleTime=100
+Var=CDC_FLWheel_Torque_Feedback signed 0,16 /u:Nm /f:0.1 /max:3276.7 /d:0
+Var=CDC_FRWheel_Torque_Feedback signed 16,16 /u:Nm /f:0.1 /max:3276.7 /d:0
+Var=CDC_RLWheel_Torque_Feedback signed 32,16 /u:Nm /f:0.1 /max:3276.7 /d:0
+Var=CDC_RRWheel_Torque_Feedback signed 48,16 /u:Nm /f:0.1 /max:3276.7 /d:0
+
+[CDC_WheelTorqueSetpoint]
+ID=272h
+DLC=8
+CycleTime=100
+Var=CDC_FLWheel_Torque_Setpoint signed 0,16 /u:Nm /f:0.1 /max:3276.7 /d:0
+Var=CDC_FRWheel_Torque_Setpoint signed 16,16 /u:Nm /f:0.1 /max:3276.7 /d:0
+Var=CDC_RLWheel_Torque_Setpoint signed 32,16 /u:Nm /f:0.1 /max:3276.7 /d:0
+Var=CDC_RRWheel_Torque_Setpoint signed 48,16 /u:Nm /f:0.1 /max:3276.7 /d:0
+
+[CDC_PosePosition]
+ID=282h
+DLC=8
+CycleTime=100
+Var=CDC_Latitude float 0,32 /u:deg
+Var=CDC_Longitude float 32,32 /u:deg
+
+[CDC_PoseOrientation]
+ID=292h
+DLC=8
+CycleTime=100
+Var=CDC_Roll signed 0,16 /u:deg /f:0.1 /max:3276.7 /d:0
+Var=CDC_Pitch signed 16,16 /u:deg /f:0.1 /max:3276.7 /d:0
+Var=CDC_Yaw signed 32,16 /u:deg /f:0.1 /max:3276.7 /d:0
+Var=CDC_Velocity_Angle signed 48,16 /u:deg /f:0.1 /max:3276.7 /d:0
+
+[CDC_PoseVelocity]
+ID=2A2h
+DLC=6
+CycleTime=100
+Var=CDC_LongitudinalVelocity signed 0,16 /u:mps /f:0.01 /d:0
+Var=CDC_LateralVelocity signed 16,16 /u:mps /f:0.01 /d:0
+Var=CDC_VerticalVelocity signed 32,16 /u:mps /f:0.01 /d:0
 
 [CDC_PoseAcceleration]
 ID=2B2h
@@ -1775,6 +1522,13 @@ Var=SBG_Accel_X signed 0,16 /u:m.s-2 /f:0.01 /d:0
 Var=SBG_Accel_Y signed 16,16 /u:m.s-2 /f:0.01 /d:0
 Var=SBG_Accel_Z signed 32,16 /u:m.s-2 /f:0.01 /d:0
 
+[ELLIPSE_IMU_GYRO]
+ID=712h
+DLC=6
+Var=SBG_Gyro_X signed 0,16 /u:rad.s-1 /f:0.001 /d:0
+Var=SBG_Gyro_Y signed 16,16 /u:rad.s-1 /f:0.001 /d:0
+Var=SBG_Gyro_Z signed 32,16 /u:rad.s-1 /f:0.001 /d:0
+
 [ELLIPSE_IMU_DELTA_VEL]
 ID=713h
 DLC=6
@@ -1802,12 +1556,25 @@ Var=SBG_Q1 signed 16,16
 Var=SBG_Q2 signed 32,16
 Var=SBG_Q3 signed 48,16
 
+[ELLIPSE_IMU_EKF_EULER]
+ID=722h
+DLC=6
+Var=SBG_Roll signed 0,16 /u:' /f:0.0057295779 /d:0
+Var=SBG_Pitch signed 16,16 /u:' /f:0.0057295779 /d:0
+Var=SBG_Yaw signed 32,16 /u:' /f:0.0057295779 /d:0
+
 [ELLIPSE_IMU_EKF_ORIENT_ACC]
 ID=723h
 DLC=6
 Var=SBG_Roll_Acc unsigned 0,16 /u:' /f:0.0057295779 /d:0
 Var=SBG_Pitch_Acc unsigned 16,16 /u:' /f:0.0057295779 /d:0
 Var=SBG_Yaw_Acc unsigned 32,16 /u:' /f:0.0057295779 /d:0
+
+[ELLIPSE_IMU_EKF_POS]
+ID=724h
+DLC=8
+Var=SBG_Latitude signed 0,32 /u:' /f:1E-007 /d:0
+Var=SBG_Longitude signed 32,32 /u:' /f:1E-007 /d:0
 
 [ELLIPSE_IMU_EKF_ALTITUDE]
 ID=725h
@@ -1821,6 +1588,20 @@ DLC=6
 Var=SBG_Latitude_Acc unsigned 0,16 /u:m /f:0.01 /d:0
 Var=SBG_Longitude_Acc unsigned 16,16 /u:m /f:0.01 /d:0
 Var=SBG_Altitude_Acc unsigned 32,16 /u:m /f:0.01 /d:0
+
+[ELLIPSE_IMU_EKF_VEL]
+ID=727h
+DLC=6
+Var=SBG_Velocity_N signed 0,16 /u:m.s-1 /f:0.01 /d:0
+Var=SBG_Velocity_E signed 16,16 /u:m.s-1 /f:0.01 /d:0
+Var=SBG_Velocity_D signed 32,16 /u:m.s-1 /f:0.01 /d:0
+
+[ELLIPSE_IMU_BODY_VEL]
+ID=729h
+DLC=6
+Var=SBG_Velocity_Forward signed 0,16 /u:m.s-1 /f:0.01 /d:0
+Var=SBG_Velocity_Right signed 16,16 /u:m.s-1 /f:0.01 /d:0
+Var=SBG_Velocity_Down signed 32,16 /u:m.s-1 /f:0.01 /d:0
 
 [ELLIPSE_IMU_EKF_VEL_ACC]
 ID=728h
@@ -2000,6 +1781,14 @@ Var=Max_Mains_Current unsigned 8,16 -m /u:A /f:0.1 /d:0
 Var=Requested_Voltage unsigned 24,16 -m /u:V /f:0.1 /d:0
 Var=Requested_Current unsigned 40,16 -m /u:A /f:0.1 /d:0
 
+[CDC_CONTROLS_PID]
+ID=7E5h
+DLC=8
+CycleTime=100
+Var=controls_current_yaw_rate signed 0,16 /u:rad.s-1 /f:0.01 /d:0
+Var=controls_target_yaw_rate signed 16,16 /u:rad.s-1 /f:0.01 /d:0
+Var=controls_pid float 32,32 /f:0.01 /d:0
+
 [EMD_Status]
 ID=400h
 DLC=4
@@ -2025,6 +1814,18 @@ Var=padding unsigned 32,16 /max:1
 Var=volume unsigned 48,8 /max:7
 Var=squelch unsigned 56,8 /max:8	// 0 for listen, 1 - 8 for transmit
 
+[CDC_RTC_DATA_OUT]
+ID=6A2h
+DLC=7
+CycleTime=1000
+Var=RTC_Seconds unsigned 0,8 /u:seconds
+Var=RTC_Minutes unsigned 8,8 /u:minutes
+Var=RTC_Hours unsigned 16,8 /u:hours
+Var=RTC_Date unsigned 24,8 /u:day
+Var=RTC_Month unsigned 32,8 /u:month
+Var=RTC_Year unsigned 40,8 /u:year
+Var=RTC_Error unsigned 48,8	// For interpreting this, see comments in code.
+
 [CDC_RTC_DATA_IN]
 ID=6B2h
 DLC=7
@@ -2036,6 +1837,66 @@ Var=RTC_Date_In unsigned 24,8 /u:day
 Var=RTC_Month_In unsigned 32,8 /u:month
 Var=RTC_Year_In unsigned 40,8 /u:year
 Var=RTC_Error_In unsigned 48,8	// For interpreting this, see comments in code.
+
+[CDC_ODOMETER]
+ID=6C2h
+DLC=4
+CycleTime=1000
+Var=CDC_Odometer float 0,32 /u:km
+
+[SF_State]
+ID=52Dh
+DLC=8
+CycleTime=100
+Var=Power_Limit_Max_Violation_W float 0,32 /u:W
+Var=Longest_Power_Violation unsigned 32,8
+Var=Over_Voltage_Count unsigned 40,8
+Var=Under_Voltage_Count unsigned 48,8
+Var=Over_Temp_Count unsigned 56,8
+
+[CDC_Motor_Power]
+ID=52Eh
+DLC=8
+Var=motor_power_FL unsigned 0,16
+Var=motor_power_FR unsigned 16,16
+Var=motor_power_RL unsigned 32,16
+Var=motor_power_RR unsigned 48,16
+
+[CDC_Front_Slip_Ratios]
+ID=7E8h
+DLC=8
+Var=slipRatio_FL float 0,32
+Var=slipRatio_FR float 32,32
+
+[CDC_Rear_Slip_Ratios]
+ID=7E9h
+DLC=8
+Var=slipRatio_RL float 0,32
+Var=slipRatio_RR float 32,32
+
+[CDC_Front_Velocity_Setpoints]
+ID=7EAh
+DLC=8
+Var=setPoint_FL float 0,32
+Var=setPoint_FR float 32,32
+
+[CDC_Rear_Velocity_Setpoints]
+ID=7EBh
+DLC=8
+Var=setPoint_RL float 0,32
+Var=setPoint_RR float 32,32
+
+[CDC_Front_Whl_Velocity_Calc]
+ID=7ECh
+DLC=8
+Var=vel_calc_FL float 0,32
+Var=vel_calc_FR float 32,32
+
+[CDC_Rear_Whl_Velocity_Calc]
+ID=7EDh
+DLC=8
+Var=vel_calc_RL float 0,32
+Var=vel_calc_RR float 32,32
 
 [DIM_DAQ_TEXT]
 ID=525h
@@ -2057,6 +1918,27 @@ DLC=8
 Var=HVI_Current signed 0,16 /u:A /f:0.1 /max:3276.7 /d:0
 Var=HVI_Voltage unsigned 16,16 /u:V /f:0.01 /d:0
 Var=HVI_Power signed 32,32 /u:kW /f:0.001 /d:0
+
+[CDC_Solver_Inputs]
+ID=7E6h
+DLC=8
+Var=Moment_REQ float 0,32
+Var=Lin_Accel_REQ float 32,32
+
+[CDC_Solver_Outputs]
+ID=7F0h
+DLC=8
+Var=Torque_FL signed 0,16
+Var=Torque_FR signed 16,16
+Var=Torque_RL signed 32,16
+Var=Torque_RR signed 48,16
+
+[CDC_Solver_Settings]
+ID=7EEh
+DLC=6
+Var=k_lin unsigned 0,16 /u:Unit
+Var=k_yaw unsigned 16,16 /u:Unit
+Var=k_tie unsigned 32,16 /u:Unit
 
 [VSM_Git]
 ID=7F1h
@@ -2170,6 +2052,60 @@ ID=77Bh
 DLC=8
 Var=Movella_Latitude signed 0,32 -m /u:deg /f:5.96046447753906E-008 /max:127.999999940395 /d:0
 Var=Movella_Longitude signed 32,32 -m /u:deg /f:1.19209289550781E-007 /min:-255.999999999999 /max:255.99999988079 /d:0
+
+[DCM_COG_Velocity]
+ID=2C2h
+DLC=8
+Var=cog_x signed 0,16 /u:m/s /f:0.01 /d:0
+Var=cog_y signed 16,16 /u:m/s /f:0.01 /d:0
+Var=slip_angle float 32,32 /u:rad
+
+[DCM_Front_Velocity]
+ID=2D2h
+DLC=8
+Var=fl_x signed 0,16 /u:m/s /f:0.01 /d:0
+Var=fl_y signed 16,16 /u:m/s /f:0.01 /d:0
+Var=fr_x signed 32,16 /u:m/s /f:0.01 /d:0
+Var=fr_y signed 48,16 /u:m/s /f:0.01 /d:0
+
+[DCM_Rear_Velocity]
+ID=2E2h
+DLC=8
+Var=rl_x signed 0,16 /u:m/s /f:0.01 /d:0
+Var=rl_y signed 16,16 /u:m/s /f:0.01 /d:0
+Var=rr_x signed 32,16 /u:m/s /f:0.01 /d:0
+Var=rr_y signed 48,16 /u:m/s /f:0.01 /d:0
+
+[Movella_MTi860G_Status]
+ID=772h
+DLC=4
+Var=Movella_fitler_mode unsigned 0,2 /e:VtSig_Movella_fitler_mode
+Var=Movella_have_gnss_time_pulse bit 2,1
+Var=Movella_rtk_status unsigned 3,2
+Var=Movella_clipflag_mag_z bit 8,1
+Var=Movella_clipping_indication bit 11,1
+Var=Movella_sync_in_marker bit 13,1
+Var=Movella_sync_out_marker bit 14,1
+Var=Movella_filter_mode_2 bit 15,1
+Var=Movella_clipflag_acc_x bit 16,1
+Var=Movella_clipflag_acc_y bit 17,1
+Var=Movella_clipflag_acc_z bit 18,1
+Var=Movella_clipflag_gyr_x bit 19,1
+Var=Movella_clipflag_gyr_y bit 20,1
+Var=Movella_clipflag_gyr_z bit 21,1
+Var=Movella_clipflag_mag_x bit 22,1
+Var=Movella_clipflag_mag_y bit 23,1
+Var=Movella_self_test bit 24,1
+Var=Movella_filter_valid bit 25,1
+Var=Movella_gnss_fix bit 26,1
+Var=Movella_no_rotation_update unsigned 27,2
+Var=Movella_representative_motion bit 29,1
+Var=Movella_clock_bias_estimation bit 30,1
+
+[DCM_PowerLimit]
+ID=6E4h
+DLC=4
+Var=PowerLimit float 0,32 /u:kW /f:0.001 /d:0
 
 [LV_BMS_Voltages1]
 ID=7F7h
