@@ -1132,7 +1132,7 @@ void setFastTorqueWithPhantomDiff(
     const float phantom_diff_scaling_factor = 
         CLAMP(
             0.0f,
-            phantomDiffGain * vehicle_speed_mps * vehicle_speed_mps * fabsf(swangle_rad),
+            phantomDiffGain * vehicle_speed_mps * vehicle_speed_mps * fabsf(swangle_rad), // tan approximated with small angle
             maxPhantomDiffScalingFactor
         );
 
