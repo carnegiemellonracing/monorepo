@@ -44,9 +44,6 @@ typedef struct{
 // Public function declarations
 
 void motorsInit();
-void setTorqueLimPos(motorLocation_t motor, float torqueLimPos_Nm);
-void setTorqueLimNeg(motorLocation_t motor, float torqueLimNeg_Nm);
-void setTorque(motorLocation_t motor, float torque);
 void initiateTorqueMode();
 void disableTorqueMode();
 void setTorqueLimsUnprotected (motorLocation_t motor, float torqueLimPos_Nm, float torqueLimNeg_Nm);
@@ -58,9 +55,7 @@ void setVelocityInt16(motorLocation_t motor, int16_t velocity_rpm);
 void setVelocityFloat(motorLocation_t motor, float velocity_rpm);
 void setVelocityInt16All(int16_t velocity_rpm);
 void setVelocityFloatAll(float velocity_rpm);
-cmr_torque_limit_t getTorqueBudget();
 const cmr_DTI_RX_Message_t *getDTISetpoints(motorLocation_t motor);
-cmr_canDAQTest_t getDAQTest();
 cmr_canGear_t getCurrentGear();
 
 #endif /* MOTORS_H */

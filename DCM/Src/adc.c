@@ -16,7 +16,7 @@
  * @see `CMR/adc.h` for various initialization values.
  */
 static cmr_adcChannel_t adcChannels[ADC_LEN] = {
-
+    
     [ADC_THERM1] = {
         .channel = ADC_CHANNEL_2,
         .port = GPIOF,

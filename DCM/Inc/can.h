@@ -221,8 +221,6 @@ int sendDTIMessage(cmr_canBusID_t bus, cmr_canID_t id, const void *data, size_t 
 int16_t getDTICtrlTemp(canRX_t rxMsg);
 int16_t getDTIMotorTemp(canRX_t rxMsg);
 int16_t getDTITorque(canRX_t rxMsg);
-float canEmdHvVoltage();
-float canEmdHvCurrent();
 int32_t getDTIERPM(canTractiveRX_t rxMsg);
 int16_t getDTIInputVoltage(canTractiveRX_t rxMsg);
 int16_t getDTIACCurrent_dA(canTractiveRX_t rxMsg);
