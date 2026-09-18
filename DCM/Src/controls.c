@@ -663,7 +663,46 @@ void set_optimal_control_with_regen(
     set_optimal_control(combined_request, swAngle_millideg_FL, swAngle_millideg_FR, true);
 }
 
-void setRegenFastTorqueWithPhantomDiff(
+void setBasicRegenFastTorqueWithPhantomDiff(
+    int throttlePos_u8,
+    int32_t swAngle_millideg,
+    int32_t avgMotorRPM
+) {
+
+    float throttle = (float) throttlePos_u8 / UINT8_MAX;
+    if (throttle < basicOnePedalRegenThrottleZeroTorquePoint) {
+        float adjusted_throttle = 
+                CLAMP(
+                    -1, 
+                    (throttle - basicOnePedalRegenThrottleZeroTorquePoint) / basicOnePedalRegenThrottleZeroTorquePoint, 
+                    0
+                );
+        float regen_torque = 
+                CLAMP(
+                    -max_regen_torque_Nm,
+                    max_regen_torque_Nm * adjusted_throttle * basicOnePedalRegenGain,
+                    0
+                );
+        setTorqueLimsUnprotected(MOTOR_FL, 0.0f, regen_torque);
+        setTorqueLimsUnprotected(MOTOR_FR, 0.0f, regen_torque);
+        setTorqueLimsUnprotected(MOTOR_RL, 0.0f, regen_torque);
+        setTorqueLimsUnprotected(MOTOR_RR, 0.0f, regen_torque);
+        setVelocityInt16All(0);
+    }
+    else {
+        float adjusted_throttle = 
+                CLAMP(
+                    0, 
+                    (throttle - basicOnePedalRegenThrottleZeroTorquePoint) / (1 - basicOnePedalRegenThrottleZeroTorquePoint), 
+                    1
+                );
+        int adjusted_throttle_u8 = (int) (adjusted_throttle * UINT8_MAX);
+        setFastTorqueWithPhantomDiff(adjusted_throttle_u8, swAngle_millideg, front_bias, maxPhantomDiffScalingFactor);
+    }
+
+}
+
+void setAdaptiveRegenFastTorqueWithPhantomDiff(
 	int throttlePos_u8,
 	int32_t swAngle_millideg,
     int32_t avgMotorRPM
@@ -822,7 +861,7 @@ void runControls (
         }
         case CMR_CAN_GEAR_ENDURANCE: {
             disableTorqueMode();
-            setRegenFastTorqueWithPhantomDiff(throttlePos_u8, swAngle_millideg, avgMotorSpeed_RPM);
+            setAdaptiveRegenFastTorqueWithPhantomDiff(throttlePos_u8, swAngle_millideg, avgMotorSpeed_RPM);
             setPowerLimit(false, MOTOR_FL, maxPowerPerMotor_kW * front_bias);
             setPowerLimit(false, MOTOR_FR, maxPowerPerMotor_kW * front_bias);
             setPowerLimit(false, MOTOR_RL, maxPowerPerMotor_kW * (1 - front_bias));
@@ -887,8 +926,7 @@ void runControls (
         }
         case CMR_CAN_GEAR_TEST: {
             disableTorqueMode();
-            setFastTorqueWithPhantomDiff(throttlePos_u8, swAngle_millideg, front_bias, maxPhantomDiffScalingFactor);
-
+            setAdaptiveRegenFastTorqueWithPhantomDiff(throttlePos_u8, swAngle_millideg, avgMotorSpeed_RPM);
             setPowerLimit(false, MOTOR_FL, maxPowerPerMotor_kW * front_bias);
             setPowerLimit(false, MOTOR_FR, maxPowerPerMotor_kW * front_bias);
             setPowerLimit(false, MOTOR_RL, maxPowerPerMotor_kW * (1 - front_bias));
