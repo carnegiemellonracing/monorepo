@@ -21,7 +21,6 @@
 #include <CMR/utils.h>
 
 // #include "controls_23e.h"
-#include "drs_controls.h"
 #include "servo.h"
 #include "can.h"
 #include "daq.h"
@@ -53,9 +52,6 @@ static cmr_task_t motorsCommand_task;
 
 static cmr_task_t motorsTest_task;
 
-/** @brief DAQ test type and HAL rand init **/
-cmr_canDAQTest_t daqTest;
-
 /** @brief Vehicle gear. */
 static cmr_canGear_t gear = CMR_CAN_GEAR_SLOW;
 
@@ -72,10 +68,6 @@ static cmr_DTISetpoints_t motorSetpoints[MOTOR_LEN];
 static cmr_DTI_RX_Message_t DTI_RXMessage[MOTOR_LEN];
 
 #define MAX_CURRENT_DECI_AMPS 850                        
-
-cmr_canDAQTest_t getDAQTest() {
-    return daqTest;
-}
 
 /* Global Variable to Initiate/Disable Torque Mode*/ 
 bool isTorqueMode = false;
@@ -300,42 +292,6 @@ void motorsInit (
 }
 
 /**
- * @brief Sets positive torque limit for a motor.
- *
- * @param motor Which motor to set torque limit for.
- * @param torqueLimPos_Nm Desired positive torque limit.
- */
-void setTorqueLimPos (
-    motorLocation_t motor,
-    float torqueLimPos_Nm
-) {
-    if (motor >= MOTOR_LEN) {
-        return;
-    }
-
-    torqueLimPos_Nm = fmaxf(torqueLimPos_Nm, 0.0f);
-    motorSetpoints[motor].torqueLimPos_mNm = torqueLimPos_Nm;
-}
-
-/**
- * @brief Sets negative torque limit for a motor.
- *
- * @param motor Which motor to set torque limit for.
- * @param torqueLimNeg_Nm Desired negative torque limit.
- */
-void setTorqueLimNeg (
-    motorLocation_t motor,
-    float torqueLimNeg_Nm
-) {
-    if (motor >= MOTOR_LEN) {
-        return;
-    }
-
-    torqueLimNeg_Nm = fminf(torqueLimNeg_Nm, 0.0f);
-    motorSetpoints[motor].torqueLimNeg_mNm = torqueLimNeg_Nm;
-}
-
-/**
  * @brief Sets both positive and negative torque limits for all motors.
  *
  * @param torqueLimPos_Nm Desired positive torque limit.
@@ -347,6 +303,7 @@ void setTorqueLimsAllProtected (
 ) {
     setTorqueLimsAllDistProtected(torqueLimPos_Nm, torqueLimNeg_Nm, NULL, NULL);
 }
+
 
 /**
  * @brief Sets both positive and negative torque limits for all motors with over/undervolt protection.
@@ -380,6 +337,7 @@ void setTorqueLimsAllDistProtected (
     setTorqueLimsProtected(&torquesPos_Nm, &torquesNeg_Nm);
 }
 
+
 /**
  * @brief Sets both positive and negative torque limits for a motor.
  *
@@ -403,41 +361,6 @@ void setTorqueLimsUnprotected (
     motorSetpoints[motor].torqueLimNeg_mNm = torqueLimNeg_Nm * 1000.0f;
 }
 
-/**
- * @brief Sets direct torque for a motor.
- *
- * @param motor Which motor to set torque for.
- * @param torqueLimPos_Nm Desired torque.
- */
-void setTorques (
-    motorLocation_t motor,
-    float torque_Nm
-) {
-    if (motor >= MOTOR_LEN) {
-        return;
-    }
-
-    torque_Nm = fmaxf(torque_Nm, 0.0f); // ensures torqueLimPos_Nm >= 0
-
-    motorSetpoints[motor].torque_mNm = torque_Nm * 1000.0f;
-}
-
-/**
- * @brief Sets direct torque for a motor.
- *
- * @param motor Which motor to set torque for.
- * @param torqueLimPos_Nm Desired torque.
- */
-void setTorquesAll (
-    float torque_Nm
-) {
-    torque_Nm = fmaxf(torque_Nm, 0.0f); // ensures torqueLimPos_Nm >= 0
-
-    motorSetpoints[MOTOR_FL].torque_mNm = torque_Nm * 1000.0f;
-    motorSetpoints[MOTOR_FR].torque_mNm = torque_Nm * 1000.0f;
-    motorSetpoints[MOTOR_RL].torque_mNm = torque_Nm * 1000.0f;
-    motorSetpoints[MOTOR_RR].torque_mNm = torque_Nm * 1000.0f;
-}
 
 /**
  * @brief Sets velocity setpoint for a motor.
@@ -511,19 +434,6 @@ void setVelocityFloatAll (
 }
 
 /**
- * @brief Sets torque setpoint for a motor.
- *
- * @param motor Which motor to set torque for.
- * @param torque Desired torque in Nm
- */
-void setTorque(
-    motorLocation_t motor,
-    float torque_Nm
-){
-    motorSetpoints[motor].torque_mNm = 1000.0f * torque_Nm;
-}
-
-/**
  * @brief Initiates Torque Mode.
  */
 void initiateTorqueMode()
@@ -537,15 +447,6 @@ void initiateTorqueMode()
 void disableTorqueMode()
 {
     isTorqueMode = false;
-}
-
-/**
- * @brief Calculate the torque budget for power-aware traction and yaw rate control.
- *
- * @return The torque upper- and lower-limits for a motor, which applies to every motor.
- */
-cmr_torque_limit_t getTorqueBudget() {
-	return getPreemptiveTorqueLimits();
 }
 
 /**

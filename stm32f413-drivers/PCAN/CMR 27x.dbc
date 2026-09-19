@@ -87,11 +87,6 @@ BO_ 400 AUTONOMOUS_ACTION: 8 Vector__XXX
  SG_ steeringAngle_centi_deg : 32|16@1- (1,0) [-32768|32767] "" Vector__XXX
  SG_ maxVelocity_decimeters_s : 48|16@1+ (1,0) [0|65535] "" Vector__XXX
 
-BO_ 706 CDC_COG_VELOCITY: 8 Vector__XXX
- SG_ COG_cog_x_mps : 0|16@1- (0.01,0) [-327.68|327.67] "mps" Vector__XXX
- SG_ COG_cog_y_mps : 16|16@1- (0.01,0) [-327.68|327.67] "mps" Vector__XXX
- SG_ COG_slip_angle : 32|32@1+ (1,0) [0|4294967295] "" Vector__XXX
-
 BO_ 1746 CDC_CONTROLS_STATUS: 2 Vector__XXX
  SG_ CONTROLS_tcOn : 0|8@1+ (1,0) [0|255] "" Vector__XXX
  SG_ CONTROLS_yrcOn : 8|8@1+ (1,0) [0|255] "" Vector__XXX
@@ -99,106 +94,9 @@ BO_ 1746 CDC_CONTROLS_STATUS: 2 Vector__XXX
 BO_ 1763 CDC_COULOMB_COUNTING: 4 Vector__XXX
  SG_ COULOMB_KCoulombs : 0|32@1+ (1,0) [0|4294967295] "" Vector__XXX
 
-BO_ 722 CDC_FRONT_VELOCITY: 8 Vector__XXX
- SG_ FRONT_fl_x : 0|16@1- (0.01,0) [-327.68|327.67] "" Vector__XXX
- SG_ FRONT_fl_y : 16|16@1- (0.01,0) [-327.68|327.67] "" Vector__XXX
- SG_ FRONT_fr_x : 32|16@1- (0.01,0) [-327.68|327.67] "" Vector__XXX
- SG_ FRONT_fr_y : 48|16@1- (0.01,0) [-327.68|327.67] "" Vector__XXX
-
-BO_ 1730 CDC_ODOMETER: 4 Vector__XXX
- SG_ ODOMETER_odometer_km : 0|32@1+ (1,0) [0|4294967295] "km" Vector__XXX
-
-BO_ 658 CDC_POSE_ORIENTATION: 8 Vector__XXX
- SG_ POSE_roll_deg : 0|16@1- (0.1,0) [-3276.8|3276.7] "deg" Vector__XXX
- SG_ POSE_pitch_deg : 16|16@1- (0.1,0) [-3276.8|3276.7] "deg" Vector__XXX
- SG_ POSE_yaw_deg : 32|16@1- (0.1,0) [-3276.8|3276.7] "deg" Vector__XXX
- SG_ POSE_velocity_deg : 48|16@1- (0.1,0) [-3276.8|3276.7] "deg" Vector__XXX
-
-BO_ 642 CDC_POSE_POSITION: 8 Vector__XXX
- SG_ POSE_latitude_deg : 0|32@1+ (1,0) [0|4294967295] "deg" Vector__XXX
- SG_ POSE_longitude_deg : 32|32@1+ (1,0) [0|4294967295] "deg" Vector__XXX
-
-BO_ 674 CDC_POSE_VELOCITY: 6 Vector__XXX
- SG_ POSE_longitudinalVel_mps : 0|16@1- (0.01,0) [-327.68|327.67] "mps" Vector__XXX
- SG_ POSE_lateralVel_mps : 16|16@1- (0.01,0) [-327.68|327.67] "mps" Vector__XXX
- SG_ POSE_verticalVel_mps : 32|16@1- (0.01,0) [-327.68|327.67] "mps" Vector__XXX
-
-BO_ 1764 CDC_POWER_LOG: 4 Vector__XXX
- SG_ POWER_power_limit_W : 0|32@1+ (0.001,0) [0.000|4294967.295] "W" Vector__XXX
-
-BO_ 773 CDC_POWER_SENSE: 8 Vector__XXX
- SG_ POWER_packCurrent_dA : 0|16@1- (1,0) [-32768|32767] "dA" Vector__XXX
- SG_ POWER_packVoltage_cV : 16|16@1+ (1,0) [0|65535] "cV" Vector__XXX
- SG_ POWER_packPower_W : 32|32@1- (1,0) [-2147483648|2147483647] "W" Vector__XXX
-
-BO_ 738 CDC_REAR_VELOCITY: 8 Vector__XXX
- SG_ REAR_rl_x : 0|16@1- (0.01,0) [-327.68|327.67] "" Vector__XXX
- SG_ REAR_rl_y : 16|16@1- (0.01,0) [-327.68|327.67] "" Vector__XXX
- SG_ REAR_rr_x : 32|16@1- (0.01,0) [-327.68|327.67] "" Vector__XXX
- SG_ REAR_rr_y : 48|16@1- (0.01,0) [-327.68|327.67] "" Vector__XXX
-
-BO_ 1698 CDC_RTC_DATA_OUT: 7 Vector__XXX
- SG_ RTC_seconds : 0|8@1+ (1,0) [0|255] "" Vector__XXX
- SG_ RTC_minutes : 8|8@1+ (1,0) [0|255] "" Vector__XXX
- SG_ RTC_hours : 16|8@1+ (1,0) [0|255] "" Vector__XXX
- SG_ RTC_date : 24|8@1+ (1,0) [0|255] "" Vector__XXX
- SG_ RTC_month : 32|8@1+ (1,0) [0|255] "" Vector__XXX
- SG_ RTC_year : 40|8@1+ (1,0) [0|255] "" Vector__XXX
- SG_ RTC_err : 48|8@1+ (1,0) [0|255] "" Vector__XXX
-
-BO_ 562 CDC_WHEEL_SPEED_FEEDBACK: 8 Vector__XXX
- SG_ WHEEL_frontLeft_rpm : 0|16@1- (0.1,0) [-3276.8|3276.7] "rpm" Vector__XXX
- SG_ WHEEL_frontRight_rpm : 16|16@1- (0.1,0) [-3276.8|3276.7] "rpm" Vector__XXX
- SG_ WHEEL_rearLeft_rpm : 32|16@1- (0.1,0) [-3276.8|3276.7] "rpm" Vector__XXX
- SG_ WHEEL_rearRight_rpm : 48|16@1- (0.1,0) [-3276.8|3276.7] "rpm" Vector__XXX
-
-BO_ 594 CDC_WHEEL_SPEED_SETPOINT: 8 Vector__XXX
- SG_ WHEEL_frontLeft_rpm1 : 0|16@1- (0.1,0) [-3276.8|3276.7] "rpm" Vector__XXX
- SG_ WHEEL_frontRight_rpm1 : 16|16@1- (0.1,0) [-3276.8|3276.7] "rpm" Vector__XXX
- SG_ WHEEL_rearLeft_rpm1 : 32|16@1- (0.1,0) [-3276.8|3276.7] "rpm" Vector__XXX
- SG_ WHEEL_rearRight_rpm1 : 48|16@1- (0.1,0) [-3276.8|3276.7] "rpm" Vector__XXX
-
-BO_ 610 CDC_WHEEL_TORQUE_FEEDBACK: 8 Vector__XXX
- SG_ WHEEL_frontLeft_Nm : 0|16@1- (0.1,0) [-3276.8|3276.7] "Nm" Vector__XXX
- SG_ WHEEL_frontRight_Nm : 16|16@1- (0.1,0) [-3276.8|3276.7] "Nm" Vector__XXX
- SG_ WHEEL_rearLeft_Nm : 32|16@1- (0.1,0) [-3276.8|3276.7] "Nm" Vector__XXX
- SG_ WHEEL_rearRight_Nm : 48|16@1- (0.1,0) [-3276.8|3276.7] "Nm" Vector__XXX
-
-BO_ 626 CDC_WHEEL_TORQUE_SETPOINT: 8 Vector__XXX
- SG_ WHEEL_frontLeft_Nm1 : 0|16@1- (0.1,0) [-3276.8|3276.7] "Nm" Vector__XXX
- SG_ WHEEL_frontRight_Nm1 : 16|16@1- (0.1,0) [-3276.8|3276.7] "Nm" Vector__XXX
- SG_ WHEEL_rearLeft_Nm1 : 32|16@1- (0.1,0) [-3276.8|3276.7] "Nm" Vector__XXX
- SG_ WHEEL_rearRight_Nm1 : 48|16@1- (0.1,0) [-3276.8|3276.7] "Nm" Vector__XXX
-
 BO_ 308 CELL_BALANCE_ENABLE: 3 Vector__XXX
  SG_ BALANCE_balanceRequest : 0|8@1+ (1,0) [0|255] "" Vector__XXX
  SG_ BALANCE_threshold : 8|16@1+ (1,0) [0|65535] "" Vector__XXX
-
-BO_ 2021 CONTROLS_PID_IO: 8 Vector__XXX
- SG_ PID_controls_current_yaw_rate : 0|16@1- (0.01,0) [-327.68|327.67] "" Vector__XXX
- SG_ PID_controls_target_yaw_rate : 16|16@1- (0.01,0) [-327.68|327.67] "" Vector__XXX
- SG_ PID_controls_bias : 32|16@1- (0.01,0) [-327.68|327.67] "" Vector__XXX
- SG_ PID_controls_pid : 48|16@1- (0.01,0) [-327.68|327.67] "" Vector__XXX
-
-BO_ 2047 CONTROLS_SOLVER_AUX: 4 Vector__XXX
- SG_ combined_normalized_throttle : 0|16@1- (1,0) [-32768|32767] "" Vector__XXX
- SG_ SOLVER_allow_regen : 16|8@1+ (1,0) [0|255] "" Vector__XXX
- SG_ SOLVER_placeholder : 24|8@1+ (1,0) [0|255] "" Vector__XXX
-
-BO_ 2022 CONTROLS_SOLVER_INPUTS: 8 Vector__XXX
- SG_ SOLVER_moment_req_Nm : 0|32@1+ (1,0) [0|4294967295] "Nm" Vector__XXX
- SG_ SOLVER_lin_accel_Nm : 32|32@1+ (1,0) [0|4294967295] "Nm" Vector__XXX
-
-BO_ 2032 CONTROLS_SOLVER_OUTPUTS: 8 Vector__XXX
- SG_ SOLVER_frontLeft_Nm : 0|16@1- (0.1,0) [-3276.8|3276.7] "Nm" Vector__XXX
- SG_ SOLVER_frontRight_Nm : 16|16@1- (0.1,0) [-3276.8|3276.7] "Nm" Vector__XXX
- SG_ SOLVER_rearLeft_Nm : 32|16@1- (0.1,0) [-3276.8|3276.7] "Nm" Vector__XXX
- SG_ SOLVER_rearRight_Nm : 48|16@1- (0.1,0) [-3276.8|3276.7] "Nm" Vector__XXX
-
-BO_ 2030 CONTROLS_SOLVER_SETTINGS: 6 Vector__XXX
- SG_ SOLVER_k_lin : 0|16@1+ (1,0) [0|65535] "" Vector__XXX
- SG_ SOLVER_k_yaw : 16|16@1+ (1,0) [0|65535] "" Vector__XXX
- SG_ SOLVER_k_tie : 32|16@1+ (1,0) [0|65535] "" Vector__XXX
 
 BO_ 1766 CUBEMARS_DATA: 6 Vector__XXX
  SG_ DATA_position_deg : 0|16@1- (1,0) [-32768|32767] "" Vector__XXX
@@ -321,6 +219,12 @@ BO_ 1324 DRS_STATE: 4 Vector__XXX
  SG_ STATE_pwm_left : 16|8@1+ (1,0) [0|255] "" Vector__XXX
  SG_ STATE_pwm_right : 24|8@1+ (1,0) [0|255] "" Vector__XXX
 
+BO_ 773 DTI_ERROR_MESSAGES: 4 Vector__XXX
+ SG_ ERROR_fr_fault_code : 0|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ ERROR_fl_fault_code : 8|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ ERROR_rr_fault_code : 16|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ ERROR_rl_fault_code : 24|8@1+ (1,0) [0|255] "" Vector__XXX
+
 BO_ 1089 DTI_FL_TEMPFAULT: 5 Vector__XXX
  SG_ FL_ctlr_temp : 0|16@1- (1,0) [-32768|32767] "" Vector__XXX
  SG_ FL_motor_temp : 16|16@1- (1,0) [-32768|32767] "" Vector__XXX
@@ -365,18 +269,6 @@ BO_ 256 EXTENDED_CUBEMARS_DATA: 6 Vector__XXX
  SG_ CUBEMARS_speed_erpm : 16|16@1- (1,0) [-32768|32767] "" Vector__XXX
  SG_ CUBEMARS_motorTemp_C : 32|8@1- (1,0) [-128|127] "" Vector__XXX
  SG_ CUBEMARS_errorCode : 40|8@1+ (1,0) [0|255] "" Vector__XXX
-
-BO_ 2024 FRONT_SLIP_RATIOS: 8 Vector__XXX
- SG_ SLIP_slipRatio_FL : 0|32@1+ (1,0) [0|4294967295] "" Vector__XXX
- SG_ SLIP_slipRatio_FR : 32|32@1+ (1,0) [0|4294967295] "" Vector__XXX
-
-BO_ 2026 FRONT_WHL_SETPOINTS: 8 Vector__XXX
- SG_ WHL_slipRatio_FL : 0|32@1+ (1,0) [0|4294967295] "" Vector__XXX
- SG_ WHL_slipRatio_FR : 32|32@1+ (1,0) [0|4294967295] "" Vector__XXX
-
-BO_ 2028 FRONT_WHL_VELS: 8 Vector__XXX
- SG_ WHL_v_whl_fl : 0|32@1+ (1,0) [0|4294967295] "" Vector__XXX
- SG_ WHL_v_whl_fr : 32|32@1+ (1,0) [0|4294967295] "" Vector__XXX
 
 BO_ 307 FSM_DATA: 7 Vector__XXX
  SG_ DATA_torqueRequested : 0|8@1+ (1,0) [0|255] "" Vector__XXX
@@ -564,76 +456,6 @@ BO_ 310 LV_CELL_BALANCE_ENABLE: 3 Vector__XXX
 BO_ 1312 MEMORATOR_WARNINGS: 1 Vector__XXX
  SG_ WARNINGS_warnings : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 
-BO_ 1326 MOTORPOWER_STATE: 8 Vector__XXX
- SG_ STATE_motor_power_FL : 0|16@1+ (1,0) [0|65535] "" Vector__XXX
- SG_ STATE_motor_power_FR : 16|16@1+ (1,0) [0|65535] "" Vector__XXX
- SG_ STATE_motor_power_RL : 32|16@1+ (1,0) [0|65535] "" Vector__XXX
- SG_ STATE_motor_power_RR : 48|16@1+ (1,0) [0|65535] "" Vector__XXX
-
-BO_ 1906 MOVELLA_STATUS: 4 Vector__XXX
- SG_ STATUS_filter_mode_1 : 0|2@1+ (1,0) [0|3] "" Vector__XXX
- SG_ STATUS_have_gnss_time_pulse : 2|1@1+ (1,0) [0|1] "" Vector__XXX
- SG_ STATUS_rtk_status : 3|2@1+ (1,0) [0|3] "" Vector__XXX
- SG_ STATUS_reserved_4 : 5|3@1+ (1,0) [0|7] "" Vector__XXX
- SG_ STATUS_clipflag_mag_z : 8|1@1+ (1,0) [0|1] "" Vector__XXX
- SG_ STATUS_reserved_2 : 9|2@1+ (1,0) [0|3] "" Vector__XXX
- SG_ STATUS_clipping_indication : 11|1@1+ (1,0) [0|1] "" Vector__XXX
- SG_ STATUS_reserved_3 : 12|1@1+ (1,0) [0|1] "" Vector__XXX
- SG_ STATUS_sync_in_marker : 13|1@1+ (1,0) [0|1] "" Vector__XXX
- SG_ STATUS_sync_out_marker : 14|1@1+ (1,0) [0|1] "" Vector__XXX
- SG_ STATUS_filter_mode_2 : 15|1@1+ (1,0) [0|1] "" Vector__XXX
- SG_ STATUS_clipflag_acc_x : 16|1@1+ (1,0) [0|1] "" Vector__XXX
- SG_ STATUS_clipflag_acc_y : 17|1@1+ (1,0) [0|1] "" Vector__XXX
- SG_ STATUS_clipflag_acc_z : 18|1@1+ (1,0) [0|1] "" Vector__XXX
- SG_ STATUS_clipflag_gyr_x : 19|1@1+ (1,0) [0|1] "" Vector__XXX
- SG_ STATUS_clipflag_gyr_y : 20|1@1+ (1,0) [0|1] "" Vector__XXX
- SG_ STATUS_clipflag_gyr_z : 21|1@1+ (1,0) [0|1] "" Vector__XXX
- SG_ STATUS_clipflag_mag_x : 22|1@1+ (1,0) [0|1] "" Vector__XXX
- SG_ STATUS_clipflag_mag_y : 23|1@1+ (1,0) [0|1] "" Vector__XXX
- SG_ STATUS_self_test : 24|1@1+ (1,0) [0|1] "" Vector__XXX
- SG_ STATUS_filter_valid : 25|1@1+ (1,0) [0|1] "" Vector__XXX
- SG_ STATUS_gnss_fix : 26|1@1+ (1,0) [0|1] "" Vector__XXX
- SG_ STATUS_no_rotation_update : 27|2@1+ (1,0) [0|3] "" Vector__XXX
- SG_ STATUS_representative_motion : 29|1@1+ (1,0) [0|1] "" Vector__XXX
- SG_ STATUS_clock_bias_estimation : 30|1@1+ (1,0) [0|1] "" Vector__XXX
- SG_ STATUS_reserved_1 : 31|1@1+ (1,0) [0|1] "" Vector__XXX
-
-BO_ 2025 REAR_SLIP_RATIOS: 8 Vector__XXX
- SG_ SLIP_slipRatio_RL : 0|32@1+ (1,0) [0|4294967295] "" Vector__XXX
- SG_ SLIP_slipRatio_RR : 32|32@1+ (1,0) [0|4294967295] "" Vector__XXX
-
-BO_ 2027 REAR_WHL_SETPOINTS: 8 Vector__XXX
- SG_ WHL_omega_RL : 0|32@1+ (1,0) [0|4294967295] "" Vector__XXX
- SG_ WHL_omega_RR : 32|32@1+ (1,0) [0|4294967295] "" Vector__XXX
-
-BO_ 2029 REAR_WHL_VELS: 8 Vector__XXX
- SG_ WHL_v_whl_rl : 0|32@1+ (1,0) [0|4294967295] "" Vector__XXX
- SG_ WHL_v_whl_rr : 32|32@1+ (1,0) [0|4294967295] "" Vector__XXX
-
-BO_ 1833 SBG_BODY_VEL: 6 Vector__XXX
- SG_ BODY_velocity_forward : 0|16@1- (1,0) [-32768|32767] "" Vector__XXX
- SG_ BODY_velocity_right : 16|16@1- (1,0) [-32768|32767] "" Vector__XXX
- SG_ BODY_velocity_down : 32|16@1- (1,0) [-32768|32767] "" Vector__XXX
-
-BO_ 1826 SBG_EKF_ORIENT: 6 Vector__XXX
- SG_ EKF_roll : 0|16@1- (1,0) [-32768|32767] "" Vector__XXX
- SG_ EKF_pitch : 16|16@1- (1,0) [-32768|32767] "" Vector__XXX
- SG_ EKF_yaw : 32|16@1- (1,0) [-32768|32767] "" Vector__XXX
-
-BO_ 1828 SBG_EKF_POS: 8 Vector__XXX
- SG_ EKF_latitude : 0|32@1- (1,0) [-2147483648|2147483647] "" Vector__XXX
- SG_ EKF_longitude : 32|32@1- (1,0) [-2147483648|2147483647] "" Vector__XXX
-
-BO_ 1831 SBG_EKF_VEL: 6 Vector__XXX
- SG_ EKF_velocity_n : 0|16@1- (1,0) [-32768|32767] "" Vector__XXX
- SG_ EKF_velocity_e : 16|16@1- (1,0) [-32768|32767] "" Vector__XXX
- SG_ EKF_velocity_d : 32|16@1- (1,0) [-32768|32767] "" Vector__XXX
-
-BO_ 1810 SBG_IMU_GYRO: 6 Vector__XXX
- SG_ IMU_gyro_x_rads : 0|16@1- (1,0) [-32768|32767] "rad" Vector__XXX
- SG_ IMU_gyro_y_rads : 16|16@1- (1,0) [-32768|32767] "rad" Vector__XXX
- SG_ IMU_gyro_z_rads : 32|16@1- (1,0) [-32768|32767] "rad" Vector__XXX
-
 BO_ 1537 SENSORIC_DIST: 8 Vector__XXX
  SG_ DIST_dist_A : 0|32@1- (1,0) [-2147483648|2147483647] "" Vector__XXX
  SG_ DIST_radius : 32|16@1- (1,0) [-32768|32767] "" Vector__XXX
@@ -644,13 +466,6 @@ BO_ 1536 SENSORIC_VEL_ANG: 8 Vector__XXX
  SG_ VEL_vel_Y : 16|16@1- (1,0) [-32768|32767] "" Vector__XXX
  SG_ VEL_vel_A : 32|16@1- (1,0) [-32768|32767] "" Vector__XXX
  SG_ VEL_ang_S : 48|16@1- (1,0) [-32768|32767] "" Vector__XXX
-
-BO_ 1325 SF_STATE: 8 Vector__XXX
- SG_ power_limit_max_violation_W : 0|32@1+ (1,0) [0|4294967295] "W" Vector__XXX
- SG_ longest_power_violation_ms : 32|8@1+ (1,0) [0|255] "ms" Vector__XXX
- SG_ STATE_over_voltage_count : 40|8@1+ (1,0) [0|255] "" Vector__XXX
- SG_ STATE_under_voltage_count : 48|8@1+ (1,0) [0|255] "" Vector__XXX
- SG_ STATE_over_temp_count : 56|8@1+ (1,0) [0|255] "" Vector__XXX
 
 BO_ 1296 VSM_LATCHED_STATUS: 3 Vector__XXX
  SG_ VSM_TIMEOUT_SOURCE_CUBEMARS : 7|1@1+ (1,0) [0|1] "" Vector__XXX
@@ -760,6 +575,45 @@ BO_ 1282 CDC_MCFaults: 8 Vector__XXX
  SG_ RUN_ERROR_CurrSensFault : 57|1@1+ (1,0) [0|1] "" Vector__XXX
  SG_ RUN_ERROR_ResolverDisconnected : 62|1@1+ (1,0) [0|1] "" Vector__XXX
  SG_ RUN_ERROR_InvtrDischargeActive : 63|1@1+ (1,0) [0|1] "" Vector__XXX
+
+BO_ 562 CDC_WheelVelocityFeedback: 8 Vector__XXX
+ SG_ CDC_FLWheel_Vel_Feedback : 0|16@1- (0.1,0) [-3276.8|3276.7] "rpm" Vector__XXX
+ SG_ CDC_FRWheel_Vel_Feedback : 16|16@1- (0.1,0) [-3276.8|3276.7] "rpm" Vector__XXX
+ SG_ CDC_RLWheel_Vel_Feedback : 32|16@1- (0.1,0) [-3276.8|3276.7] "rpm" Vector__XXX
+ SG_ CDC_RRWheel_Vel_Feedback : 48|16@1- (0.1,0) [-3276.8|3276.7] "rpm" Vector__XXX
+
+BO_ 594 CDC_WheelVelocitySetpoint: 8 Vector__XXX
+ SG_ CDC_FLWheel_Vel_Setpoint : 0|16@1- (0.1,0) [-3276.8|3276.7] "rpm" Vector__XXX
+ SG_ CDC_FRWheel_Vel_Setpoint : 16|16@1- (0.1,0) [-3276.8|3276.7] "rpm" Vector__XXX
+ SG_ CDC_RLWheel_Vel_Setpoint : 32|16@1- (0.1,0) [-3276.8|3276.7] "rpm" Vector__XXX
+ SG_ CDC_RRWheel_Vel_Setpoint : 48|16@1- (0.1,0) [-3276.8|3276.7] "rpm" Vector__XXX
+
+BO_ 610 CDC_WheelTorqueFeedback: 8 Vector__XXX
+ SG_ CDC_FLWheel_Torque_Feedback : 0|16@1- (0.1,0) [-3276.8|3276.7] "Nm" Vector__XXX
+ SG_ CDC_FRWheel_Torque_Feedback : 16|16@1- (0.1,0) [-3276.8|3276.7] "Nm" Vector__XXX
+ SG_ CDC_RLWheel_Torque_Feedback : 32|16@1- (0.1,0) [-3276.8|3276.7] "Nm" Vector__XXX
+ SG_ CDC_RRWheel_Torque_Feedback : 48|16@1- (0.1,0) [-3276.8|3276.7] "Nm" Vector__XXX
+
+BO_ 626 CDC_WheelTorqueSetpoint: 8 Vector__XXX
+ SG_ CDC_FLWheel_Torque_Setpoint : 0|16@1- (0.1,0) [-3276.8|3276.7] "Nm" Vector__XXX
+ SG_ CDC_FRWheel_Torque_Setpoint : 16|16@1- (0.1,0) [-3276.8|3276.7] "Nm" Vector__XXX
+ SG_ CDC_RLWheel_Torque_Setpoint : 32|16@1- (0.1,0) [-3276.8|3276.7] "Nm" Vector__XXX
+ SG_ CDC_RRWheel_Torque_Setpoint : 48|16@1- (0.1,0) [-3276.8|3276.7] "Nm" Vector__XXX
+
+BO_ 642 CDC_PosePosition: 8 Vector__XXX
+ SG_ CDC_Latitude : 0|32@1+ (1,0) [0|4294967295] "deg" Vector__XXX
+ SG_ CDC_Longitude : 32|32@1+ (1,0) [0|4294967295] "deg" Vector__XXX
+
+BO_ 658 CDC_PoseOrientation: 8 Vector__XXX
+ SG_ CDC_Roll : 0|16@1- (0.1,0) [-3276.8|3276.7] "deg" Vector__XXX
+ SG_ CDC_Pitch : 16|16@1- (0.1,0) [-3276.8|3276.7] "deg" Vector__XXX
+ SG_ CDC_Yaw : 32|16@1- (0.1,0) [-3276.8|3276.7] "deg" Vector__XXX
+ SG_ CDC_Velocity_Angle : 48|16@1- (0.1,0) [-3276.8|3276.7] "deg" Vector__XXX
+
+BO_ 674 CDC_PoseVelocity: 6 Vector__XXX
+ SG_ CDC_LongitudinalVelocity : 0|16@1- (0.01,0) [-327.68|327.67] "mps" Vector__XXX
+ SG_ CDC_LateralVelocity : 16|16@1- (0.01,0) [-327.68|327.67] "mps" Vector__XXX
+ SG_ CDC_VerticalVelocity : 32|16@1- (0.01,0) [-327.68|327.67] "mps" Vector__XXX
 
 BO_ 690 CDC_PoseAcceleration: 6 Vector__XXX
  SG_ CDC_LongitudinalAcceleration : 0|16@1- (0.01,0) [-327.68|327.67] "mps2" Vector__XXX
@@ -1078,6 +932,11 @@ BO_ 1809 ELLIPSE_IMU_ACCEL: 6 Vector__XXX
  SG_ SBG_Accel_Y : 16|16@1- (0.01,0) [-327.68|327.67] "m.s-2" Vector__XXX
  SG_ SBG_Accel_Z : 32|16@1- (0.01,0) [-327.68|327.67] "m.s-2" Vector__XXX
 
+BO_ 1810 ELLIPSE_IMU_GYRO: 6 Vector__XXX
+ SG_ SBG_Gyro_X : 0|16@1- (0.001,0) [-32.768|32.767] "rad.s-1" Vector__XXX
+ SG_ SBG_Gyro_Y : 16|16@1- (0.001,0) [-32.768|32.767] "rad.s-1" Vector__XXX
+ SG_ SBG_Gyro_Z : 32|16@1- (0.001,0) [-32.768|32.767] "rad.s-1" Vector__XXX
+
 BO_ 1811 ELLIPSE_IMU_DELTA_VEL: 6 Vector__XXX
  SG_ SBG_Delta_Vel_X : 0|16@1- (0.01,0) [-327.68|327.67] "m.s-2" Vector__XXX
  SG_ SBG_Delta_Vel_Y : 16|16@1- (0.01,0) [-327.68|327.67] "m.s-2" Vector__XXX
@@ -1097,7 +956,11 @@ BO_ 1825 ELLIPSE_IMU_EKF_QUAT: 8 Vector__XXX
  SG_ SBG_Q2 : 32|16@1- (1,0) [-32768|32767] "" Vector__XXX
  SG_ SBG_Q3 : 48|16@1- (1,0) [-32768|32767] "" Vector__XXX
 
+BO_ 1826 ELLIPSE_IMU_EKF_EULER: 6 Vector__XXX
+
 BO_ 1827 ELLIPSE_IMU_EKF_ORIENT_ACC: 6 Vector__XXX
+
+BO_ 1828 ELLIPSE_IMU_EKF_POS: 8 Vector__XXX
 
 BO_ 1829 ELLIPSE_IMU_EKF_ALTITUDE: 6 Vector__XXX
  SG_ SBG_Altitude : 0|32@1- (0.001,0) [-2147483.648|2147483.647] "m" Vector__XXX
@@ -1107,6 +970,16 @@ BO_ 1830 ELLIPSE_IMU_EKF_POS_ACC: 6 Vector__XXX
  SG_ SBG_Latitude_Acc : 0|16@1+ (0.01,0) [0.00|655.35] "m" Vector__XXX
  SG_ SBG_Longitude_Acc : 16|16@1+ (0.01,0) [0.00|655.35] "m" Vector__XXX
  SG_ SBG_Altitude_Acc : 32|16@1+ (0.01,0) [0.00|655.35] "m" Vector__XXX
+
+BO_ 1831 ELLIPSE_IMU_EKF_VEL: 6 Vector__XXX
+ SG_ SBG_Velocity_N : 0|16@1- (0.01,0) [-327.68|327.67] "m.s-1" Vector__XXX
+ SG_ SBG_Velocity_E : 16|16@1- (0.01,0) [-327.68|327.67] "m.s-1" Vector__XXX
+ SG_ SBG_Velocity_D : 32|16@1- (0.01,0) [-327.68|327.67] "m.s-1" Vector__XXX
+
+BO_ 1833 ELLIPSE_IMU_BODY_VEL: 6 Vector__XXX
+ SG_ SBG_Velocity_Forward : 0|16@1- (0.01,0) [-327.68|327.67] "m.s-1" Vector__XXX
+ SG_ SBG_Velocity_Right : 16|16@1- (0.01,0) [-327.68|327.67] "m.s-1" Vector__XXX
+ SG_ SBG_Velocity_Down : 32|16@1- (0.01,0) [-327.68|327.67] "m.s-1" Vector__XXX
 
 BO_ 1832 ELLIPSE_IMU_EKF_VEL_ACC: 6 Vector__XXX
  SG_ SBG_Velocity_Acc_N : 0|16@1+ (0.01,0) [0.00|655.35] "m.s-1" Vector__XXX
@@ -1226,6 +1099,11 @@ BO_ 1320 BRUSA_Charger_Control: 7 Vector__XXX
  SG_ Requested_Voltage : 31|16@0+ (0.1,0) [0|6553.5] "V" Vector__XXX
  SG_ Requested_Current : 47|16@0+ (0.1,0) [0|6553.5] "A" Vector__XXX
 
+BO_ 2021 CDC_CONTROLS_PID: 8 Vector__XXX
+ SG_ controls_current_yaw_rate : 0|16@1- (0.01,0) [-327.68|327.67] "rad.s-1" Vector__XXX
+ SG_ controls_target_yaw_rate : 16|16@1- (0.01,0) [-327.68|327.67] "rad.s-1" Vector__XXX
+ SG_ controls_pid : 32|32@1+ (0.01,0) [0.00|42949672.95] "" Vector__XXX
+
 BO_ 1024 EMD_Status: 4 Vector__XXX
  SG_ EMD_CurrentGain : 7|4@0+ (1,0) [0|15] "" Vector__XXX
  SG_ EMD_VoltageGain : 3|4@0+ (1,0) [0|15] "" Vector__XXX
@@ -1243,6 +1121,15 @@ BO_ 1952 DCM_Configure: 8 Vector__XXX
  SG_ volume : 48|8@1+ (1,0) [0|7] "" Vector__XXX
  SG_ squelch : 56|8@1+ (1,0) [0|8] "" Vector__XXX
 
+BO_ 1698 CDC_RTC_DATA_OUT: 7 Vector__XXX
+ SG_ RTC_Seconds : 0|8@1+ (1,0) [0|255] "seconds" Vector__XXX
+ SG_ RTC_Minutes : 8|8@1+ (1,0) [0|255] "minutes" Vector__XXX
+ SG_ RTC_Hours : 16|8@1+ (1,0) [0|255] "hours" Vector__XXX
+ SG_ RTC_Date : 24|8@1+ (1,0) [0|255] "day" Vector__XXX
+ SG_ RTC_Month : 32|8@1+ (1,0) [0|255] "month" Vector__XXX
+ SG_ RTC_Year : 40|8@1+ (1,0) [0|255] "year" Vector__XXX
+ SG_ RTC_Error : 48|8@1+ (1,0) [0|255] "" Vector__XXX
+
 BO_ 1714 CDC_RTC_DATA_IN: 7 Vector__XXX
  SG_ RTC_Seconds_In : 0|8@1+ (1,0) [0|255] "seconds" Vector__XXX
  SG_ RTC_Minutes_In : 8|8@1+ (1,0) [0|255] "minutes" Vector__XXX
@@ -1251,6 +1138,46 @@ BO_ 1714 CDC_RTC_DATA_IN: 7 Vector__XXX
  SG_ RTC_Month_In : 32|8@1+ (1,0) [0|255] "month" Vector__XXX
  SG_ RTC_Year_In : 40|8@1+ (1,0) [0|255] "year" Vector__XXX
  SG_ RTC_Error_In : 48|8@1+ (1,0) [0|255] "" Vector__XXX
+
+BO_ 1730 CDC_ODOMETER: 4 Vector__XXX
+ SG_ CDC_Odometer : 0|32@1+ (1,0) [0|4294967295] "km" Vector__XXX
+
+BO_ 1325 SF_State: 8 Vector__XXX
+ SG_ Power_Limit_Max_Violation_W : 0|32@1+ (1,0) [0|4294967295] "W" Vector__XXX
+ SG_ Longest_Power_Violation : 32|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ Over_Voltage_Count : 40|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ Under_Voltage_Count : 48|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ Over_Temp_Count : 56|8@1+ (1,0) [0|255] "" Vector__XXX
+
+BO_ 1326 CDC_Motor_Power: 8 Vector__XXX
+ SG_ motor_power_FL : 0|16@1+ (1,0) [0|65535] "" Vector__XXX
+ SG_ motor_power_FR : 16|16@1+ (1,0) [0|65535] "" Vector__XXX
+ SG_ motor_power_RL : 32|16@1+ (1,0) [0|65535] "" Vector__XXX
+ SG_ motor_power_RR : 48|16@1+ (1,0) [0|65535] "" Vector__XXX
+
+BO_ 2024 CDC_Front_Slip_Ratios: 8 Vector__XXX
+ SG_ slipRatio_FL : 0|32@1+ (1,0) [0|4294967295] "" Vector__XXX
+ SG_ slipRatio_FR : 32|32@1+ (1,0) [0|4294967295] "" Vector__XXX
+
+BO_ 2025 CDC_Rear_Slip_Ratios: 8 Vector__XXX
+ SG_ slipRatio_RL : 0|32@1+ (1,0) [0|4294967295] "" Vector__XXX
+ SG_ slipRatio_RR : 32|32@1+ (1,0) [0|4294967295] "" Vector__XXX
+
+BO_ 2026 CDC_Front_Velocity_Setpoints: 8 Vector__XXX
+ SG_ setPoint_FL : 0|32@1+ (1,0) [0|4294967295] "" Vector__XXX
+ SG_ setPoint_FR : 32|32@1+ (1,0) [0|4294967295] "" Vector__XXX
+
+BO_ 2027 CDC_Rear_Velocity_Setpoints: 8 Vector__XXX
+ SG_ setPoint_RL : 0|32@1+ (1,0) [0|4294967295] "" Vector__XXX
+ SG_ setPoint_RR : 32|32@1+ (1,0) [0|4294967295] "" Vector__XXX
+
+BO_ 2028 CDC_Front_Whl_Velocity_Calc: 8 Vector__XXX
+ SG_ vel_calc_FL : 0|32@1+ (1,0) [0|4294967295] "" Vector__XXX
+ SG_ vel_calc_FR : 32|32@1+ (1,0) [0|4294967295] "" Vector__XXX
+
+BO_ 2029 CDC_Rear_Whl_Velocity_Calc: 8 Vector__XXX
+ SG_ vel_calc_RL : 0|32@1+ (1,0) [0|4294967295] "" Vector__XXX
+ SG_ vel_calc_RR : 32|32@1+ (1,0) [0|4294967295] "" Vector__XXX
 
 BO_ 1317 DIM_DAQ_TEXT: 5 Vector__XXX
  SG_ Address : 0|8@1+ (1,0) [0|255] "" Vector__XXX
@@ -1266,6 +1193,21 @@ BO_ 262 HVI_Heartbeat: 8 Vector__XXX
  SG_ HVI_Current : 0|16@1- (0.1,0) [-3276.8|3276.7] "A" Vector__XXX
  SG_ HVI_Voltage : 16|16@1+ (0.01,0) [0.00|655.35] "V" Vector__XXX
  SG_ HVI_Power : 32|32@1- (0.001,0) [-2147483.648|2147483.647] "kW" Vector__XXX
+
+BO_ 2022 CDC_Solver_Inputs: 8 Vector__XXX
+ SG_ Moment_REQ : 0|32@1+ (1,0) [0|4294967295] "" Vector__XXX
+ SG_ Lin_Accel_REQ : 32|32@1+ (1,0) [0|4294967295] "" Vector__XXX
+
+BO_ 2032 CDC_Solver_Outputs: 8 Vector__XXX
+ SG_ Torque_FL : 0|16@1- (1,0) [-32768|32767] "" Vector__XXX
+ SG_ Torque_FR : 16|16@1- (1,0) [-32768|32767] "" Vector__XXX
+ SG_ Torque_RL : 32|16@1- (1,0) [-32768|32767] "" Vector__XXX
+ SG_ Torque_RR : 48|16@1- (1,0) [-32768|32767] "" Vector__XXX
+
+BO_ 2030 CDC_Solver_Settings: 6 Vector__XXX
+ SG_ k_lin : 0|16@1+ (1,0) [0|65535] "Unit" Vector__XXX
+ SG_ k_yaw : 16|16@1+ (1,0) [0|65535] "Unit" Vector__XXX
+ SG_ k_tie : 32|16@1+ (1,0) [0|65535] "Unit" Vector__XXX
 
 BO_ 2033 VSM_Git: 8 Vector__XXX
  SG_ Commit_Hash_VSM : 0|32@1+ (1,0) [0|4294967295] "" Vector__XXX
@@ -1339,6 +1281,50 @@ BO_ 121 Movella_MTi680G_GnssStatus: 5 Vector__XXX
 BO_ 1915 Movella_MTi680G_Coordinates: 8 Vector__XXX
  SG_ Movella_Latitude : 7|32@0- (5.96046447753906E-008,0) [-127.9999999999999463129088|127.999999940395] "deg" Vector__XXX
  SG_ Movella_Longitude : 39|32@0- (1.19209289550781E-007,0) [-255.999999999999|255.99999988079] "deg" Vector__XXX
+
+BO_ 706 DCM_COG_Velocity: 8 Vector__XXX
+ SG_ cog_x : 0|16@1- (0.01,0) [-327.68|327.67] "m/s" Vector__XXX
+ SG_ cog_y : 16|16@1- (0.01,0) [-327.68|327.67] "m/s" Vector__XXX
+ SG_ slip_angle : 32|32@1+ (1,0) [0|4294967295] "rad" Vector__XXX
+
+BO_ 722 DCM_Front_Velocity: 8 Vector__XXX
+ SG_ fl_x : 0|16@1- (0.01,0) [-327.68|327.67] "m/s" Vector__XXX
+ SG_ fl_y : 16|16@1- (0.01,0) [-327.68|327.67] "m/s" Vector__XXX
+ SG_ fr_x : 32|16@1- (0.01,0) [-327.68|327.67] "m/s" Vector__XXX
+ SG_ fr_y : 48|16@1- (0.01,0) [-327.68|327.67] "m/s" Vector__XXX
+
+BO_ 738 DCM_Rear_Velocity: 8 Vector__XXX
+ SG_ rl_x : 0|16@1- (0.01,0) [-327.68|327.67] "m/s" Vector__XXX
+ SG_ rl_y : 16|16@1- (0.01,0) [-327.68|327.67] "m/s" Vector__XXX
+ SG_ rr_x : 32|16@1- (0.01,0) [-327.68|327.67] "m/s" Vector__XXX
+ SG_ rr_y : 48|16@1- (0.01,0) [-327.68|327.67] "m/s" Vector__XXX
+
+BO_ 1906 Movella_MTi860G_Status: 4 Vector__XXX
+ SG_ Movella_fitler_mode : 0|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ Movella_have_gnss_time_pulse : 2|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ Movella_rtk_status : 3|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ Movella_clipflag_mag_z : 8|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ Movella_clipping_indication : 11|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ Movella_sync_in_marker : 13|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ Movella_sync_out_marker : 14|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ Movella_filter_mode_2 : 15|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ Movella_clipflag_acc_x : 16|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ Movella_clipflag_acc_y : 17|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ Movella_clipflag_acc_z : 18|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ Movella_clipflag_gyr_x : 19|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ Movella_clipflag_gyr_y : 20|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ Movella_clipflag_gyr_z : 21|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ Movella_clipflag_mag_x : 22|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ Movella_clipflag_mag_y : 23|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ Movella_self_test : 24|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ Movella_filter_valid : 25|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ Movella_gnss_fix : 26|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ Movella_no_rotation_update : 27|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ Movella_representative_motion : 29|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ Movella_clock_bias_estimation : 30|1@1+ (1,0) [0|1] "" Vector__XXX
+
+BO_ 1764 DCM_PowerLimit: 4 Vector__XXX
+ SG_ PowerLimit : 0|32@1+ (0.001,0) [0.000|4294967.295] "kW" Vector__XXX
 
 BO_ 2039 LV_BMS_Voltages1: 6 Vector__XXX
  SG_ Cell1 : 0|16@1- (1,0) [-32768|32767] "cV" Vector__XXX
@@ -1968,6 +1954,7 @@ CM_ BO_ 1219  "Node ID: 3";
 CM_ BO_ 1220  "Node ID: 4";
 
 CM_ SG_ 1952 squelch "0 for listen, 1 - 8 for transmit";
+CM_ SG_ 1698 RTC_Error "For interpreting this, see comments in code.";
 CM_ SG_ 1714 RTC_Error_In "For interpreting this, see comments in code.";
 CM_ SG_ 1904 Movella_SampleTime "10kHz ticks";
 
@@ -1990,72 +1977,15 @@ BA_ "Sendable" BO_ 401 "True";
 BA_ "GenMsgCycleTime" BO_ 400 400;
 BA_ "Receivable" BO_ 400 "True";
 BA_ "Sendable" BO_ 400 "True";
-BA_ "GenMsgCycleTime" BO_ 706 5;
-BA_ "Receivable" BO_ 706 "True";
-BA_ "Sendable" BO_ 706 "True";
-BA_ "GenMsgCycleTime" BO_ 1746 1000;
+BA_ "GenMsgCycleTime" BO_ 1746 800;
 BA_ "Receivable" BO_ 1746 "True";
 BA_ "Sendable" BO_ 1746 "True";
 BA_ "GenMsgCycleTime" BO_ 1763 100;
 BA_ "Receivable" BO_ 1763 "True";
 BA_ "Sendable" BO_ 1763 "True";
-BA_ "GenMsgCycleTime" BO_ 722 5;
-BA_ "Receivable" BO_ 722 "True";
-BA_ "Sendable" BO_ 722 "True";
-BA_ "GenMsgCycleTime" BO_ 1730 1000;
-BA_ "Receivable" BO_ 1730 "True";
-BA_ "Sendable" BO_ 1730 "True";
-BA_ "GenMsgCycleTime" BO_ 658 100;
-BA_ "Receivable" BO_ 658 "True";
-BA_ "Sendable" BO_ 658 "True";
-BA_ "GenMsgCycleTime" BO_ 642 100;
-BA_ "Receivable" BO_ 642 "True";
-BA_ "Sendable" BO_ 642 "True";
-BA_ "GenMsgCycleTime" BO_ 674 100;
-BA_ "Receivable" BO_ 674 "True";
-BA_ "Sendable" BO_ 674 "True";
-BA_ "GenMsgCycleTime" BO_ 1764 1000;
-BA_ "Receivable" BO_ 1764 "True";
-BA_ "Sendable" BO_ 1764 "True";
-BA_ "GenMsgCycleTime" BO_ 773 100;
-BA_ "Receivable" BO_ 773 "True";
-BA_ "Sendable" BO_ 773 "True";
-BA_ "GenMsgCycleTime" BO_ 738 5;
-BA_ "Receivable" BO_ 738 "True";
-BA_ "Sendable" BO_ 738 "True";
-BA_ "GenMsgCycleTime" BO_ 1698 1000;
-BA_ "Receivable" BO_ 1698 "True";
-BA_ "Sendable" BO_ 1698 "True";
-BA_ "GenMsgCycleTime" BO_ 562 5;
-BA_ "Receivable" BO_ 562 "True";
-BA_ "Sendable" BO_ 562 "True";
-BA_ "GenMsgCycleTime" BO_ 594 5;
-BA_ "Receivable" BO_ 594 "True";
-BA_ "Sendable" BO_ 594 "True";
-BA_ "GenMsgCycleTime" BO_ 610 5;
-BA_ "Receivable" BO_ 610 "True";
-BA_ "Sendable" BO_ 610 "True";
-BA_ "GenMsgCycleTime" BO_ 626 5;
-BA_ "Receivable" BO_ 626 "True";
-BA_ "Sendable" BO_ 626 "True";
 BA_ "GenMsgCycleTime" BO_ 308 10;
 BA_ "Receivable" BO_ 308 "True";
 BA_ "Sendable" BO_ 308 "True";
-BA_ "GenMsgCycleTime" BO_ 2021 5;
-BA_ "Receivable" BO_ 2021 "True";
-BA_ "Sendable" BO_ 2021 "True";
-BA_ "GenMsgCycleTime" BO_ 2047 10;
-BA_ "Receivable" BO_ 2047 "True";
-BA_ "Sendable" BO_ 2047 "True";
-BA_ "GenMsgCycleTime" BO_ 2022 10;
-BA_ "Receivable" BO_ 2022 "True";
-BA_ "Sendable" BO_ 2022 "True";
-BA_ "GenMsgCycleTime" BO_ 2032 10;
-BA_ "Receivable" BO_ 2032 "True";
-BA_ "Sendable" BO_ 2032 "True";
-BA_ "GenMsgCycleTime" BO_ 2030 10;
-BA_ "Receivable" BO_ 2030 "True";
-BA_ "Sendable" BO_ 2030 "True";
 BA_ "GenMsgCycleTime" BO_ 1766 5;
 BA_ "Receivable" BO_ 1766 "True";
 BA_ "Sendable" BO_ 1766 "True";
@@ -2110,9 +2040,12 @@ BA_ "Sendable" BO_ 1301 "True";
 BA_ "GenMsgCycleTime" BO_ 565 5;
 BA_ "Receivable" BO_ 565 "True";
 BA_ "Sendable" BO_ 565 "True";
-BA_ "GenMsgCycleTime" BO_ 1324 100;
+BA_ "GenMsgCycleTime" BO_ 1324 800;
 BA_ "Receivable" BO_ 1324 "True";
 BA_ "Sendable" BO_ 1324 "True";
+BA_ "GenMsgCycleTime" BO_ 773 100;
+BA_ "Receivable" BO_ 773 "True";
+BA_ "Sendable" BO_ 773 "True";
 BA_ "GenMsgCycleTime" BO_ 1089 20;
 BA_ "Receivable" BO_ 1089 "True";
 BA_ "Sendable" BO_ 1089 "True";
@@ -2137,15 +2070,6 @@ BA_ "Sendable" BO_ 1549 "True";
 BA_ "GenMsgCycleTime" BO_ 256 200;
 BA_ "Receivable" BO_ 256 "True";
 BA_ "Sendable" BO_ 256 "True";
-BA_ "GenMsgCycleTime" BO_ 2024 100;
-BA_ "Receivable" BO_ 2024 "True";
-BA_ "Sendable" BO_ 2024 "True";
-BA_ "GenMsgCycleTime" BO_ 2026 100;
-BA_ "Receivable" BO_ 2026 "True";
-BA_ "Sendable" BO_ 2026 "True";
-BA_ "GenMsgCycleTime" BO_ 2028 100;
-BA_ "Receivable" BO_ 2028 "True";
-BA_ "Sendable" BO_ 2028 "True";
 BA_ "GenMsgCycleTime" BO_ 307 10;
 BA_ "Receivable" BO_ 307 "True";
 BA_ "Sendable" BO_ 307 "True";
@@ -2233,45 +2157,12 @@ BA_ "Sendable" BO_ 310 "True";
 BA_ "GenMsgCycleTime" BO_ 1312 800;
 BA_ "Receivable" BO_ 1312 "True";
 BA_ "Sendable" BO_ 1312 "True";
-BA_ "GenMsgCycleTime" BO_ 1326 5;
-BA_ "Receivable" BO_ 1326 "True";
-BA_ "Sendable" BO_ 1326 "True";
-BA_ "GenMsgCycleTime" BO_ 1906 10;
-BA_ "Receivable" BO_ 1906 "True";
-BA_ "Sendable" BO_ 1906 "True";
-BA_ "GenMsgCycleTime" BO_ 2025 100;
-BA_ "Receivable" BO_ 2025 "True";
-BA_ "Sendable" BO_ 2025 "True";
-BA_ "GenMsgCycleTime" BO_ 2027 100;
-BA_ "Receivable" BO_ 2027 "True";
-BA_ "Sendable" BO_ 2027 "True";
-BA_ "GenMsgCycleTime" BO_ 2029 100;
-BA_ "Receivable" BO_ 2029 "True";
-BA_ "Sendable" BO_ 2029 "True";
-BA_ "GenMsgCycleTime" BO_ 1833 400;
-BA_ "Receivable" BO_ 1833 "True";
-BA_ "Sendable" BO_ 1833 "True";
-BA_ "GenMsgCycleTime" BO_ 1826 400;
-BA_ "Receivable" BO_ 1826 "True";
-BA_ "Sendable" BO_ 1826 "True";
-BA_ "GenMsgCycleTime" BO_ 1828 400;
-BA_ "Receivable" BO_ 1828 "True";
-BA_ "Sendable" BO_ 1828 "True";
-BA_ "GenMsgCycleTime" BO_ 1831 400;
-BA_ "Receivable" BO_ 1831 "True";
-BA_ "Sendable" BO_ 1831 "True";
-BA_ "GenMsgCycleTime" BO_ 1810 400;
-BA_ "Receivable" BO_ 1810 "True";
-BA_ "Sendable" BO_ 1810 "True";
 BA_ "GenMsgCycleTime" BO_ 1537 10;
 BA_ "Receivable" BO_ 1537 "True";
 BA_ "Sendable" BO_ 1537 "True";
 BA_ "GenMsgCycleTime" BO_ 1536 5;
 BA_ "Receivable" BO_ 1536 "True";
 BA_ "Sendable" BO_ 1536 "True";
-BA_ "GenMsgCycleTime" BO_ 1325 10;
-BA_ "Receivable" BO_ 1325 "True";
-BA_ "Sendable" BO_ 1325 "True";
 BA_ "GenMsgCycleTime" BO_ 1296 10000;
 BA_ "Receivable" BO_ 1296 "True";
 BA_ "Sendable" BO_ 1296 "True";
@@ -2290,6 +2181,27 @@ BA_ "Sendable" BO_ 1298 "True";
 BA_ "GenMsgCycleTime" BO_ 1282 1000;
 BA_ "Receivable" BO_ 1282 "True";
 BA_ "Sendable" BO_ 1282 "True";
+BA_ "GenMsgCycleTime" BO_ 562 100;
+BA_ "Receivable" BO_ 562 "True";
+BA_ "Sendable" BO_ 562 "True";
+BA_ "GenMsgCycleTime" BO_ 594 100;
+BA_ "Receivable" BO_ 594 "True";
+BA_ "Sendable" BO_ 594 "True";
+BA_ "GenMsgCycleTime" BO_ 610 100;
+BA_ "Receivable" BO_ 610 "True";
+BA_ "Sendable" BO_ 610 "True";
+BA_ "GenMsgCycleTime" BO_ 626 100;
+BA_ "Receivable" BO_ 626 "True";
+BA_ "Sendable" BO_ 626 "True";
+BA_ "GenMsgCycleTime" BO_ 642 100;
+BA_ "Receivable" BO_ 642 "True";
+BA_ "Sendable" BO_ 642 "True";
+BA_ "GenMsgCycleTime" BO_ 658 100;
+BA_ "Receivable" BO_ 658 "True";
+BA_ "Sendable" BO_ 658 "True";
+BA_ "GenMsgCycleTime" BO_ 674 100;
+BA_ "Receivable" BO_ 674 "True";
+BA_ "Sendable" BO_ 674 "True";
 BA_ "GenMsgCycleTime" BO_ 690 100;
 BA_ "Receivable" BO_ 690 "True";
 BA_ "Sendable" BO_ 690 "True";
@@ -2428,6 +2340,8 @@ BA_ "Receivable" BO_ 1808 "True";
 BA_ "Sendable" BO_ 1808 "True";
 BA_ "Receivable" BO_ 1809 "True";
 BA_ "Sendable" BO_ 1809 "True";
+BA_ "Receivable" BO_ 1810 "True";
+BA_ "Sendable" BO_ 1810 "True";
 BA_ "Receivable" BO_ 1811 "True";
 BA_ "Sendable" BO_ 1811 "True";
 BA_ "Receivable" BO_ 1812 "True";
@@ -2436,12 +2350,20 @@ BA_ "Receivable" BO_ 1824 "True";
 BA_ "Sendable" BO_ 1824 "True";
 BA_ "Receivable" BO_ 1825 "True";
 BA_ "Sendable" BO_ 1825 "True";
+BA_ "Receivable" BO_ 1826 "True";
+BA_ "Sendable" BO_ 1826 "True";
 BA_ "Receivable" BO_ 1827 "True";
 BA_ "Sendable" BO_ 1827 "True";
+BA_ "Receivable" BO_ 1828 "True";
+BA_ "Sendable" BO_ 1828 "True";
 BA_ "Receivable" BO_ 1829 "True";
 BA_ "Sendable" BO_ 1829 "True";
 BA_ "Receivable" BO_ 1830 "True";
 BA_ "Sendable" BO_ 1830 "True";
+BA_ "Receivable" BO_ 1831 "True";
+BA_ "Sendable" BO_ 1831 "True";
+BA_ "Receivable" BO_ 1833 "True";
+BA_ "Sendable" BO_ 1833 "True";
 BA_ "Receivable" BO_ 1832 "True";
 BA_ "Sendable" BO_ 1832 "True";
 BA_ "Receivable" BO_ 1840 "True";
@@ -2494,6 +2416,9 @@ BA_ "Receivable" BO_ 1834 "True";
 BA_ "Sendable" BO_ 1834 "True";
 BA_ "Receivable" BO_ 1320 "True";
 BA_ "Sendable" BO_ 1320 "True";
+BA_ "GenMsgCycleTime" BO_ 2021 100;
+BA_ "Receivable" BO_ 2021 "True";
+BA_ "Sendable" BO_ 2021 "True";
 BA_ "Receivable" BO_ 1024 "True";
 BA_ "Sendable" BO_ 1024 "True";
 BA_ "Receivable" BO_ 2023 "True";
@@ -2502,15 +2427,44 @@ BA_ "Receivable" BO_ 2031 "True";
 BA_ "Sendable" BO_ 2031 "True";
 BA_ "Receivable" BO_ 1952 "True";
 BA_ "Sendable" BO_ 1952 "True";
+BA_ "GenMsgCycleTime" BO_ 1698 1000;
+BA_ "Receivable" BO_ 1698 "True";
+BA_ "Sendable" BO_ 1698 "True";
 BA_ "GenMsgCycleTime" BO_ 1714 1000;
 BA_ "Receivable" BO_ 1714 "True";
 BA_ "Sendable" BO_ 1714 "True";
+BA_ "GenMsgCycleTime" BO_ 1730 1000;
+BA_ "Receivable" BO_ 1730 "True";
+BA_ "Sendable" BO_ 1730 "True";
+BA_ "GenMsgCycleTime" BO_ 1325 100;
+BA_ "Receivable" BO_ 1325 "True";
+BA_ "Sendable" BO_ 1325 "True";
+BA_ "Receivable" BO_ 1326 "True";
+BA_ "Sendable" BO_ 1326 "True";
+BA_ "Receivable" BO_ 2024 "True";
+BA_ "Sendable" BO_ 2024 "True";
+BA_ "Receivable" BO_ 2025 "True";
+BA_ "Sendable" BO_ 2025 "True";
+BA_ "Receivable" BO_ 2026 "True";
+BA_ "Sendable" BO_ 2026 "True";
+BA_ "Receivable" BO_ 2027 "True";
+BA_ "Sendable" BO_ 2027 "True";
+BA_ "Receivable" BO_ 2028 "True";
+BA_ "Sendable" BO_ 2028 "True";
+BA_ "Receivable" BO_ 2029 "True";
+BA_ "Sendable" BO_ 2029 "True";
 BA_ "Receivable" BO_ 1317 "True";
 BA_ "Sendable" BO_ 1317 "True";
 BA_ "Receivable" BO_ 1318 "True";
 BA_ "Sendable" BO_ 1318 "True";
 BA_ "Receivable" BO_ 262 "True";
 BA_ "Sendable" BO_ 262 "True";
+BA_ "Receivable" BO_ 2022 "True";
+BA_ "Sendable" BO_ 2022 "True";
+BA_ "Receivable" BO_ 2032 "True";
+BA_ "Sendable" BO_ 2032 "True";
+BA_ "Receivable" BO_ 2030 "True";
+BA_ "Sendable" BO_ 2030 "True";
 BA_ "GenMsgCycleTime" BO_ 2033 1000;
 BA_ "Receivable" BO_ 2033 "True";
 BA_ "Sendable" BO_ 2033 "True";
@@ -2551,6 +2505,16 @@ BA_ "Receivable" BO_ 121 "True";
 BA_ "Sendable" BO_ 121 "True";
 BA_ "Receivable" BO_ 1915 "True";
 BA_ "Sendable" BO_ 1915 "True";
+BA_ "Receivable" BO_ 706 "True";
+BA_ "Sendable" BO_ 706 "True";
+BA_ "Receivable" BO_ 722 "True";
+BA_ "Sendable" BO_ 722 "True";
+BA_ "Receivable" BO_ 738 "True";
+BA_ "Sendable" BO_ 738 "True";
+BA_ "Receivable" BO_ 1906 "True";
+BA_ "Sendable" BO_ 1906 "True";
+BA_ "Receivable" BO_ 1764 "True";
+BA_ "Sendable" BO_ 1764 "True";
 BA_ "Receivable" BO_ 2039 "True";
 BA_ "Sendable" BO_ 2039 "True";
 BA_ "Receivable" BO_ 2040 "True";
@@ -2871,10 +2835,6 @@ BA_ "GenMsgCycleTime" BO_ 1911 100;
 BA_ "Receivable" BO_ 1911 "True";
 BA_ "Sendable" BO_ 1911 "True";
 
-BA_ "DisplayDecimalPlaces" SG_ 2021 PID_controls_current_yaw_rate 2;
-BA_ "DisplayDecimalPlaces" SG_ 2021 PID_controls_target_yaw_rate 2;
-BA_ "DisplayDecimalPlaces" SG_ 2021 PID_controls_bias 2;
-BA_ "DisplayDecimalPlaces" SG_ 2021 PID_controls_pid 2;
 
 VAL_ 308 BALANCE_balanceRequest 0 "BALANCE_DIS" 1 "BALANCE_EN";
 VAL_ 1779 AS_state 0 "UNKNOWN" 1 "GLV_ON" 2 "HV_EN" 3 "RTD" 4 "ERROR" 5 "CLEAR_ERROR" 6 "AS_READY" 7 "AS_DRIVING" 8 "AS_FINISHED" 9 "AS_EMERGENCY" 10 "LEN";
@@ -2896,6 +2856,7 @@ VAL_ 261 PTC_state 0 "UNKNOWN" 1 "GLV_ON" 2 "HV_EN" 3 "RTD" 4 "ERROR" 5 "CLEAR_E
 VAL_ 1794 SBG_Solution_Mode 0 "Uninitialized" 1 "Vertical_Gyro_Only" 2 "Orientation_Only" 3 "Nav_Velocity" 4 "Full_Nav";
 VAL_ 1024 EMD_CurrentGain 0 "x1" 1 "x2" 2 "x4" 3 "x8" 4 "x16" 5 "x32";
 VAL_ 1024 EMD_VoltageGain 0 "x1" 1 "x2" 2 "x4" 3 "x8" 4 "x16" 5 "x32";
+VAL_ 1906 Movella_fitler_mode 0 "Without GNSS (filter profile is in VRU mode)" 1 "Coasting mode (GNSS has been lost <60 sec ago)" 3 "With GNSS (default mode)";
 VAL_ 1153 Digital_input_1_FL 0 "Input_1_disabled" 1 "Input_1_enabled";
 VAL_ 1153 Digital_input_2_FL 0 "Input_2_enabled" 1 "Input_2_enabled";
 VAL_ 1153 Digital_input_3_FL 0 "Input_3_disabled" 1 "Input_3_enabled";
@@ -2980,32 +2941,33 @@ VAL_ 385 CMD_DriveEnable_FL 0 "Drive_not_allowed" 1 "Drive allowed";
 VAL_ 386 CMD_DriveEnable_FR 0 "Drive_not_allowed" 1 "Drive allowed";
 VAL_ 387 CMD_DriveEnable_RR 0 "Drive_not_allowed" 1 "Drive allowed";
 VAL_ 388 CMD_DriveEnable_RL 0 "Drive_not_allowed" 1 "Drive allowed";
-SIG_VALTYPE_ 706 COG_slip_angle : 1;
 SIG_VALTYPE_ 1763 COULOMB_KCoulombs : 1;
-SIG_VALTYPE_ 1730 ODOMETER_odometer_km : 1;
-SIG_VALTYPE_ 642 POSE_latitude_deg : 1;
-SIG_VALTYPE_ 642 POSE_longitude_deg : 1;
-SIG_VALTYPE_ 1764 POWER_power_limit_W : 1;
-SIG_VALTYPE_ 2022 SOLVER_moment_req_Nm : 1;
-SIG_VALTYPE_ 2022 SOLVER_lin_accel_Nm : 1;
 SIG_VALTYPE_ 1785 CDC_KCoulombs : 1;
 SIG_VALTYPE_ 1025 MEASUREMENT_current : 1;
 SIG_VALTYPE_ 1025 MEASUREMENT_voltage : 1;
-SIG_VALTYPE_ 2024 SLIP_slipRatio_FL : 1;
-SIG_VALTYPE_ 2024 SLIP_slipRatio_FR : 1;
-SIG_VALTYPE_ 2026 WHL_slipRatio_FL : 1;
-SIG_VALTYPE_ 2026 WHL_slipRatio_FR : 1;
-SIG_VALTYPE_ 2028 WHL_v_whl_fl : 1;
-SIG_VALTYPE_ 2028 WHL_v_whl_fr : 1;
-SIG_VALTYPE_ 2025 SLIP_slipRatio_RL : 1;
-SIG_VALTYPE_ 2025 SLIP_slipRatio_RR : 1;
-SIG_VALTYPE_ 2027 WHL_omega_RL : 1;
-SIG_VALTYPE_ 2027 WHL_omega_RR : 1;
-SIG_VALTYPE_ 2029 WHL_v_whl_rl : 1;
-SIG_VALTYPE_ 2029 WHL_v_whl_rr : 1;
-SIG_VALTYPE_ 1325 power_limit_max_violation_W : 1;
+SIG_VALTYPE_ 642 CDC_Latitude : 1;
+SIG_VALTYPE_ 642 CDC_Longitude : 1;
 SIG_VALTYPE_ 1860 SBG_Velocity_ODO : 1;
 SIG_VALTYPE_ 1862 SBG_Pressure_IMU : 1;
 SIG_VALTYPE_ 1862 SBG_Altitude_IMU : 1;
+SIG_VALTYPE_ 2021 controls_pid : 1;
+SIG_VALTYPE_ 1730 CDC_Odometer : 1;
+SIG_VALTYPE_ 1325 Power_Limit_Max_Violation_W : 1;
+SIG_VALTYPE_ 2024 slipRatio_FL : 1;
+SIG_VALTYPE_ 2024 slipRatio_FR : 1;
+SIG_VALTYPE_ 2025 slipRatio_RL : 1;
+SIG_VALTYPE_ 2025 slipRatio_RR : 1;
+SIG_VALTYPE_ 2026 setPoint_FL : 1;
+SIG_VALTYPE_ 2026 setPoint_FR : 1;
+SIG_VALTYPE_ 2027 setPoint_RL : 1;
+SIG_VALTYPE_ 2027 setPoint_RR : 1;
+SIG_VALTYPE_ 2028 vel_calc_FL : 1;
+SIG_VALTYPE_ 2028 vel_calc_FR : 1;
+SIG_VALTYPE_ 2029 vel_calc_RL : 1;
+SIG_VALTYPE_ 2029 vel_calc_RR : 1;
+SIG_VALTYPE_ 2022 Moment_REQ : 1;
+SIG_VALTYPE_ 2022 Lin_Accel_REQ : 1;
+SIG_VALTYPE_ 706 slip_angle : 1;
+SIG_VALTYPE_ 1764 PowerLimit : 1;
 SIG_VALTYPE_ 794 DV_Kp : 1;
 SIG_VALTYPE_ 794 DV_Kd : 1;
