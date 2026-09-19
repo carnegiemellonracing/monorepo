@@ -872,10 +872,12 @@ void runControls (
         case CMR_CAN_GEAR_TEST: {
             disableTorqueMode();
 
-            const float vehicle_speed_mps =
-                motorSpeedToWheelLinearSpeed_mps(getTotalMotorSpeed_radps() * 0.25f);
+            // Zero-initialised so an unavailable sensor source leaves the phantom diff inactive
+            // rather than reading an uninitialised value.
+            float ax_mps2 = 0.0f, ay_mps2 = 0.0f, az_mps2 = 0.0f;
+            sensors_get_accel_xyz(&ax_mps2, &ay_mps2, &az_mps2);
 
-            setFastTorqueWithPhantomDiff(throttlePos_u8, swAngle_millideg, vehicle_speed_mps, front_bias);
+            setFastTorqueWithPhantomDiff(throttlePos_u8, swAngle_millideg, ay_mps2, front_bias);
             int send = (int)(maxPhantomDiffScalingFactor * 100.0f);
             canTX(CMR_CAN_BUS_VEH, 0x526, &send, sizeof(int), 200);
 
@@ -1115,7 +1117,7 @@ void setFastTorqueWithBias (uint8_t throttlePos_u8, float front_bias) {
 void setFastTorqueWithPhantomDiff(
     uint8_t throttlePos_u8,
     int32_t swAngle_millideg,
-    float vehicle_speed_mps,
+    float lateral_accel_mps2,
     float front_bias
 )
 {
@@ -1127,62 +1129,72 @@ void setFastTorqueWithPhantomDiff(
         reqTorque * front_bias / (1.0f - front_bias);
     const float reqTorque_rear = reqTorque;
 
-    const float clamped_swAngle_millideg =
+    const int32_t clamped_swAngle_millideg =
         CLAMP(
             -swAngleMax_millideg,
             swAngle_millideg,
             swAngleMax_millideg
         );
-    
-    const float swangle_rad = swAngleMillidegToSteeringAngleRad(clamped_swAngle_millideg);
 
-    // Phantom torque differential is expressed linearly as a percentage of the
-    // steering angle beyond the turning threshold.
-    /// Lateral acceleration is approximated as (velocity)^2 * swangle * (k) / wheelbase, where
-    /// k is a swangle → curvature kinematic conversion factor. 
+    /// Phantom diff scales with lateral load transfer, the transfer of vertical tire load from
+    /// the inside wheels to the outside wheels during cornering. For a given axle:
+    ///     dFz/Fz_static = 4 * K_axle * cg_ht * a_y / (t * g)
+    /// where t is track width, g is gravity, and K_axle is that axle's share of the total
+    /// transfer. Vehicle mass cancels, since both the transfer and the static corner load
+    /// scale with it.
     ///
-    /// Phantom diff scales with the estimated lateral load transfer, which is the transfer of
-    /// vertical tire load from the inside wheels to the outside wheels during cornering.
-    /// The fractional load transfer is approximated as:
-    ///     dFz/Fz_static = 2 * cg_ht * V^2 * swangle * k / (t * g * L)
+    /// phantomDiffGain absorbs the constant vehicle geometry, so each axle's scaling factor is
+    /// directly proportional to measured lateral acceleration.
     ///
-    /// phantomDiffGain absorbs the constant vehicle-specific terms and maps the V^2 * swangle
-    /// dependence of estimated lateral load transfer into the desired phantom diff scaling.
-    const float phantom_diff_scaling_factor = 
+    /// The transfer splits between axles by roll stiffness distribution, not evenly, which is
+    /// why the front and rear get separate scaling factors.
+    ///
+    /// The magnitude comes from the IMU; the steering angle is used only for its sign, to decide
+    /// which side is outer.
+    const float lateral_load_ratio = phantomDiffGain * fabsf(lateral_accel_mps2);
+
+    const float phantom_diff_front =
         CLAMP(
             0.0f,
-            phantomDiffGain * vehicle_speed_mps * vehicle_speed_mps * fabsf(swangle_rad), // tan approximated with small angle
+            lateral_load_ratio * lateralLoadTransferDistFront,
             maxPhantomDiffScalingFactor
         );
 
-    const float outer_torque_fraction = 1.0f + phantom_diff_scaling_factor;
-    const float inner_torque_fraction = 1.0f - phantom_diff_scaling_factor;
+    const float phantom_diff_rear =
+        CLAMP(
+            0.0f,
+            lateral_load_ratio * (1.0f - lateralLoadTransferDistFront),
+            maxPhantomDiffScalingFactor
+        );
+
+    const float inner_front_torque_fraction = 1.0f - phantom_diff_front;
+    const float inner_rear_torque_fraction  = 1.0f - phantom_diff_rear;
 
     // If we are turning right, left wheels are treated as outer and right wheels as inner.
-    const float reqTorque_rear_outer = 
+    const float reqTorque_rear_outer =
         CLAMP(
             reqTorque_rear,
-            reqTorque_rear * outer_torque_fraction,
+            reqTorque_rear * (1.0f + phantom_diff_rear),
             maxFastTorque_Nm
         );
-    
+
     const float reqTorque_front_outer =
         CLAMP(
             reqTorque_front,
-            reqTorque_front * outer_torque_fraction,
+            reqTorque_front * (1.0f + phantom_diff_front),
             maxFastTorque_Nm
         );
-    
+
     if (clamped_swAngle_millideg >= 0) {
         setTorqueLimsUnprotected(MOTOR_FL, reqTorque_front_outer, 0.0f);
         setTorqueLimsUnprotected(MOTOR_RL, reqTorque_rear_outer, 0.0f);
-        setTorqueLimsUnprotected(MOTOR_FR, reqTorque_front * inner_torque_fraction, 0.0f);
-        setTorqueLimsUnprotected(MOTOR_RR, reqTorque_rear * inner_torque_fraction, 0.0f);
+        setTorqueLimsUnprotected(MOTOR_FR, reqTorque_front * inner_front_torque_fraction, 0.0f);
+        setTorqueLimsUnprotected(MOTOR_RR, reqTorque_rear * inner_rear_torque_fraction, 0.0f);
     }
     // If we are turning left, right wheels are treated as outer and left wheels as inner.
     else {
-        setTorqueLimsUnprotected(MOTOR_FL, reqTorque_front * inner_torque_fraction, 0.0f);
-        setTorqueLimsUnprotected(MOTOR_RL, reqTorque_rear * inner_torque_fraction, 0.0f);
+        setTorqueLimsUnprotected(MOTOR_FL, reqTorque_front * inner_front_torque_fraction, 0.0f);
+        setTorqueLimsUnprotected(MOTOR_RL, reqTorque_rear * inner_rear_torque_fraction, 0.0f);
         setTorqueLimsUnprotected(MOTOR_FR, reqTorque_front_outer, 0.0f);
         setTorqueLimsUnprotected(MOTOR_RR, reqTorque_rear_outer, 0.0f);
     }

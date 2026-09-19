@@ -31,7 +31,7 @@ void setFastTorqueWithBias(uint8_t throttlePos_u8, float front_bias);
 void setFastTorqueWithPhantomDiff(
     uint8_t throttlePos_u8,
     int32_t swAngle_millideg,
-    float vehicle_speed_mps,
+    float lateral_accel_mps2,
     float front_bias
 );
 float getYawRateControlLeftRightBias(int32_t swAngle_millideg);

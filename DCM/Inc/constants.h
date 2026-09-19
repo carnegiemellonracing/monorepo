@@ -20,8 +20,17 @@ static const float front_bias_endurance = 0.25f;
 static const int32_t swAngleTurningThreshold_millideg = 4000;
 /// The maximum steering wheel angle.
 static const int32_t swAngleMax_millideg = 27000;
-/// Lateral load transfer gain, k*2h/(t*g*l) (true value likely lower?)
-static const float phantomDiffGain = 1.0f*0.0293f;
+/// Lateral load transfer geometry term, 4h/(t*g), where h = CG height, t = track width,
+/// g = gravity. Multiplied by measured lateral acceleration and by an axle's share of the
+/// transfer to give that axle's dFz/Fz_static.
+/// True value is likely lower: tire load sensitivity and combined slip both mean the optimal
+/// split is less aggressive than pure load-proportional.
+static const float phantomDiffGain = 0.0908f;
+/// Fraction of lateral load transfer taken by the front axle. Set by roll stiffness
+/// distribution, so it moves whenever the anti-roll bars are adjusted. The rear axle's share
+/// is (1 - this). 0.5 assumes the transfer splits evenly between the axles.
+/// TODO: get below constant frm Nate
+static const float lateralLoadTransferDistFront = 0.5f;
 
 /// Power limit setpoint per DTI motor. Two motors per inverter provide a combined limit of 70 KW.
 static const float maxPowerPerMotor_kW = 35.0f;
