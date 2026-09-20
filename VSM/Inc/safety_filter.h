@@ -1,0 +1,13 @@
+#include <stdint.h>
+#include <CMR/can_ids.h>    // CMR CAN IDs
+
+void setTorqueLimsProtected ( const cmr_torqueDistributionNm_t *torquesPos_Nm, const cmr_torqueDistributionNm_t *torquesNeg_Nm);
+cmr_torque_limit_t getPreemptiveTorqueLimits();
+void initRetroactiveLimitFilters();
+void resetRetroactiveLimitFilters();
+float getPowerLimit_W();
+
+void setPowerLimit_kW(uint8_t power_limit_kW);
+
+const cmr_canDCMSafetyFilterStates_t *getSafetyFilterInfo();
+const cmr_canDCMMotorPower_t *getMotorPowerInfo();
