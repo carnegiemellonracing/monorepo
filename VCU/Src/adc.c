@@ -79,7 +79,7 @@ uint32_t adcRead(adcChannel_t channel) {
     return cmr_adcRead(&adc, channel);
 }
 
- * @brief Initializes the ADC interface.
+/** @brief Initializes the ADC interface.
  */
 void adcInit(void) {
     // ADC initialization and channel configuration.

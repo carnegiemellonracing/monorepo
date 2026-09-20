@@ -24,7 +24,6 @@ typedef enum {
 	ADC_SSOUT,							/**< @brief SS Out Voltage Sense */
 	ADC_LEN     						/**< @brief Total ADC channels. */
 
-  ADC_LEN         /**< @brief Total ADC channels. */
 } adcChannel_t;
 
 void adcInit(void);

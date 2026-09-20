@@ -27,7 +27,7 @@ typedef enum {
 typedef enum {
 	PWM_GREEN = 0,    /**< @brief Green TSSI. */
 	PWM_RED,          /**< @brief Red TSSI. */
-  PWM_YELLOW,       /**< @brief Yellow ASSI. */
+	PWM_YELLOW,       /**< @brief Yellow ASSI. */
 	PWM_BLUE,		  		/**< @brief Blue ASSI */
 	PWM_LEN     	 		/**< @brief Total PWM pins. */
 } pwm_t;
