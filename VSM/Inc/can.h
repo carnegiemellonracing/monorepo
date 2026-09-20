@@ -8,27 +8,63 @@
 #ifndef CAN_H
 #define CAN_H
 
-#include <CMR/can.h>        // CMR CAN interface
+#pragma once
+
+#include <CMR/can.h>      // CMR CAN interface
 #include <CMR/can_types.h>  // CMR CAN types
 #include <CMR/can_ids.h>    // CMR CAN IDs
 
+
+#include "motors_helper.h"
+
 /**
- * @brief CAN receive metadata indices.
+ * @brief Vehicle CAN receive metadata indices.
  *
- * @warning New messages MUST be added before `CANRX_LEN`.
+ * @warning New messages MUST be added before `CANRX_VEH_LEN`.
  */
 typedef enum {
+    CANRX_VEH_HEARTBEAT_VSM = 0,    /**< @brief VSM heartbeat. */
+    CANRX_VSM_STATUS,
+    CANRX_VEH_DATA_FSM,             /**< @brief FSM data. */
+    CANRX_VEH_SWANGLE_FSM,          /**< @brief VSM status */
+    CANRX_VEH_REQUEST_DIM,          /**< @brief DIM state and gear request. */
+    CANRX_VEH_VOLTAGE_HVC,          /**< @brief HVC pack voltage. */
+    CANRX_VEH_CURRENT_HVC,          /**< @brief HVC pack current. */
+    CANRX_VEH_DIM_ACTION_BUTTON,    /**< @brief DIM action button. */
+    CANRX_VEH_PACK_CELL_VOLTAGE,    /**< @brief Min/Max Cell voltage*/
+    CANRX_VEH_PACK_CELL_TEMP,       /**< @brief Min/Max Cell temp*/
+    CANRX_VEH_VSM_SENSORS,          /**< @brief VSM Sensors */
+	CANRX_RTC_SET,
+	CANRX_HVI_SENSE,
+    CANRX_VEH_MOVELLA_STATUS,
+    CANRX_VEH_MOVELLA_QUATERNION,
+    CANRX_VEH_MOVELLA_IMU_EULER_ANGLES,
+    CANRX_VEH_MOVELLA_IMU_GYRO,
+    CANRX_VEH_MOVELLA_IMU_ACCEL,
+    CANRX_VEH_MOVELLA_VELOCITY,
+    CANRX_VEH_DTI_ERROR_MESSAGES,
+    CANRX_VEH_SENSORIC_VEL_ANG_POI,   /**< @brief Sensoric data */
+    CANRX_VEH_SENSORIC_PITCH_ROLL,
+    CANRX_VEH_SENSORIC_ACC,
+    CANRX_VEH_SENSORIC_RATE,
+    CANRX_VEH_AS_RES,
+    CANRX_VEH_AS_TANK_PRESSURE,
+    CANRX_VEH_LEN                   /**< @brief Number of periodic CAN messages. */
+} canVehicleRX_t;
+
+//TODO: Rename these VSM indices based on CAN placement
+typedef enum {
     CANRX_HEARTBEAT_HVC = 0,  /**< @brief HVC heartbeat. */
-    CANRX_HEARTBEAT_CDC,      /**< @brief CDC heartbeat. */
+    CANRX_HEARTBEAT_DCM,      /**< @brief DCM heartbeat. */
     CANRX_HEARTBEAT_DIM,      /**< @brief DIM heartbeat. */
     CANRX_HEARTBEAT_HVBMS,    /**< @brief HVBMS heartbeat. */
     CANRX_HEARTBEAT_COMPUTE,
     CANRX_FSM_DATA,           /**< @brief FSM data. */
+    CANRX_CUBEMARS_DATA,
     CANRX_FSM_SWANGLE,
     CANRX_DIM_REQUEST,        /**< @brief DIM state request. */
     CANRX_RES,                /**< @brief RES */
     CANRX_AS_PRESSURE_READING,/**< @brief Autonomous Pressure Readings */
-    CANRX_ASMS_STATE,
     CANRX_DTI_ERROR_CODE,     /**< @brief Inverter Fault Codes*/
     CANRX_FL_TEMPFAULT,       /**< @brief Front Left Inverter Fault */
     CANRX_FR_TEMPFAULT,       /**< @brief Front Right Inverter Fault */
@@ -43,26 +79,201 @@ typedef enum {
     CANRX_RL_ERPM,
     CANRX_RR_ERPM,
     CANRX_AS_MISSION_FINISHED,
+    CANRX_AMS_ERROR,
     CANRX_LEN     /**< @brief Number of periodic CAN messages. */
 } canRX_t;
 
+/**
+ * @brief Tractive CAN receive metadata indices.
+ *
+ * @warning New messages MUST be added before `CANRX_TRAC_LEN`.
+ */
+typedef enum {
+    CANRX_TRAC_FL_ERPM = 0,
+    CANRX_TRAC_FL_CURRENT,
+    CANRX_TRAC_FL_TEMPFAULT,
+    CANRX_TRAC_FL_IDIQ,
+    CANRX_TRAC_FL_ACLIMS,
+    CANRX_TRAC_FL_DCLIMS,
+    CANRX_TRAC_FL_CONTROL_STATUS,
+    CANRX_TRAC_FL_IO_STATUS,
+
+    CANRX_TRAC_FR_ERPM,
+    CANRX_TRAC_FR_CURRENT,
+    CANRX_TRAC_FR_TEMPFAULT,
+    CANRX_TRAC_FR_IDIQ,
+    CANRX_TRAC_FR_ACLIMS,
+    CANRX_TRAC_FR_DCLIMS,
+    CANRX_TRAC_FR_CONTROL_STATUS,
+    CANRX_TRAC_FR_IO_STATUS,
+
+    CANRX_TRAC_RL_ERPM,
+    CANRX_TRAC_RL_CURRENT,
+    CANRX_TRAC_RL_TEMPFAULT,
+    CANRX_TRAC_RL_IDIQ,
+    CANRX_TRAC_RL_ACLIMS,
+    CANRX_TRAC_RL_DCLIMS,
+    CANRX_TRAC_RL_CONTROL_STATUS,
+    CANRX_TRAC_RL_IO_STATUS,
+
+    CANRX_TRAC_RR_ERPM,
+    CANRX_TRAC_RR_CURRENT,
+    CANRX_TRAC_RR_TEMPFAULT,
+    CANRX_TRAC_RR_IDIQ,
+    CANRX_TRAC_RR_ACLIMS,
+    CANRX_TRAC_RR_DCLIMS,
+    CANRX_TRAC_RR_CONTROL_STATUS,
+    CANRX_TRAC_RR_IO_STATUS,
+
+    CANRX_TRAC_FL_TEST,
+    CANRX_TRAC_FR_TEST,
+    CANRX_TRAC_RL_TEST,
+    CANRX_TRAC_RR_TEST,
+    
+    CANRX_TRAC_DTI_ERROR_MESSAGES,
+    CANRX_TRAC_HVI_SENSE,             /**< @brief High voltage, current, and power sense in inverters. */
+
+    CANRX_TRAC_EMD_MEASUREMENT,
+    CANRX_TRAC_EMD_TEMPERATURE,
+    CANRX_TRAC_IVT_CURRENT, 
+    CANRX_TRAC_IVT_VOLTAGE,
+    
+    CANRX_TRAC_LEN                    /**< @brief Number of periodic CAN messages. */
+} canTractiveRX_t;
+
+/**
+ * @brief DAQ CAN receive metadata indices.
+ *
+ * @warning New messages MUST be added before `CAN_AUX_RX_LEN`.
+ */
+typedef enum {
+    CANRX_DAQ_MOVELLA_STATUS = 0,
+    CANRX_DAQ_MOVELLA_QUATERNION,
+    CANRX_DAQ_MOVELLA_IMU_EULER_ANGLES,
+    CANRX_DAQ_MOVELLA_IMU_GYRO,
+    CANRX_DAQ_MOVELLA_IMU_ACCEL,
+    CANRX_DAQ_MOVELLA_VELOCITY,
+    CANRX_DAQ_SENSORIC_VEL_ANG_POI,
+    CANRX_DAQ_SENSORIC_DIST_POI,
+    CANRX_DAQ_SENSORIC_PITCH_ROLL,
+    CANRX_DAQ_SENSORIC_ACC_HOR,
+    CANRX_DAQ_SENSORIC_RATE_HOR,
+    CANRX_DAQ_SENSORIC_VEL_ANG,
+    CANRX_DAQ_SENSORIC_DIST,
+    CANRX_DAQ_SENSORIC_ACC,
+    CANRX_DAQ_SENSORIC_RATE,
+    CANRX_DAQ_SENSORIC_VEL_ANG_SP,
+    CANRX_DAQ_SENSORIC_DIST_VEL_SP, 
+    CANRX_DAQ_SBG_STATUS_3,     /**< @brief SBG Status containing solution info. */
+    CANRX_DAQ_SBG_POS,          /**< @brief EKF Position. */
+    CANRX_DAQ_SBG_VEL,          /**< @brief EKF Velocity. */
+    CANRX_DAQ_SBG_ORIENT,       /**< @brief EKF Orientation. */
+    CANRX_DAQ_SBG_IMU_ACCEL,    /**< @brief IMU Acceleration. */
+    CANRX_DAQ_SBG_IMU_GYRO,     /**< @brief IMU Gyro rate. */
+    CANRX_DAQ_SBG_BODY_VEL,     /**< @brief Body Velocity. */
+    CANRX_DAQ_LOAD_FL,          /**< @brief front left load cell/newtons. */
+    CANRX_DAQ_LOAD_FR,          /**< @brief front right load cell/newtons. */
+    CANRX_DAQ_LOAD_RL,          /**< @brief rear left load cell/newtons. */
+    CANRX_DAQ_LOAD_RR,          /**< @brief rear right load cell/newtons. */
+	CANRX_DAQ_SBG_SLIPANGLE,    /**< @brief Slip Angle Radians 10^4. */
+    CANRX_DAQ_LINPOTS_LEFTS,    /**< @brief front left load cell/newtons. */
+    CANRX_DAQ_LINPOTS_RIGHTS,   /**< @brief front right load cell/newtons. */
+    CANRX_DAQ_MEMORATOR_BROADCAST,
+    CANRX_DAQ_HEARTBEAT_COMPUTE,
+    CANRX_DAQ_AUTONOMOUS_ACTION,
+    CANRX_DAQ_AUTONOMOUS_PID_CONSTANTS, /**< @brief Autonomous PID Constants used for tuning. */
+    CANRX_DAQ_CUBEMARS_DATA,    /**< @brief Steering motor published data. */
+    CANRX_DAQ_AS_FINISHED,
+    CANRX_DAQ_LEN               /**< @brief Number of periodic CAN messages. */
+} canDaqRX_t;
+
+/** @brief CAN bus-id enumeration.
+ *  @note 0 can be assumed to be the default bus where unspecified. */
+typedef enum {
+    CMR_CAN_BUS_VEH = 0,        /**< @brief Index of the VEH bus */
+    CMR_CAN_BUS_DAQ,            /**< @brief Index of the DAQ bus */
+    CMR_CAN_BUS_TRAC,           /**< @brief Index of the TRAC bus */
+    CMR_CAN_BUS_NUM,            /**< @brief Number of busses in use */
+} cmr_canBusID_t;
+
+typedef enum {
+    CANRX_HEARTBEAT_VSM = 0,    /**< @brief VSM heartbeat. */
+    CANRX_VSM_SENSORS,          /**< @brief VSM sensors. */
+    CANRX_FSM_DATA,             /**< @brief FSM data. */
+    CANRX_FSM_SWANGLE,
+    CANRX_HVC_MINMAX_TEMPS,     /**< @brief HVC min/max cell temps. */
+    CANRX_INV1_STATUS,          /**< @brief Inverter 1 temp. */
+    CANRX_INV2_STATUS,          /**< @brief Inverter 2 temp. */
+    CANRX_INV3_STATUS,          /**< @brief Inverter 3 temp. */
+    CANRX_INV4_STATUS,          /**< @brief Inverter 4 temp. */
+    CANRX_LEN,     /**< @brief Number of periodic CAN messages. */
+} canRX_t;
+
+/** @brief Number of bits in a CAN ID. */
+#define CAN_ID_BITS 11
+
+/** @brief "Packed" CAN message. */
+typedef struct {
+    uint16_t idLen;         /**< @brief ID ([10:0]) and length ([14:11]). */
+    uint8_t payload[8];     /**< @brief Payload data. */
+} canMsg_t;
+
+extern cmr_canRXMeta_t canRXMeta[];
+extern cmr_canRXMeta_t canVehicleRXMeta[CANRX_VEH_LEN];
+extern cmr_canRXMeta_t canTractiveRXMeta[CANRX_TRAC_LEN];
+extern cmr_canRXMeta_t canDaqRXMeta[CANRX_DAQ_LEN];
+
+extern uint16_t fan_1_State;
+extern uint16_t fan_2_State;
+extern uint16_t pump_Left_State;
+extern uint16_t pump_Right_State;
+
+void canInit(void);
+int canTX(
+    cmr_canBusID_t bus, cmr_canID_t id,
+    const void *data, size_t len,
+    TickType_t timeout
+);
+int canExtendedTX(
+    cmr_canBusID_t bus, cmr_canExtendedID_t id,
+    const void *data, size_t len,
+    TickType_t timeout
+);
+
+volatile void *canVehicleGetPayload(canVehicleRX_t msg);
+volatile void *canTractiveGetPayload(canTractiveRX_t msg);
+volatile void *canDAQGetPayload(canDaqRX_t msg);
+cmr_canRXMeta_t *canVehicleGetMeta(canVehicleRX_t msg);
+cmr_canRXMeta_t *canTractiveGetMeta(canTractiveRX_t msg);
+cmr_canRXMeta_t *canDAQGetMeta(canDaqRX_t msg);
+void *canGetPayload(canRX_t rxMsg);
+int8_t getPacketID(cmr_canID_t id);
+int8_t getNodeID(cmr_canID_t id);
+int sendCubeMarsMessage(cmr_canBusID_t bus, cmr_canExtendedID_t id, const void *data, size_t len, TickType_t timeout);
+int sendDTIMessage(cmr_canBusID_t bus, cmr_canID_t id, const void *data, size_t len, TickType_t timeout);
+int16_t getDTICtrlTemp(canRX_t rxMsg);
+int16_t getDTIMotorTemp(canRX_t rxMsg);
+int16_t getDTITorque(canRX_t rxMsg);
+float canEmdHvVoltage();
+float canEmdHvCurrent();
+int32_t getDTIERPM(canTractiveRX_t rxMsg);
+int16_t getDTIInputVoltage(canTractiveRX_t rxMsg);
+int16_t getDTIACCurrent_dA(canTractiveRX_t rxMsg);
+int16_t getDTIDCCurrent_dA(canTractiveRX_t rxMsg);
+int16_t getDTICtlrTemp_dC(canTractiveRX_t rxMsg);
+int16_t getDTIMotorTemp_dC(canTractiveRX_t rxMsg);
+void setPowerLimit(bool all, motorLocation_t motor, float powerLimit_kw);
+
+//VSM Functions:
 //extern volatile TickType_t lastStateChangeTime;
 extern cmr_canRXMeta_t canRXMeta[];
 extern const cmr_canVSMTimeoutErrorSource_t vsmErrorSourceFlags[];
 
 void canInit(void);
 int canTX(cmr_canID_t id, const void *data, size_t len, TickType_t timeout);
-void *getPayload(canRX_t rxMsg);
 cmr_canState_t getModuleState(canRX_t module);
 uint8_t getASMSState(void);
 void sendFirstError(uint8_t error_code);
 void resetError();
 
-int32_t getDTIERPM(canRX_t rxMsg);
-int16_t getDTIACCurrent_dA(canRX_t rxMsg);
-int16_t getDTIDCCurrent_dA(canRX_t rxMsg);
-int16_t getDTICtlrTemp_dC(canRX_t rxMsg);
-int16_t getDTIMotorTemp_dC(canRX_t rxMsg);
-
 #endif /* CAN_H */
-
