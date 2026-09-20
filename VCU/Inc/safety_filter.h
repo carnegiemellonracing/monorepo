@@ -9,5 +9,5 @@ float getPowerLimit_W();
 
 void setPowerLimit_kW(uint8_t power_limit_kW);
 
-const cmr_canDCMSafetyFilterStates_t *getSafetyFilterInfo();
-const cmr_canDCMMotorPower_t *getMotorPowerInfo();
+const cmr_canVCUSafetyFilterStates_t *getSafetyFilterInfo();
+const cmr_canVCUMotorPower_t *getMotorPowerInfo();

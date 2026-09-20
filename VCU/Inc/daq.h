@@ -11,14 +11,14 @@
 #include <CMR/can_types.h>
 #include <CMR/can_ids.h>
 
-void daqWheelSpeedFeedback(cmr_canDCMWheelVelocity_t *speedFeedback);
-void daqWheelTorqueFeedback(cmr_canDCMWheelTorque_t *torqueFeedback);
-void daqWheelSpeedSetpoints(cmr_canDCMWheelVelocity_t *speedSetpoint);
-void daqWheelTorqueSetpoints(cmr_canDCMWheelTorque_t *torqueSetpoint);
+void daqWheelSpeedFeedback(cmr_canVCUWheelVelocity_t *speedFeedback);
+void daqWheelTorqueFeedback(cmr_canVCUWheelTorque_t *torqueFeedback);
+void daqWheelSpeedSetpoints(cmr_canVCUWheelVelocity_t *speedSetpoint);
+void daqWheelTorqueSetpoints(cmr_canVCUWheelTorque_t *torqueSetpoint);
 
-void daqPosePosition(cmr_canDCMPosePosition_t *posePos);
-void daqPoseOrientation(cmr_canDCMPoseOrientation_t *poseOrient);
-void daqPoseVelocity(cmr_canDCMPoseVelocity_t *poseVel);
+void daqPosePosition(cmr_canVCUPosePosition_t *posePos);
+void daqPoseOrientation(cmr_canVCUPoseOrientation_t *poseOrient);
+void daqPoseVelocity(cmr_canVCUPoseVelocity_t *poseVel);
 
 float carVelocityToWheelRPM(float vel);
 float carVelocityToMotorRPM(float vel);
