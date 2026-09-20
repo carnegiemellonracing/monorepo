@@ -61,6 +61,8 @@ set(PROCESSOR_FAM F4XX)
 # Include directories for all compilers
 set(include_DIRS
     ${CMAKE_SOURCE_DIR}/Inc
+    ${CMAKE_SOURCE_DIR}/optimizer
+    ${CMAKE_SOURCE_DIR}/data
 )
 
 # Include directories for each compiler
