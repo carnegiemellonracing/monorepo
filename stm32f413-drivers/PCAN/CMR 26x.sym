@@ -351,16 +351,6 @@ TimeOut=50
 Var=SOLVER_moment_req_Nm float 0,32 /u:Nm
 Var=SOLVER_lin_accel_Nm float 32,32 /u:Nm
 
-[CONTROLS_SOLVER_OUTPUTS]
-ID=7F0h
-DLC=8
-CycleTime=10
-TimeOut=50
-Var=SOLVER_frontLeft_Nm signed 0,16 /u:Nm /f:0.1
-Var=SOLVER_frontRight_Nm signed 16,16 /u:Nm /f:0.1
-Var=SOLVER_rearLeft_Nm signed 32,16 /u:Nm /f:0.1
-Var=SOLVER_rearRight_Nm signed 48,16 /u:Nm /f:0.1
-
 [CONTROLS_SOLVER_SETTINGS]
 ID=7EEh
 DLC=6
@@ -369,6 +359,14 @@ TimeOut=50
 Var=SOLVER_k_lin unsigned 0,16
 Var=SOLVER_k_yaw unsigned 16,16
 Var=SOLVER_k_tie unsigned 32,16
+
+[CUBEMARS_DATA]
+ID=000029FFh
+DLC=2
+CycleTime=5
+TimeOut=25
+Var=DATA_motorTemp_C signed 0,8
+Var=DATA_errorCode unsigned 8,8
 
 [DIM_ACKNOWLEDGE]
 ID=545h
@@ -417,18 +415,6 @@ Var=STATE_angle unsigned 8,8
 Var=STATE_pwm_left unsigned 16,8
 Var=STATE_pwm_right unsigned 24,8
 
-[DTI_FL_IO_STATUS]
-ID=24h
-DLC=6
-CycleTime=20
-TimeOut=100
-Var=FL_throttle_signal signed 0,8
-Var=FL_brake_signal signed 8,8
-Var=FL_digital_inputs unsigned 16,8
-Var=FL_drive_enable unsigned 24,8
-Var=FL_DTI_reserved unsigned 32,8
-Var=FL_canVersion unsigned 40,8
-
 [DTI_FL_TEMPFAULT]
 ID=22h
 DLC=1
@@ -439,10 +425,18 @@ Var=FL_fault_code unsigned 0,8
 [EMD_MEASUREMENT]
 ID=401h
 DLC=8
-CycleTime=20
-TimeOut=100
+CycleTime=100
+TimeOut=500
 Var=MEASUREMENT_current signed 0,32 /u:A
 Var=MEASUREMENT_voltage signed 32,32 /u:V
+
+[EXTENDED_CUBEMARS_DATA]
+ID=000029FFh
+DLC=2
+CycleTime=200
+TimeOut=1000
+Var=CUBEMARS_motorTemp_C signed 0,8
+Var=CUBEMARS_errorCode unsigned 8,8
 
 [FRONT_SLIP_RATIOS]
 ID=7E8h
@@ -905,19 +899,11 @@ Var=LATCHED_VSM_LATCH_AMS bit 18,1
 Var=LATCHED_VSM_LATCH_IMD bit 17,1
 Var=LATCHED_VSM_LATCH_BSPD bit 16,1
 
-[VSM_POWER_DIAGNOSTICS]
-ID=530h
-DLC=4
-CycleTime=100
-TimeOut=500
-Var=POWER_busVoltage_mV2 unsigned 0,16 /u:mV
-Var=POWER_busCurrent_mA2 unsigned 16,16 /u:mA
-
 [VSM_SENSORS]
 ID=200h
 DLC=6
-CycleTime=5
-TimeOut=25
+CycleTime=100
+TimeOut=500
 Var=SENSORS_brakePressureRear_PSI unsigned 0,16
 Var=SENSORS_hallEffect_cA signed 16,16
 Var=SENSORS_safetyIn_V unsigned 32,8
@@ -943,6 +929,14 @@ Var=STATUS_VSM_LATCH_SOFTWARE bit 27,1
 Var=STATUS_VSM_LATCH_AMS bit 26,1
 Var=STATUS_VSM_LATCH_IMD bit 25,1
 Var=STATUS_VSM_LATCH_BSPD bit 24,1
+
+[VSM_PowerDiagnostic]
+ID=530h
+DLC=4
+CycleTime=100
+Timeout=1000
+Var=VSM_busVoltage unsigned 0,16 /u:mV
+Var=VSM_busCurrent unsigned 16,16 /u:mA
 
 [CDC_MotorTemps]
 ID=512h
@@ -1991,6 +1985,14 @@ ID=777h
 DLC=1
 Var=TEST_ID unsigned 0,7	// Randomly generated test id sent everytime the car states up
 Var=TEST_STATUS bit 7,1	// 1- START TEST, 0 - STOP TEST
+
+[CDC_Solver_Outputs]
+ID=7F0h
+DLC=8
+Var=Torque_FL signed 0,16
+Var=Torque_FR signed 16,16
+Var=Torque_RL signed 32,16
+Var=Torque_RR signed 48,16
 
 [VSM_Git]
 ID=7F1h
