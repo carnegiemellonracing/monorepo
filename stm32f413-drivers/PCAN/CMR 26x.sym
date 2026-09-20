@@ -248,8 +248,8 @@ Var=POWER_busCurrent_mA unsigned 16,16 /u:mA
 [DIM_REQUEST]
 ID=235h
 DLC=5
-CycleTime=5
-TimeOut=25
+CycleTime=100
+TimeOut=500
 Var=REQUEST_requestedState unsigned 0,8 /e:State
 Var=REQUEST_requestedGear unsigned 8,8 /e:Gear
 Var=REQUEST_requestedDrsMode unsigned 16,8 /e:DrsMode
@@ -549,8 +549,8 @@ Var=PACK_avgCurrent_mA signed 32,32 /u:mA
 [HV_SENSORS]
 ID=306h
 DLC=8
-CycleTime=5
-TimeOut=25
+CycleTime=100
+TimeOut=500
 Var=SENSORS_packCurrent_dA signed 0,16
 Var=SENSORS_packVoltage_cV unsigned 16,16
 Var=SENSORS_packPower_W signed 32,32
