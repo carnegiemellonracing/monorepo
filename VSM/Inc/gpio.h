@@ -18,21 +18,34 @@
  * @warning New pins MUST be added between `GPIO_LED_STATUS` and `GPIO_LEN`.
  */
 typedef enum {
-    GPIO_OUT_LED_STATUS = 0,    /**< @brief Status LED. */
-    GPIO_OUT_LED_BLUE,
-    GPIO_OUT_LED_YELLOW,
-    GPIO_OUT_SOFTWARE_ERR,      /**< @brief Software error indicator. */
+	//DCM
+    GPIO_LED_STATUS = 0,    /**< @brief Status LED. */
+    GPIO_FRAM_WP,           /**< @brief FRAM Write Protect Pin */
+	GPIO_BRKLT_ENABLE,      /**< @brief Brakelight Enable. */
+	GPIO_FAN_ON,            /**< @brief Fan On LED. */
+	GPIO_FAN_1,
+	GPIO_FAN_2,
+	GPIO_PUMP_LEFT,
+	GPIO_PUMP_RIGHT,
+	GPIO_PUMP_ON,           /**< @brief Pump On LED. */
+    GPIO_AUXILIARY_ENABLE,  /**< @brief Auxiliary Enable. */
+	GPIO_MTR_CTRL_ENABLE,   /**< @brief Motor Controller Power Enable */
+    GPIO_LEN  				/**< @brief Total GPIO pins. */
+
+	//VSM
+	GPIO_OUT_LED_STATUS = 0,    /**< @brief Status LED. */
+    GPIO_OUT_SOFTWARE_ERR_N,    /**< @brief Software error Driver. */
+    GPIO_OUT_AMS_ERR_N,         /**< @brief AMS error Driver. */
     GPIO_OUT_RTD_SIGNAL,        /**< @brief Ready-to-drive signal. */
-    GPIO_IN_SOFTWARE_ERR,       /**< @brief Software error latch input signal. */
-    GPIO_IN_BSPD_ERR,           /**< @brief BSPD latch input signal. */
-    GPIO_IN_IMD_ERR,            /**< @brief IMD latch input signal. */
-    GPIO_IN_IMD_ERR_COND,
-    GPIO_IN_EAB,
-    GPIO_IN_EBS_ACTIVATED,
+    GPIO_IN_SOFTWARE_ERR_N,     /**< @brief Software error latch input signal. */
+    GPIO_IN_BSPD_ERR_N,         /**< @brief BSPD latch input signal. */
+    GPIO_IN_IMD_ERR_N,          /**< @brief IMD latch input signal. */
+    GPIO_IN_IMD_ERR_COND_N,     /**< @brief IMD un-latch input signal. */
+    GPIO_IN_BSPD_ERR_UNLATCH,   /**< @brief BSPD un-latch input signal. */
+    GPIO_IN_EAB,                /**< @brief EAB Signal Input */
     GPIO_LEN                    /**< @brief Total GPIO pins. */
 } gpio_t;
 
-static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN];
 void gpioInit(void);
 
 #endif /* GPIO_H */
