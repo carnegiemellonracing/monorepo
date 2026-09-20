@@ -129,15 +129,31 @@ add_executable(${CMAKE_PROJECT_NAME}
     # Project sources
     ${CMAKE_SOURCE_DIR}/Src/adc.c
     ${CMAKE_SOURCE_DIR}/Src/assi.c
+    ${CMAKE_SOURCE_DIR}/Src/brakelight.c
     ${CMAKE_SOURCE_DIR}/Src/can.c
+    ${CMAKE_SOURCE_DIR}/Src/cmr_error.c
+    ${CMAKE_SOURCE_DIR}/Src/control_sensors.c
+    ${CMAKE_SOURCE_DIR}/Src/control_helper.c
+    ${CMAKE_SOURCE_DIR}/Src/controls.c
     ${CMAKE_SOURCE_DIR}/Src/dac.c
-    ${CMAKE_SOURCE_DIR}/Src/gpio.c
-    ${CMAKE_SOURCE_DIR}/Src/main.c
+    ${CMAKE_SOURCE_DIR}/Src/daq.c
     ${CMAKE_SOURCE_DIR}/Src/error.c
+    ${CMAKE_SOURCE_DIR}/Src/gpio.c
+    ${CMAKE_SOURCE_DIR}/Src/i2c.c
+    ${CMAKE_SOURCE_DIR}/Src/lut.c
+    ${CMAKE_SOURCE_DIR}/Src/main.c
+    ${CMAKE_SOURCE_DIR}/Src/mc_power.c
+    ${CMAKE_SOURCE_DIR}/Src/motors_helper.c
+    ${CMAKE_SOURCE_DIR}/Src/motors.c
+    ${CMAKE_SOURCE_DIR}/Src/movella.c
+    ${CMAKE_SOURCE_DIR}/Src/pumps.c
     ${CMAKE_SOURCE_DIR}/Src/pwm.c
-    ${CMAKE_SOURCE_DIR}/Src/state.c
+    ${CMAKE_SOURCE_DIR}/Src/safety_filter.c
+    ${CMAKE_SOURCE_DIR}/Src/sensoric.c
     ${CMAKE_SOURCE_DIR}/Src/sensors.c
+    ${CMAKE_SOURCE_DIR}/Src/state.c
     ${CMAKE_SOURCE_DIR}/Src/statusLED.c
+    ${CMAKE_SOURCE_DIR}/Src/steering.c
     ${CMAKE_SOURCE_DIR}/Src/tssi.c
     ${CMAKE_SOURCE_DIR}/Src/syscall.c
     ${CMAKE_SOURCE_DIR}/Src/sysmem.c
