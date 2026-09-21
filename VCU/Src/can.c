@@ -869,6 +869,7 @@ static void canTX10Hz(void *pvParameters) {
     cmr_canEMDTemperatures_t *emdTemperature  = canTractiveGetPayload(CANRX_TRAC_EMD_TEMPERATURE);
 
     while (1) {
+        //remove?
         daqWheelSpeedFeedback(&speedFeedback);
         daqWheelTorqueFeedback(&torqueFeedback);
         daqWheelSpeedSetpoints(&speedSetpoint);
