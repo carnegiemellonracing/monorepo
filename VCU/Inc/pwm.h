@@ -20,11 +20,8 @@
 typedef enum {
 	PWM_PUMP_RIGHT = 0,    /**< @brief Right pump. */
 	PWM_PUMP_LEFT,         /**< @brief Left pump. */
-	PWM_LEN     	  /**< @brief Total PWM pins. */
-} pwm_t;
 
-//VSM Values
-typedef enum {
+	//VSM Values
 	PWM_GREEN = 0,    /**< @brief Green TSSI. */
 	PWM_RED,          /**< @brief Red TSSI. */
 	PWM_YELLOW,       /**< @brief Yellow ASSI. */

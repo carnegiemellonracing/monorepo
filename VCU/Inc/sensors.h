@@ -20,11 +20,8 @@
 typedef enum {
 	SENSOR_CH_VOLTAGE_CV = 0,   /**< @brief High voltage rail. */
 	SENSOR_CH_AVG_CURRENT_DA,   /**< @brief HV current draw. */
-    SENSOR_CH_LEN               /**< @brief Number of sensors. */
-} sensorChannel_t;
-
-//VSM Values
-typedef enum {
+    
+    //VSM Values
     SENSOR_CH_HALL_EFFECT_A = 0,    /**< @brief Hall effect sensor for accumulator current. */
     SENSOR_CH_BPRES_PSI,            /**< @brief Rear brake pressure sensor. */
     SENSOR_CH_VOLTAGE_MV,           /**< @brief Board voltage sense. */
