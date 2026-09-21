@@ -28,7 +28,6 @@
 #include "daq.h"
 #include "gpio.h"
 #include "i2c.h"
-#include "drs_controls.h"
 #include "controls_helper.h"
 #include "controls.h"
 #include "sensors.h"
@@ -843,17 +842,6 @@ static void canTX10Hz(void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
 
-    cmr_canDCMWheelVelocity_t speedFeedback;
-    cmr_canDCMWheelTorque_t torqueFeedback;
-    cmr_canDCMWheelVelocity_t speedSetpoint;
-    cmr_canDCMWheelTorque_t torqueSetpoint;
-
-    cmr_canDCMPosePosition_t posePos;
-    cmr_canDCMPoseOrientation_t poseOrient;
-    cmr_canDCMPoseVelocity_t poseVel;
-
-    cmr_canPowerSense_t powerSense;
-
     const cmr_canDTI_TX_TempFault_t *dtiTempFaultFL = getDTITempFault(MOTOR_FL);
     const cmr_canDTI_TX_TempFault_t *dtiTempFaultFR = getDTITempFault(MOTOR_FR);
     const cmr_canDTI_TX_TempFault_t *dtiTempFaultRL = getDTITempFault(MOTOR_RL);
@@ -869,18 +857,6 @@ static void canTX10Hz(void *pvParameters) {
     cmr_canEMDTemperatures_t *emdTemperature  = canTractiveGetPayload(CANRX_TRAC_EMD_TEMPERATURE);
 
     while (1) {
-        //remove?
-        daqWheelSpeedFeedback(&speedFeedback);
-        daqWheelTorqueFeedback(&torqueFeedback);
-        daqWheelSpeedSetpoints(&speedSetpoint);
-        daqWheelTorqueSetpoints(&torqueSetpoint);
-        daqPosePosition(&posePos);
-        daqPoseOrientation(&poseOrient);
-        daqPoseVelocity(&poseVel);
-
-        powerSense.packCurrent_dA = getCurrent_mA() / 100;
-        powerSense.packVoltage_cV = getVoltage_mV() / 10;
-        
         cmr_canEMDBrakePressure_t emdPressures = {
             .ebsPressure1_psi = (uint16_t)((float)(dvPressure->ebsPressure_1_deci_bar) * 1.45038),
             .ebsPressure2_psi = (uint16_t)((float)(dvPressure->ebsPressure_2_deci_bar) * 1.45038),
@@ -900,16 +876,8 @@ static void canTX10Hz(void *pvParameters) {
             dtiErrorMessages.rr_fault_code = dtiTempFaultRR->fault_code;
             canTX(CMR_CAN_BUS_VEH, CMR_CANID_DTI_ERROR_MESSAGES, &dtiErrorMessages, sizeof(dtiErrorMessages), canTX10Hz_period_ms);
         }
-
-        // canTX(CMR_CAN_BUS_VEH, CMR_CANID_FRONT_SLIP_RATIOS, &frontSlipRatios, sizeof(frontSlipRatios), canTX10Hz_period_ms);
-        // canTX(CMR_CAN_BUS_VEH, CMR_CANID_REAR_SLIP_RATIOS, &rearSlipRatios, sizeof(rearSlipRatios), canTX10Hz_period_ms);
-        // canTX(CMR_CAN_BUS_VEH, CMR_CANID_FRONT_WHL_SETPOINTS, &frontWhlSetpoints, sizeof(frontSlipRatios), canTX10Hz_period_ms);
-        // canTX(CMR_CAN_BUS_VEH, CMR_CANID_REAR_WHL_SETPOINTS, &rearWhlSetpoints, sizeof(rearWhlSetpoints), canTX10Hz_period_ms);
-        // canTX(CMR_CAN_BUS_VEH, CMR_CANID_FRONT_WHL_VELS, &frontWhlVelocities, sizeof(frontWhlVelocities), canTX10Hz_period_ms);
-        // canTX(CMR_CAN_BUS_VEH, CMR_CANID_REAR_WHL_VELS, &rearWhlVelocities, sizeof(rearWhlVelocities), canTX10Hz_period_ms);
-
-        // //powersense is dead, it's voltage * HVI
-        // canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_POWER_SENSE, &powerSense, sizeof(powerSense), canTX10Hz_period_ms);
+        
+        //TODO: add correct diagnostic messages here 
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_DCM_COULOMB_COUNTING, &coulombCounting, sizeof(cmr_canDCMKiloCoulombs_t), canTX10Hz_period_ms);
         
         sendRESEnable();
@@ -1176,33 +1144,6 @@ static void canTX200Hz(void *pvParameters) {
             sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_SET_MAX_CURRENT, &currentRR_dA, sizeof(uint16_t), canTX10Hz_period_ms);
         }
 
-        daqWheelSpeedFeedback(&speedFeedback);
-        daqWheelTorqueFeedback(&torqueFeedback);
-        daqWheelSpeedSetpoints(&speedSetpoint);
-        daqWheelTorqueSetpoints(&torqueSetpoint);
-
-        daqPosePosition(&posePos);
-        //daqPoseOrientation(&poseOrient);
-        daqPoseVelocity(&poseVel);
-        
-        cog_velocity.cog_x_mps = car_state.velocity.x * 100.0f;
-        cog_velocity.cog_y_mps = car_state.velocity.y * 100.0f;
-        cog_velocity.slip_angle = car_state.slip_angle.body;
-
-        front_velocity.fl_x = car_state.fl_velocity.x * 100.0f;
-        front_velocity.fl_y = car_state.fl_velocity.y * 100.0f;
-        front_velocity.fr_x = car_state.fr_velocity.x * 100.0f;
-        front_velocity.fr_y = car_state.fr_velocity.y * 100.0f;
-
-        rear_velocity.rl_x = car_state.rl_velocity.x * 100.0f;
-        rear_velocity.rl_y = car_state.rl_velocity.y * 100.0f;
-        rear_velocity.rr_x = car_state.rr_velocity.x * 100.0f;
-        rear_velocity.rr_y = car_state.rr_velocity.y * 100.0f;
-
-
-        // YRC
-        // canTX(CMR_CAN_BUS_VEH, CMR_CANID_CONTROLS_PID_IO, &yrcDebug, sizeof(yrcDebug), canTX200Hz_period_ms);
-
         if(new_dim_request) {
             cmr_canDIMRequest_t *dimRequest = canVehicleGetPayload(CANRX_VEH_REQUEST_DIM);
             canTX(CMR_CAN_BUS_DAQ, CMR_CANID_DIM_REQUEST, dimRequest, sizeof(cmr_canDIMRequest_t), canTX200Hz_period_ms);
@@ -1234,41 +1175,6 @@ static void canTX5Hz(void *pvParameters) {
     TickType_t lastWakeTime = xTaskGetTickCount();
 
     while (1) {
-
-        // Forward SBG Systems messages to vehicle CAN at lower 5Hz rate
-        for (size_t i = 0; i < CANRX_DAQ_LEN; i++) {
-
-            uint16_t canID = canDaqRXMeta[i].canID;
-            if (canID == CMR_CANID_EMD_MEASUREMENT || i == CANRX_DAQ_MEMORATOR_BROADCAST) {
-                continue;
-                canID = CMR_CANID_EMD_MEASUREMENT_RETX;
-            }
-
-            // Do not transmit if we haven't received that message lately
-            if (cmr_canRXMetaTimeoutError(&canDaqRXMeta[i], xTaskGetTickCountFromISR()) < 0) continue;
-
-            // 7 messages in RX stuct are 6 bytes long except position message and EMD message
-            size_t message_size = (
-                (i == CANRX_DAQ_SBG_POS || (i >= CANRX_DAQ_LOAD_FL && i <= CANRX_DAQ_LOAD_RR) || (i >= CANRX_DAQ_LINPOTS_LEFTS && i <= CANRX_DAQ_LINPOTS_RIGHTS)) ?
-                8 : ((i == CANRX_DAQ_SBG_SLIPANGLE) ? 7 : 6)
-            );
-
-            if (canID == CMR_CANID_EMD_MEASUREMENT) {
-                canID = CMR_CANID_EMD_MEASUREMENT_RETX;
-            }
-
-//            canTX(
-//                CMR_CAN_BUS_VEH,
-//                canID,
-//				(void *) &(canDaqRXMeta[i].payload),
-//                message_size,
-//                canTX5Hz_period_ms
-//            );
-        }
-
-        // Send DRS state and debug data
-        const cmr_canDCMDRSStates_t *drsStatesInfo = getDRSInfo();
-        // canTX(CMR_CAN_BUS_VEH, CMR_CANID_DRS_STATE, drsStatesInfo, sizeof(*drsStatesInfo), canTX5Hz_period_ms);
 
         transmitDCM_DIMconfigMessages();
 
@@ -1318,15 +1224,6 @@ static void canTX1Hz(void *pvParameters) {
     TickType_t lastWakeTime = xTaskGetTickCount();
 
     while (1) {
-        cmr_canDCMControlsStatus_t *controlsStatus = getControlsStatus();
-        // canTX(CMR_CAN_BUS_VEH, CMR_CANID_DCM_CONTROLS_STATUS, controlsStatus, sizeof(cmr_canDCMControlsStatus_t), canTX1Hz_period_ms);
-
-        cmr_canDCMPowerLimitLog_t power_limit = {
-            // If you don't #include "safety_filter.h",
-            // getPowerLimit_W() is 0!!!!!!!!!!! (╯°□°)╯ノ彡┻━┻
-            .power_limit_W = getPowerLimit_W(),
-        };
-        // canTX(CMR_CAN_BUS_VEH, CMR_CANID_DCM_POWER_LOG, &power_limit, sizeof(power_limit), canTX1Hz_period_ms);
 
         volatile cmr_canSensoricVelAng_t *sensoricVelAng = (cmr_canSensoricVelAng_t*)canDAQGetPayload(CANRX_DAQ_SENSORIC_VEL_ANG);
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_SENSORIC_VEL_ANG, sensoricVelAng, sizeof(cmr_canSensoricVelAng_t), canTX200Hz_period_ms);
@@ -1883,34 +1780,6 @@ cmr_canRXMeta_t *canTractiveGetMeta(canTractiveRX_t msg) {
  */
 cmr_canRXMeta_t *canDAQGetMeta(canDaqRX_t msg) {
     return &(canDaqRXMeta[msg]);
-}
-
-/**
- * @brief Return the HV voltage as measured by the EMD.
- *
- * @return HV voltage.
- */
-float canEmdHvVoltage() {
-//    static const float div = powf(2.0f, 16.0f);
-//
-//    volatile cmr_canEMDMeasurements_t *meas = canVehicleGetPayload(CANRX_VEH_EMD_MEASURE);
-//    int32_t converted = (int32_t) __builtin_bswap32((uint32_t) meas->voltage);
-//    return ((float) converted) / div;
-	return 0;
-}
-
-/**
- * @brief Return the HV current as measured by the EMD.
- *
- * @return HV current.
- */
-float canEmdHvCurrent() {
-//    static const float div = powf(2.0f, 16.0f);
-//
-//    volatile cmr_canEMDMeasurements_t *meas = canVehicleGetPayload(CANRX_VEH_EMD_MEASURE);
-//    int32_t converted = (int32_t) __builtin_bswap32((uint32_t) meas->current);
-//    return ((float) converted) / div;
-	return 0;
 }
 
 /**

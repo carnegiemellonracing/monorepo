@@ -14,6 +14,7 @@
 #define BUTTON_ACT  0b00010000
 #define BUTTON_PTT  0b100000
 #define BUTTON_SCRN 0b10000
+#define YRC_PERS_SWANGLE_DEADZONE_RAD 0.0872665f // 5 degrees in radians
 
 // ------------------------------------------------------------------------------------------------
 // Includes
@@ -29,28 +30,6 @@ void setSlowTorque(uint8_t throttlePos_u8, int32_t swAngle_millideg);
 void setFastTorque(uint8_t throttlePos_u8);
 void setFastTorqueWithBias(uint8_t throttlePos_u8, float front_bias);
 float getYawRateControlLeftRightBias(int32_t swAngle_millideg);
-void setTractionControl(uint8_t throttlePos_u8, uint16_t brakePressurePsi_u8, int32_t swAngle_millideg, float leftRightBias_Nm,
-    bool assumeNoTurn, bool ignoreYawRate, bool allowRegen, float critical_speed_mps);
-void setYawRateControl (
-    uint8_t throttlePos_u8,
-    uint16_t brakePressurePsi_u8,
-    int32_t swAngle_deg,
-    bool clampbyside
-);
-void setYawRateAndTractionControl(uint8_t throttlePos_u8, uint16_t brakePressurePsi_u8, int32_t swAngle_millideg,
-    bool assumeNoTurn, bool ignoreYawRate, bool allowRegen, float critical_speed_mps);
-void setCruiseControlTorque(uint8_t throttlePos_u8, uint16_t brakePressurePsi_u8, int32_t avgMotorSpeed_RPM);
-void setEnduranceTorque(int32_t avgMotorSpeed_RPM, uint8_t throttlePos_u8, int32_t swAngle_millideg,
-    int32_t battVoltage_mV, int32_t battCurrent_mA, uint16_t brakePressurePsi_u8);
-void setEnduranceTestTorque(
-    int32_t avgMotorSpeed_RPM,
-    uint8_t throttlePos_u8,
-    int32_t swAngle_millideg,
-    int32_t battVoltage_mV,
-    int32_t battCurrent_mA,
-    uint16_t brakePressurePsi_u8,
-    bool clampbyside
-);
 
 // ------------------------------------------------------------------------------------------------
 // Public functions
