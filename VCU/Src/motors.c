@@ -21,7 +21,6 @@
 #include <CMR/utils.h>
 
 // #include "controls_23e.h"
-#include "drs_controls.h"
 #include "servo.h"
 #include "can.h"
 #include "daq.h"
@@ -53,9 +52,6 @@ static cmr_task_t motorsCommand_task;
 
 static cmr_task_t motorsTest_task;
 
-/** @brief DAQ test type and HAL rand init **/
-cmr_canDAQTest_t daqTest;
-
 /** @brief Vehicle gear. */
 static cmr_canGear_t gear = CMR_CAN_GEAR_SLOW;
 
@@ -72,10 +68,6 @@ static cmr_DTISetpoints_t motorSetpoints[MOTOR_LEN];
 static cmr_DTI_RX_Message_t DTI_RXMessage[MOTOR_LEN];
 
 #define MAX_CURRENT_DECI_AMPS 850                        
-
-cmr_canDAQTest_t getDAQTest() {
-    return daqTest;
-}
 
 /* Global Variable to Initiate/Disable Torque Mode*/ 
 bool isTorqueMode = false;
@@ -124,6 +116,7 @@ static void motorsCommand (
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
+        volatile cmr_canHeartbeat_t      *heartbeatVSM = canVehicleGetPayload(CANRX_VEH_HEARTBEAT_VSM);
         volatile cmr_canDIMRequest_t     *reqDIM       = canVehicleGetPayload(CANRX_VEH_REQUEST_DIM);
         volatile cmr_canFSMData_t        *dataFSM      = canVehicleGetPayload(CANRX_VEH_DATA_FSM);
         volatile cmr_canFSMSWAngle_t     *swangleFSM   = canVehicleGetPayload(CANRX_VEH_SWANGLE_FSM);
@@ -131,8 +124,6 @@ static void motorsCommand (
         volatile cmr_canHVCPackCurrent_t *currentHVC   = canVehicleGetPayload(CANRX_VEH_CURRENT_HVC);
         volatile cmr_canVSMStatus_t      *vsm          = canVehicleGetPayload(CANRX_VSM_STATUS);
         volatile cmr_canDIMActions_t     *actions      = canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON);
-
-        volatile cmr_canState_t state = getCurrentExternalState();
 
         //transmit Coulombs using HVI sense
         integrateCurrent();
@@ -158,10 +149,8 @@ static void motorsCommand (
         //                 dataFSM    -> brakePressureFront_PSI
         //                 );
         // mcCtrlOn();
-        
-        cmr_canState_t state = getCurrentExternalState();
 
-        switch (state) {
+        switch (heartbeatVSM->state) {
             // Drive the vehicle in RTD
             case CMR_CAN_AS_DRIVING:
             case CMR_CAN_RTD: {
@@ -214,6 +203,12 @@ static void motorsCommand (
             // Reset errors in HV_EN
             case CMR_CAN_AS_READY:
             case CMR_CAN_HV_EN: {
+                //for now, for testing purposes 
+                float maxPhantomDiffScalingFactor_test = 0.25f;
+                getProcessedValue(&maxPhantomDiffScalingFactor_test, PHANTOM_DIFF_CONSTANT_INDEX, float_2_decimal);
+                int send = (int)(maxPhantomDiffScalingFactor_test * 100.0f); 
+                canTX(CMR_CAN_BUS_VEH, 0x526, &send, sizeof(int), 200); 
+                
             	mcCtrlOn();
             	// fansOn();
             	pumpsOn();
@@ -230,6 +225,11 @@ static void motorsCommand (
             case CMR_CAN_AS_FINISHED:
             case CMR_CAN_GLV_ON: {
                 // pumpsOn();
+                //for now, for testing purposes 
+                float maxPhantomDiffScalingFactor_test = 0.25f;
+                getProcessedValue(&maxPhantomDiffScalingFactor_test, PHANTOM_DIFF_CONSTANT_INDEX, float_2_decimal);
+                int send = (int)(maxPhantomDiffScalingFactor_test * 100.0f); 
+                canTX(CMR_CAN_BUS_VEH, 0x526, &send, sizeof(int), 200); 
                 pumpsOff();
             	mcCtrlOff();
 
@@ -258,14 +258,14 @@ static void motorsCommand (
         }
 
         // Update gear in transition from HV_EN to RTD
-        if ((prevState == CMR_CAN_HV_EN && state == CMR_CAN_RTD)
-            || (prevState == CMR_CAN_AS_READY && state == CMR_CAN_AS_DRIVING)) {
+        if ((prevState == CMR_CAN_HV_EN && heartbeatVSM->state == CMR_CAN_RTD)
+            || (prevState == CMR_CAN_AS_READY && heartbeatVSM->state == CMR_CAN_AS_DRIVING)) {
             gear = reqDIM->requestedGear;
             resetRetroactiveLimitFilters();
             initControls();
         }
 
-        prevState = state;
+        prevState = heartbeatVSM->state;
         vTaskDelayUntil(&lastWakeTime, motorsCommand_period_ms);
     }
 }
@@ -292,42 +292,6 @@ void motorsInit (
 }
 
 /**
- * @brief Sets positive torque limit for a motor.
- *
- * @param motor Which motor to set torque limit for.
- * @param torqueLimPos_Nm Desired positive torque limit.
- */
-void setTorqueLimPos (
-    motorLocation_t motor,
-    float torqueLimPos_Nm
-) {
-    if (motor >= MOTOR_LEN) {
-        return;
-    }
-
-    torqueLimPos_Nm = fmaxf(torqueLimPos_Nm, 0.0f);
-    motorSetpoints[motor].torqueLimPos_mNm = torqueLimPos_Nm;
-}
-
-/**
- * @brief Sets negative torque limit for a motor.
- *
- * @param motor Which motor to set torque limit for.
- * @param torqueLimNeg_Nm Desired negative torque limit.
- */
-void setTorqueLimNeg (
-    motorLocation_t motor,
-    float torqueLimNeg_Nm
-) {
-    if (motor >= MOTOR_LEN) {
-        return;
-    }
-
-    torqueLimNeg_Nm = fminf(torqueLimNeg_Nm, 0.0f);
-    motorSetpoints[motor].torqueLimNeg_mNm = torqueLimNeg_Nm;
-}
-
-/**
  * @brief Sets both positive and negative torque limits for all motors.
  *
  * @param torqueLimPos_Nm Desired positive torque limit.
@@ -339,6 +303,7 @@ void setTorqueLimsAllProtected (
 ) {
     setTorqueLimsAllDistProtected(torqueLimPos_Nm, torqueLimNeg_Nm, NULL, NULL);
 }
+
 
 /**
  * @brief Sets both positive and negative torque limits for all motors with over/undervolt protection.
@@ -372,6 +337,7 @@ void setTorqueLimsAllDistProtected (
     setTorqueLimsProtected(&torquesPos_Nm, &torquesNeg_Nm);
 }
 
+
 /**
  * @brief Sets both positive and negative torque limits for a motor.
  *
@@ -395,41 +361,6 @@ void setTorqueLimsUnprotected (
     motorSetpoints[motor].torqueLimNeg_mNm = torqueLimNeg_Nm * 1000.0f;
 }
 
-/**
- * @brief Sets direct torque for a motor.
- *
- * @param motor Which motor to set torque for.
- * @param torqueLimPos_Nm Desired torque.
- */
-void setTorques (
-    motorLocation_t motor,
-    float torque_Nm
-) {
-    if (motor >= MOTOR_LEN) {
-        return;
-    }
-
-    torque_Nm = fmaxf(torque_Nm, 0.0f); // ensures torqueLimPos_Nm >= 0
-
-    motorSetpoints[motor].torque_mNm = torque_Nm * 1000.0f;
-}
-
-/**
- * @brief Sets direct torque for a motor.
- *
- * @param motor Which motor to set torque for.
- * @param torqueLimPos_Nm Desired torque.
- */
-void setTorquesAll (
-    float torque_Nm
-) {
-    torque_Nm = fmaxf(torque_Nm, 0.0f); // ensures torqueLimPos_Nm >= 0
-
-    motorSetpoints[MOTOR_FL].torque_mNm = torque_Nm * 1000.0f;
-    motorSetpoints[MOTOR_FR].torque_mNm = torque_Nm * 1000.0f;
-    motorSetpoints[MOTOR_RL].torque_mNm = torque_Nm * 1000.0f;
-    motorSetpoints[MOTOR_RR].torque_mNm = torque_Nm * 1000.0f;
-}
 
 /**
  * @brief Sets velocity setpoint for a motor.
@@ -503,19 +434,6 @@ void setVelocityFloatAll (
 }
 
 /**
- * @brief Sets torque setpoint for a motor.
- *
- * @param motor Which motor to set torque for.
- * @param torque Desired torque in Nm
- */
-void setTorque(
-    motorLocation_t motor,
-    float torque_Nm
-){
-    motorSetpoints[motor].torque_mNm = 1000.0f * torque_Nm;
-}
-
-/**
  * @brief Initiates Torque Mode.
  */
 void initiateTorqueMode()
@@ -529,15 +447,6 @@ void initiateTorqueMode()
 void disableTorqueMode()
 {
     isTorqueMode = false;
-}
-
-/**
- * @brief Calculate the torque budget for power-aware traction and yaw rate control.
- *
- * @return The torque upper- and lower-limits for a motor, which applies to every motor.
- */
-cmr_torque_limit_t getTorqueBudget() {
-	return getPreemptiveTorqueLimits();
 }
 
 /**
