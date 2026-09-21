@@ -880,16 +880,6 @@ static void canTX10Hz(void *pvParameters) {
         powerSense.packCurrent_dA = getCurrent_mA() / 100;
         powerSense.packVoltage_cV = getVoltage_mV() / 10;
         
-        cmr_canDAQTherm_t therms1;
-        therms1.therm_1 = adcRead(ADC_THERM1);
-        therms1.therm_2 = adcRead(ADC_THERM2);
-        cmr_canDAQTherm_t therms2;
-        therms2.therm_1 = adcRead(ADC_THERM3);
-        therms2.therm_2 = adcRead(ADC_THERM4);
-
-        canTX(CMR_CAN_BUS_VEH, 0x658, &therms1, sizeof(cmr_canDAQTherm_t), canTX10Hz_period_ms);
-        canTX(CMR_CAN_BUS_VEH, 0x659, &therms2, sizeof(cmr_canDAQTherm_t), canTX10Hz_period_ms);
-
         cmr_canEMDBrakePressure_t emdPressures = {
             .ebsPressure1_psi = (uint16_t)((float)(dvPressure->ebsPressure_1_deci_bar) * 1.45038),
             .ebsPressure2_psi = (uint16_t)((float)(dvPressure->ebsPressure_2_deci_bar) * 1.45038),
