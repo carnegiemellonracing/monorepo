@@ -169,15 +169,6 @@ Var=ACTION_rearTorque_mNm signed 16,16
 Var=steeringAngle_centi_deg signed 32,16
 Var=maxVelocity_decimeters_s unsigned 48,16
 
-[CDC_POWER_SENSE]
-ID=305h
-DLC=8
-CycleTime=100
-TimeOut=500
-Var=POWER_packCurrent_dA signed 0,16 /u:dA
-Var=POWER_packVoltage_cV unsigned 16,16 /u:cV
-Var=POWER_packPower_W signed 32,32 /u:W
-
 [CELL_BALANCE_ENABLE]
 ID=134h
 DLC=3
@@ -185,16 +176,6 @@ CycleTime=10
 TimeOut=50
 Var=BALANCE_balanceRequest unsigned 0,8 /e:HVC_Balance_State
 Var=BALANCE_threshold unsigned 8,16
-
-[CONTROLS_PID_IO]
-ID=7E5h
-DLC=8
-CycleTime=5
-TimeOut=25
-Var=PID_controls_current_yaw_rate signed 0,16 /f:0.01 /p:2
-Var=PID_controls_target_yaw_rate signed 16,16 /f:0.01 /p:2
-Var=PID_controls_bias signed 32,16 /f:0.01 /p:2
-Var=PID_controls_pid signed 48,16 /f:0.01 /p:2
 
 [CUBEMARS_DATA]
 ID=000029FFh
@@ -241,6 +222,16 @@ Var=REQUEST_requestedDrsMode unsigned 16,8 /e:DrsMode
 Var=REQUEST_requestedDriver unsigned 24,8
 Var=REQUEST_requestedDVCtrl unsigned 32,8
 
+[DTI_ERROR_MESSAGES]
+ID=305h
+DLC=4
+CycleTime=100
+TimeOut=500
+Var=ERROR_fr_fault_code unsigned 0,8
+Var=ERROR_fl_fault_code unsigned 8,8
+Var=ERROR_rr_fault_code unsigned 16,8
+Var=ERROR_rl_fault_code unsigned 24,8
+
 [DTI_FL_TEMPFAULT]
 ID=22h
 DLC=1
@@ -263,30 +254,6 @@ CycleTime=200
 TimeOut=1000
 Var=CUBEMARS_motorTemp_C signed 0,8
 Var=CUBEMARS_errorCode unsigned 8,8
-
-[FRONT_SLIP_RATIOS]
-ID=7E8h
-DLC=8
-CycleTime=100
-TimeOut=500
-Var=SLIP_slipRatio_FL float 0,32
-Var=SLIP_slipRatio_FR float 32,32
-
-[FRONT_WHL_SETPOINTS]
-ID=7EAh
-DLC=8
-CycleTime=100
-TimeOut=500
-Var=WHL_slipRatio_FL float 0,32
-Var=WHL_slipRatio_FR float 32,32
-
-[FRONT_WHL_VELS]
-ID=7ECh
-DLC=8
-CycleTime=100
-TimeOut=500
-Var=WHL_v_whl_fl float 0,32
-Var=WHL_v_whl_fr float 32,32
 
 [FSM_DATA]
 ID=133h
@@ -547,30 +514,6 @@ CycleTime=10
 TimeOut=50
 Var=CELL_balanceRequest unsigned 0,8 /e:HVC_Balance_State
 Var=CELL_threshold unsigned 8,16
-
-[REAR_SLIP_RATIOS]
-ID=7E9h
-DLC=8
-CycleTime=100
-TimeOut=500
-Var=SLIP_slipRatio_RL float 0,32
-Var=SLIP_slipRatio_RR float 32,32
-
-[REAR_WHL_SETPOINTS]
-ID=7EBh
-DLC=8
-CycleTime=100
-TimeOut=500
-Var=WHL_omega_RL float 0,32
-Var=WHL_omega_RR float 32,32
-
-[REAR_WHL_VELS]
-ID=7EDh
-DLC=8
-CycleTime=100
-TimeOut=500
-Var=WHL_v_whl_rl float 0,32
-Var=WHL_v_whl_rr float 32,32
 
 [SBG_BODY_VEL]
 ID=729h
@@ -1441,6 +1384,13 @@ Var=AMK_BR_TargetVelocity signed 16,16 /u:rpm /p:2
 Var=AMK_BR_TorqueLimitPositiv signed 32,16 /u:Nm /f:0.0098 /p:4	// Giving in 0.1% of nominal torque Mn, where Mn = 9.8 Nm.
 Var=AMK_BR_TorqueLimitNegativ signed 48,16 /u:Nm /f:0.0098 /p:4	// Giving in 0.1% of nominal torque Mn, where Mn = 9.8 Nm.
 
+[CDC_CONTROLS_PID]
+ID=7E5h
+CycleTime=100
+Var=controls_current_yaw_rate signed 0,16 /u:rad.s-1 /f:0.01 /p:2
+Var=controls_target_yaw_rate signed 16,16 /u:rad.s-1 /f:0.01 /p:2
+Var=controls_pid float 32,32 /f:0.01 /p:2
+
 [EMD_Status]
 ID=400h
 DLC=4
@@ -1558,6 +1508,42 @@ Var=motor_power_FL unsigned 0,16
 Var=motor_power_FR unsigned 16,16
 Var=motor_power_RL unsigned 32,16
 Var=motor_power_RR unsigned 48,16
+
+[CDC_Front_Slip_Ratios]
+ID=7E8h
+DLC=8
+Var=slipRatio_FL float 0,32 /p:8
+Var=slipRatio_FR float 32,32 /p:8
+
+[CDC_Rear_Slip_Ratios]
+ID=7E9h
+DLC=8
+Var=slipRatio_RL float 0,32 /p:8
+Var=slipRatio_RR float 32,32 /p:8
+
+[CDC_Front_Velocity_Setpoints]
+ID=7EAh
+DLC=8
+Var=setPoint_FL float 0,32
+Var=setPoint_FR float 32,32
+
+[CDC_Rear_Velocity_Setpoints]
+ID=7EBh
+DLC=8
+Var=setPoint_RL float 0,32
+Var=setPoint_RR float 32,32
+
+[CDC_Front_Whl_Velocity_Calc]
+ID=7ECh
+DLC=8
+Var=vel_calc_FL float 0,32
+Var=vel_calc_FR float 32,32
+
+[CDC_Rear_Whl_Velocity_Calc]
+ID=7EDh
+DLC=8
+Var=vel_calc_RL float 0,32
+Var=vel_calc_RR float 32,32
 
 [DIM_Config2_Drv0]
 ID=602h
