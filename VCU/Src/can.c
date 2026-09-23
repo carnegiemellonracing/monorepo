@@ -1013,6 +1013,7 @@ static void canTX200Hz(void *pvParameters) {
     while (1) {
         
         cmr_canState_t VSMstate = getCurrentExternalState(); 
+
         //instance here
         if (VSMstate == CMR_CAN_RTD || 
             VSMstate == CMR_CAN_AS_DRIVING){
@@ -2025,7 +2026,6 @@ static void sendVSMSensors(void) {
         .brakePressureRear_PSI =    cmr_sensorListGetValue(&sensorList, SENSOR_CH_BPRES_PSI),
         .batt_mV =                  cmr_sensorListGetValue(&sensorList, SENSOR_CH_VOLTAGE_MV),
         .safetyIn_eight_V =         cmr_sensorListGetValue(&sensorList, SENSOR_CH_SS_IN),
-        .safetyOut_eight_V =        cmr_sensorListGetValue(&sensorList, SENSOR_CH_SS_OUT),
         .EAB_pressed =              cmr_gpioRead(GPIO_IN_EAB),
         .hv_current_A =             cmr_sensorListGetValue(&sensorList, SENSOR_CH_HALL_EFFECT_A),   
     };
