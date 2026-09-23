@@ -108,11 +108,7 @@ void updateCurrentErrors(volatile vsmStatus_t *vsmStatus, TickType_t lastWakeTim
         latchMatrix |= CMR_CAN_VSM_LATCH_SOFTWARE;
         sendFirstError(LATCH_SOFTWARE_ERR);
     }
-    if (!cmr_gpioRead(GPIO_IN_IMD_ERR_N)) {
-        heartbeatErrors |= CMR_CAN_ERROR_VSM_LATCHED_ERROR;
-        latchMatrix |= CMR_CAN_VSM_LATCH_IMD;
-        sendFirstError(LATCH_IMD_ERR);
-    }
+
     if (!cmr_gpioRead(GPIO_IN_BSPD_ERR_N)) {
         heartbeatErrors |= CMR_CAN_ERROR_VSM_LATCHED_ERROR;
         latchMatrix |= CMR_CAN_VSM_LATCH_BSPD;

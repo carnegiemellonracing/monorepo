@@ -39,8 +39,6 @@ typedef enum {
     GPIO_OUT_RTD_SIGNAL,        /**< @brief Ready-to-drive signal. */
     GPIO_IN_SOFTWARE_ERR_N,     /**< @brief Software error latch input signal. */
     GPIO_IN_BSPD_ERR_N,         /**< @brief BSPD latch input signal. */
-    GPIO_IN_IMD_ERR_N,          /**< @brief IMD latch input signal. */
-    GPIO_IN_IMD_ERR_COND_N,     /**< @brief IMD un-latch input signal. */
     GPIO_IN_BSPD_ERR_UNLATCH,   /**< @brief BSPD un-latch input signal. */
     GPIO_IN_EAB,                /**< @brief EAB Signal Input */
     GPIO_LEN                    /**< @brief Total GPIO pins. */
