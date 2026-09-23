@@ -1288,16 +1288,16 @@ void dim_params_callback (cmr_can_t *canb_rx, uint16_t canID, const void *data, 
     if (currentTime - lastDriverChangeTime < 10000) return;
 
     // cast the data to the appropriate format
-    cmr_canDIMDCMconfig_t *dim_data = (cmr_canDIMDCMconfig_t *) data;
+    cmr_canDIMVCUconfig_t *dim_data = (cmr_canDIMVCUconfig_t *) data;
     // cast the data to an array for easy indexing
     uint8_t *dim_data_arr = (uint8_t*) dim_data;
 
     // Copy received data to parametersFromDIM - add 1 because sending Driver is encoded in CAN ID
-    int current_copy_index = packet_number*sizeof(cmr_canDIMDCMconfig_t) + 1;
+    int current_copy_index = packet_number*sizeof(cmr_canDIMVCUconfig_t) + 1;
     // Deal with Driver (set to index 0)
     parametersFromDIM[0] = recievedDriver;
     // note, the following only works bc each element is a byte
-    int size_to_copy = min( (MAX_MENU_ITEMS - current_copy_index), sizeof(cmr_canDIMDCMconfig_t) );
+    int size_to_copy = min( (MAX_MENU_ITEMS - current_copy_index), sizeof(cmr_canDIMVCUconfig_t) );
     memcpy((void *) &(parametersFromDIM[current_copy_index]), dim_data_arr, size_to_copy);
     gotten_packet[packet_number] = true;
 
@@ -1856,32 +1856,32 @@ int sendCubeMarsMessage(cmr_canBusID_t bus, cmr_canExtendedID_t id, const void *
 
 static void transmitDCM_DIMconfigMessages(){
     /* pack struct message for config */
-    cmr_canDIMDCMconfig_t config0 = {
+    cmr_canDIMVCUconfig_t config0 = {
         .config_val_1 = config_menu_main_array[1].value.value,
         .config_val_2 = config_menu_main_array[2].value.value,
         .config_val_3 = config_menu_main_array[3].value.value,
         .config_val_4 = config_menu_main_array[4].value.value,
     };
-    cmr_canDIMDCMconfig_t config1 = {
+    cmr_canDIMVCUconfig_t config1 = {
         .config_val_1 = config_menu_main_array[5].value.value,
         .config_val_2 = config_menu_main_array[6].value.value,
         .config_val_3 = config_menu_main_array[7].value.value,
         .config_val_4 = config_menu_main_array[8].value.value,
     };
-    cmr_canDIMDCMconfig_t config2 = {
+    cmr_canDIMVCUconfig_t config2 = {
         .config_val_1 = config_menu_main_array[9].value.value,
         .config_val_2 = config_menu_main_array[10].value.value,
         .config_val_3 = config_menu_main_array[11].value.value,
         .config_val_4 = config_menu_main_array[12].value.value,
     };
-    cmr_canDIMDCMconfig_t config3 = {
+    cmr_canDIMVCUconfig_t config3 = {
         .config_val_1 = config_menu_main_array[13].value.value,
         .config_val_2 = config_menu_main_array[14].value.value,
         .config_val_3 = config_menu_main_array[15].value.value,
         .config_val_4 = config_menu_main_array[16].value.value,
     };
 
-    cmr_canDIMDCMconfig_t config_message_array[NUM_CONFIG_PACKETS] = {
+    cmr_canDIMVCUconfig_t config_message_array[NUM_CONFIG_PACKETS] = {
         config0,
         config1,
         config2,
