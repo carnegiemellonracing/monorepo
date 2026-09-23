@@ -151,16 +151,6 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
         }
     },
 
-    [GPIO_OUT_RTD_SIGNAL] = {
-        .port = GPIOC,
-        .init = {
-            .Pin = GPIO_PIN_6,
-            .Mode = GPIO_MODE_OUTPUT_PP,
-            .Pull = GPIO_NOPULL,
-            .Speed = GPIO_SPEED_FREQ_LOW
-        }
-    },
-
     [GPIO_IN_SOFTWARE_ERR_N] = {
         .port = GPIOC,
         .init = {
@@ -215,6 +205,5 @@ void gpioInit(void) {
     cmr_gpioWrite(GPIO_AUXILIARY_ENABLE, 0);
 
     /* VSM initialization */
-    cmr_gpioWrite(GPIO_OUT_RTD_SIGNAL, 0);
     cmr_gpioWrite(GPIO_OUT_SOFTWARE_ERR_N, 1);
 }
