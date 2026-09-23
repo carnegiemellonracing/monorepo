@@ -36,7 +36,6 @@ typedef enum {
 	//VSM
 	GPIO_OUT_LED_STATUS = 0,    /**< @brief Status LED. */
     GPIO_OUT_SOFTWARE_ERR_N,    /**< @brief Software error Driver. */
-    GPIO_OUT_AMS_ERR_N,         /**< @brief AMS error Driver. */
     GPIO_OUT_RTD_SIGNAL,        /**< @brief Ready-to-drive signal. */
     GPIO_IN_SOFTWARE_ERR_N,     /**< @brief Software error latch input signal. */
     GPIO_IN_BSPD_ERR_N,         /**< @brief BSPD latch input signal. */
