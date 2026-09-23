@@ -11,6 +11,8 @@
 #include <CMR/pwm.h>
 #include <CMR/gpio.h>
 
+#pragma once
+
 /**
  * @brief Represents a GPIO pin.
  *
@@ -44,6 +46,9 @@ typedef enum {
     GPIO_IN_EAB,                /**< @brief EAB Signal Input */
     GPIO_LEN                    /**< @brief Total GPIO pins. */
 } gpio_t;
+
+void mcCtrlOff();
+void mcCtrlOn();
 
 void gpioInit(void);
 

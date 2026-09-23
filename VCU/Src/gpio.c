@@ -22,7 +22,7 @@
  * new combined VCU board schematic. Some VSM and DCM pins overlap and will
  * need to be reconciled.
  *
- * @see `stm32h7xx_hal_gpio.h` for various initialization values.
+ * @see `stm32f4xx_hal_gpio.h` for various initialization values.
  */
 static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
 
@@ -231,6 +231,26 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
         }
     }
 };
+
+//mcCtrl states
+void mcCtrlOff();
+void mcCtrlOn();
+
+/**
+ * @brief Task for controller power to motor controller.
+ *
+ * @param pvParameters Ignored.
+ *
+ * @return Does not return.
+ */
+
+void mcCtrlOff() {
+    cmr_gpioWrite(GPIO_MTR_CTRL_ENABLE, 0);
+}
+
+void mcCtrlOn() {
+    cmr_gpioWrite(GPIO_MTR_CTRL_ENABLE, 1);
+}
 
 /**
  * @brief Initializes the GPIO interface.
