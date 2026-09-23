@@ -109,13 +109,6 @@ void updateCurrentErrors(volatile vsmStatus_t *vsmStatus, TickType_t lastWakeTim
         sendFirstError(LATCH_SOFTWARE_ERR);
     }
 
-    if (!cmr_gpioRead(GPIO_IN_BSPD_ERR_N)) {
-        heartbeatErrors |= CMR_CAN_ERROR_VSM_LATCHED_ERROR;
-        latchMatrix |= CMR_CAN_VSM_LATCH_BSPD;
-        sendFirstError(LATCH_BSPD_ERR);
-    }
-
-
     // Update vsmErrors struct
     vsmStatus->heartbeatErrors = heartbeatErrors;
     vsmStatus->canVSMStatus.moduleTimeoutMatrix = moduleTimeoutMatrix;
