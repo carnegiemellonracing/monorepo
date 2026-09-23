@@ -914,7 +914,6 @@ static void canTXLatchedStatus(void *pvParameters) {
 static bool detectedFirstError = false;
 
 // Forward declarations
-static void sendDCMHeartbeat(TickType_t lastWakeTime);
 static void sendVSMHeartbeat(TickType_t lastWakeTime);
 static void sendVSMStatus(void);
 static void sendVSMSensors(void);
@@ -946,8 +945,6 @@ static void canTX100Hz(void *pvParameters) {
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
 
-        sendDCMHeartbeat(lastWakeTime);
-
         cmr_canHeartbeat_t *heartbeatVSM = canVehicleGetPayload(CANRX_VEH_HEARTBEAT_VSM);
 		canTX(CMR_CAN_BUS_DAQ, CMR_CANID_DAQ_VSM_HEARTBEAT, heartbeatVSM, sizeof(cmr_canHeartbeat_t), canTX100Hz_period_ms); 
         vTaskDelayUntil(&lastWakeTime, canTX100Hz_period_ms);
@@ -956,20 +953,6 @@ static void canTX100Hz(void *pvParameters) {
         sendVSMStatus();
         sendHVCCommand();
     }
-}
-
-//check if CANTX task 
-static void sendDCMHeartbeat(TickType_t lastWakeTime) {
-    cmr_canHeartbeat_t heartbeat = {0};
-
-    heartbeat.state = getCurrentExternalState(lastWakeTime);
-
-    updateErrorsWarnings(&heartbeat, lastWakeTime);
-
-    if (heartbeat.error[0] != 0 || heartbeat.error[1] != 0) {
-        heartbeat.state = CMR_CAN_ERROR;
-    }
-
 }
 
 /** @brief CAN 200 Hz TX priority. */
