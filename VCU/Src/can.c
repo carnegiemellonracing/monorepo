@@ -1926,34 +1926,6 @@ static void transmitDCM_DIMconfigMessages(){
 
 }
 
-
-/* @brief Sets the power limit for all motors or a specific motor
- */
-void setPowerLimit(bool all, motorLocation_t motor, float powerLimit_kw) { 
-    float clamp_powerLimit_kw = CLAMP(0.0f, powerLimit_kw, 35.0f);
-    if(all) {
-        powerLimitFL_kW = clamp_powerLimit_kw;
-        powerLimitFR_kW = clamp_powerLimit_kw;
-        powerLimitRL_kW = clamp_powerLimit_kw;
-        powerLimitRR_kW = clamp_powerLimit_kw;
-    } else {
-        switch(motor){
-            case MOTOR_FL:
-                powerLimitFL_kW = clamp_powerLimit_kw;
-                break;
-            case MOTOR_FR:
-                powerLimitFR_kW = clamp_powerLimit_kw;
-                break;
-            case MOTOR_RL:
-                powerLimitRL_kW = clamp_powerLimit_kw;
-                break;
-            case MOTOR_RR:
-                powerLimitRR_kW = clamp_powerLimit_kw;
-                break;
-        }
-    }
-}
-
 /**
  * @brief Gets a pointer to the payload of a received CAN message.
  *

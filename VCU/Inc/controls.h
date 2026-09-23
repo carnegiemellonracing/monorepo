@@ -53,6 +53,7 @@ void setAccelLaunchControl(
     float fz_fl, float fz_fr,
     float fz_rl, float fz_rr
 );
+void setPowerLimit(bool all, motorLocation_t motor, float powerLimit_kw);
 
 // ------------------------------------------------------------------------------------------------
 // Global variables
