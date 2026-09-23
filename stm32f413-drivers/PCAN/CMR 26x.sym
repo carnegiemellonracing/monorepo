@@ -298,13 +298,6 @@ TimeOut=50
 Var=steeringWheelAngle_millideg_FR signed 0,32 /u:deg /f:0.001
 Var=steeringWheelAngle_millideg_FL signed 32,32 /u:deg /f:0.001
 
-[CDC_HEARTBEAT]
-ID=102h
-DLC=5
-CycleTime=10
-TimeOut=50
-Var=CDC_HEARTBEAT_state unsigned 0,8 /e:State
-
 [DIM_HEARTBEAT]
 ID=104h
 DLC=5
@@ -485,8 +478,8 @@ Var=BMB_LOWER_BMB7 unsigned 60,4
 [HVC_COMMAND]
 ID=130h
 DLC=1
-CycleTime=40
-TimeOut=200
+CycleTime=10
+TimeOut=50
 Var=COMMAND_modeRequest unsigned 0,8 /e:HVCMode
 
 [HVC_LOW_VOLTAGE]
@@ -576,11 +569,31 @@ Var=VEL_vel_Y signed 16,16
 Var=VEL_vel_A signed 32,16
 Var=VEL_ang_S signed 48,16
 
+[VSM_LATCHED_STATUS]
+ID=510h
+DLC=3
+CycleTime=10000
+TimeOut=50000
+Var=VSM_TIMEOUT_SOURCE_HVC bit 6,1
+Var=VSM_TIMEOUT_SOURCE_VCU bit 5,1
+Var=VSM_TIMEOUT_SOURCE_FSM bit 4,1
+Var=VSM_TIMEOUT_SOURCE_DIM bit 3,1
+Var=VSM_TIMEOUT_SOURCE_HVBMS bit 0,1
+Var=VSM_BADSTATE_SOURCE_HVC bit 14,1
+Var=VSM_BADSTATE_SOURCE_VCU bit 13,1
+Var=VSM_BADSTATE_SOURCE_FSM bit 12,1
+Var=VSM_BADSTATE_SOURCE_DIM bit 11,1
+Var=VSM_BADSTATE_SOURCE_HVBMS bit 8,1
+Var=LATCHED_VSM_LATCH_SOFTWARE bit 19,1
+Var=LATCHED_VSM_LATCH_AMS bit 18,1
+Var=LATCHED_VSM_LATCH_IMD bit 17,1
+Var=LATCHED_VSM_LATCH_BSPD bit 16,1
+
 [VSM_SENSORS]
 ID=200h
 DLC=6
-CycleTime=20
-TimeOut=100
+CycleTime=100
+TimeOut=500
 Var=SENSORS_brakePressureRear_PSI unsigned 0,16
 Var=SENSORS_hallEffect_cA signed 16,16
 Var=SENSORS_safetyIn_V unsigned 32,8
@@ -596,40 +609,16 @@ Var=STATUS_VSM_TIMEOUT_SOURCE_HVC bit 14,1
 Var=STATUS_VSM_TIMEOUT_SOURCE_VCU bit 13,1
 Var=STATUS_VSM_TIMEOUT_SOURCE_FSM bit 12,1
 Var=STATUS_VSM_TIMEOUT_SOURCE_DIM bit 11,1
-Var=VSM_TIMEOUT_SOURCE_HVBMS bit 8,1
-Var=VSM_BADSTATE_SOURCE_HVC bit 22,1
-Var=VSM_BADSTATE_SOURCE_VCU bit 21,1
-Var=VSM_BADSTATE_SOURCE_FSM bit 20,1
-Var=VSM_BADSTATE_SOURCE_DIM bit 19,1
-Var=VSM_BADSTATE_SOURCE_HVBMS bit 16,1
+Var=VSM_TIMEOUT_SOURCE_HVBMS1 bit 8,1
+Var=VSM_BADSTATE_SOURCE_HVC1 bit 22,1
+Var=VSM_BADSTATE_SOURCE_VCU1 bit 21,1
+Var=VSM_BADSTATE_SOURCE_FSM1 bit 20,1
+Var=VSM_BADSTATE_SOURCE_DIM1 bit 19,1
+Var=VSM_BADSTATE_SOURCE_HVBMS1 bit 16,1
 Var=STATUS_VSM_LATCH_SOFTWARE bit 27,1
 Var=STATUS_VSM_LATCH_AMS bit 26,1
 Var=STATUS_VSM_LATCH_IMD bit 25,1
 Var=STATUS_VSM_LATCH_BSPD bit 24,1
-
-[VSM_LatchedStatus]
-ID=510h	// Timeout matrix
-DLC=3
-CycleTime=10000
-Timeout=20000
-Var=VSM_latched_ERR_HVITimeout bit 0,1
-Var=VSM_latched_ERR_PTCfTimeout bit 2,1
-Var=VSM_latched_ERR_DIMTimeout bit 3,1
-Var=VSM_latched_ERR_PTCTimeout bit 4,1
-Var=VSM_latched_ERR_FSMTimeout bit 5,1
-Var=VSM_latched_ERR_CDCTimeout bit 6,1
-Var=VSM_latched_ERR_HVCTimeout bit 7,1
-Var=VSM_latched_ERR_APCState bit 8,1
-Var=VSM_latched_ERR_PTCfState bit 10,1
-Var=VSM_latched_ERR_DIMState bit 11,1
-Var=VSM_latched_ERR_PTCState bit 12,1
-Var=VSM_latched_ERR_FSMState bit 13,1
-Var=VSM_latched_ERR_CDCState bit 14,1
-Var=VSM_latched_ERR_HVCState bit 15,1
-Var=VSM_latched_ERR_latchBSPD bit 16,1
-Var=VSM_latched_ERR_latchIMD bit 17,1
-Var=VSM_latched_ERR_latchSoftware bit 18,1
-Var=VSM_latched_ERR_latchAMS bit 18,1
 
 [VSM_PowerDiagnostic]
 ID=530h
@@ -638,6 +627,23 @@ CycleTime=100
 Timeout=1000
 Var=VSM_busVoltage unsigned 0,16 /u:mV
 Var=VSM_busCurrent unsigned 16,16 /u:mA
+
+[CDC_Heartbeat]
+ID=102h
+DLC=5
+CycleTime=10
+Timeout=100
+Var=CDC_state unsigned 0,8 /e:State
+Var=CDC_ERR_VSMTimeout unsigned 8,1
+Var=CDC_ERR_amkAllError bit 23,1
+Var=CDC_WRN_VSMTimeout bit 24,1
+Var=CDC_WRN_memoratorTimeout bit 33,1
+Var=CDC_WRN_amkTimeout bit 34,1
+Var=CDC_WRN_amkError bit 35,1
+Var=CDC_WRN_amkSrcRR bit 36,1
+Var=CDC_WRN_amkSrcRL bit 37,1
+Var=CDC_WRN_amkSrcFR bit 38,1
+Var=CDC_WRN_amkSrcFL bit 39,1
 
 [CDC_MotorTemps]
 ID=512h
