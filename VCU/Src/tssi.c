@@ -46,10 +46,6 @@ static void tssiControl(void *pvParameters) {
     static bool exitedErrorState = false;
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        bool tssi_red_error =   getAMSError() || 
-                                !cmr_gpioRead(GPIO_IN_IMD_ERR_N) || 
-                                !cmr_gpioRead(GPIO_IN_IMD_ERR_COND_N);
-
         if (tssi_red_error && exitedErrorState) {
             flash_error_state();
         }
