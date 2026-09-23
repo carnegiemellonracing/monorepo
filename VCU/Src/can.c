@@ -1887,7 +1887,6 @@ static void transmitDCM_DIMconfigMessages(){
         config2,
         config3
     };
-
     // calculate the correct CAN ID based on the current driver
     uint32_t can_ids_config_driver[NUM_CONFIG_PACKETS];
     // uint8_t requested_driver = config_menu_main_array[DRIVER_PROFILE_INDEX].value.value;
@@ -2047,6 +2046,15 @@ static void sendVSMLatchedStatus(void) {
           canTXLatchedStatus_period_ms
     );
 }
+
+/**
+ * @brief Update RTD Buzzer from DIM. 
+ *
+ */
+
+ static void sendRTDRequest(void) {
+    f
+ }
 
 /**
  * @brief Update HVC with current requested state.
