@@ -15,7 +15,7 @@ find_package(Python COMPONENTS Interpreter QUIET)
 
 if(Python_FOUND)
     execute_process(
-        COMMAND ${Python_EXECUTABLE} -c "import json, re"
+        COMMAND ${Python_EXECUTABLE} -c "import json, re, canmatrix.formats"
         RESULT_VARIABLE PYTHON_DEPS_CHECK
         OUTPUT_QUIET
         ERROR_QUIET
@@ -42,7 +42,7 @@ if(PYTHON_DEPS_AVAILABLE)
     )
 else()
     add_custom_target(run_codegen_scripts
-        COMMAND ${CMAKE_COMMAND} -E echo "WARNING: Symbol files not generated - Python or dependencies missing."
+        COMMAND ${CMAKE_COMMAND} -E echo "WARNING: Symbol files not generated - Python or dependencies (json, re, canmatrix) missing."
         COMMENT "Skipping code generation scripts"
         VERBATIM
     )
