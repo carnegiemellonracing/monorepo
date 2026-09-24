@@ -11,9 +11,9 @@
             "type": "uint8_t"
         },
         "CMR_CANID_AS_MISSION_FINISHED": {
-            "cycleTime": 5,
-            "timeOut": 25,
-            "type": "asFinishedData"
+            "cycleTime": 100,
+            "timeOut": 500,
+            "type": "missionFinished"
         },
         "CMR_CANID_AS_PRESSURE_READINGS": {
             "cycleTime": 10,
@@ -30,231 +30,15 @@
             "timeOut": 2000,
             "type": "cmr_canAutonomousControlAction_t"
         },
-        "CMR_CANID_CDC_COG_VELOCITY": {
-            "cog_x_mps": {
-                "f": 0.01,
-                "u": "mps"
-            },
-            "cog_y_mps": {
-                "f": 0.01,
-                "u": "mps"
-            },
-            "cycleTime": 5,
-            "timeOut": 25,
-            "type": "cmr_canCOGVelocity_t"
-        },
         "CMR_CANID_CDC_CONTROLS_STATUS": {
-            "cycleTime": 1000,
-            "timeOut": 5000,
+            "cycleTime": 800.0,
+            "timeOut": 4000,
             "type": "cmr_canCDCControlsStatus_t"
         },
         "CMR_CANID_CDC_COULOMB_COUNTING": {
             "cycleTime": 100,
             "timeOut": 500,
             "type": "cmr_canCDCKiloCoulombs_t"
-        },
-        "CMR_CANID_CDC_FRONT_VELOCITY": {
-            "cycleTime": 5,
-            "fl_x": {
-                "f": 0.01
-            },
-            "fl_y": {
-                "f": 0.01
-            },
-            "fr_x": {
-                "f": 0.01
-            },
-            "fr_y": {
-                "f": 0.01
-            },
-            "timeOut": 25,
-            "type": "cmr_canFrontWheelVelocity_t"
-        },
-        "CMR_CANID_CDC_ODOMETER": {
-            "cycleTime": 1000,
-            "odometer_km": {
-                "u": "km"
-            },
-            "timeOut": 5000,
-            "type": "cmr_canCDCOdometer_t"
-        },
-        "CMR_CANID_CDC_POSE_ORIENTATION": {
-            "cycleTime": 100,
-            "pitch_deg": {
-                "f": 0.1,
-                "u": "deg"
-            },
-            "roll_deg": {
-                "f": 0.1,
-                "u": "deg"
-            },
-            "timeOut": 500,
-            "type": "cmr_canCDCPoseOrientation_t",
-            "velocity_deg": {
-                "f": 0.1,
-                "u": "deg"
-            },
-            "yaw_deg": {
-                "f": 0.1,
-                "u": "deg"
-            }
-        },
-        "CMR_CANID_CDC_POSE_POSITION": {
-            "cycleTime": 100,
-            "latitude_deg": {
-                "u": "deg"
-            },
-            "longitude_deg": {
-                "u": "deg"
-            },
-            "timeOut": 500,
-            "type": "cmr_canCDCPosePosition_t"
-        },
-        "CMR_CANID_CDC_POSE_VELOCITY": {
-            "cycleTime": 100,
-            "lateralVel_mps": {
-                "f": 0.01,
-                "u": "mps"
-            },
-            "longitudinalVel_mps": {
-                "f": 0.01,
-                "u": "mps"
-            },
-            "timeOut": 500,
-            "type": "cmr_canCDCPoseVelocity_t",
-            "verticalVel_mps": {
-                "f": 0.01,
-                "u": "mps"
-            }
-        },
-        "CMR_CANID_CDC_POWER_LOG": {
-            "cycleTime": 1000,
-            "power_limit_W": {
-                "f": 0.001,
-                "u": "W"
-            },
-            "timeOut": 5000,
-            "type": "cmr_canCDCPowerLimitLog_t"
-        },
-        "CMR_CANID_CDC_POWER_SENSE": {
-            "cycleTime": 100,
-            "packCurrent_dA": {
-                "u": "dA"
-            },
-            "packPower_W": {
-                "u": "W"
-            },
-            "packVoltage_cV": {
-                "u": "cV"
-            },
-            "timeOut": 500,
-            "type": "cmr_canPowerSense_t"
-        },
-        "CMR_CANID_CDC_REAR_VELOCITY": {
-            "cycleTime": 5,
-            "rl_x": {
-                "f": 0.01
-            },
-            "rl_y": {
-                "f": 0.01
-            },
-            "rr_x": {
-                "f": 0.01
-            },
-            "rr_y": {
-                "f": 0.01
-            },
-            "timeOut": 25,
-            "type": "cmr_canRearWheelVelocity_t"
-        },
-        "CMR_CANID_CDC_RTC_DATA_OUT": {
-            "cycleTime": 1000,
-            "timeOut": 5000,
-            "type": "cmr_can_rtc_data_t"
-        },
-        "CMR_CANID_CDC_WHEEL_SPEED_FEEDBACK": {
-            "cycleTime": 5,
-            "frontLeft_rpm": {
-                "f": 0.1,
-                "u": "rpm"
-            },
-            "frontRight_rpm": {
-                "f": 0.1,
-                "u": "rpm"
-            },
-            "rearLeft_rpm": {
-                "f": 0.1,
-                "u": "rpm"
-            },
-            "rearRight_rpm": {
-                "f": 0.1,
-                "u": "rpm"
-            },
-            "timeOut": 25,
-            "type": "cmr_canCDCWheelVelocity_t"
-        },
-        "CMR_CANID_CDC_WHEEL_SPEED_SETPOINT": {
-            "cycleTime": 5,
-            "frontLeft_rpm": {
-                "f": 0.1,
-                "u": "rpm"
-            },
-            "frontRight_rpm": {
-                "f": 0.1,
-                "u": "rpm"
-            },
-            "rearLeft_rpm": {
-                "f": 0.1,
-                "u": "rpm"
-            },
-            "rearRight_rpm": {
-                "f": 0.1,
-                "u": "rpm"
-            },
-            "timeOut": 25,
-            "type": "cmr_canCDCWheelVelocity_t"
-        },
-        "CMR_CANID_CDC_WHEEL_TORQUE_FEEDBACK": {
-            "cycleTime": 5,
-            "frontLeft_Nm": {
-                "f": 0.1,
-                "u": "Nm"
-            },
-            "frontRight_Nm": {
-                "f": 0.1,
-                "u": "Nm"
-            },
-            "rearLeft_Nm": {
-                "f": 0.1,
-                "u": "Nm"
-            },
-            "rearRight_Nm": {
-                "f": 0.1,
-                "u": "Nm"
-            },
-            "timeOut": 25,
-            "type": "cmr_canCDCWheelTorque_t"
-        },
-        "CMR_CANID_CDC_WHEEL_TORQUE_SETPOINT": {
-            "cycleTime": 5,
-            "frontLeft_Nm": {
-                "f": 0.1,
-                "u": "Nm"
-            },
-            "frontRight_Nm": {
-                "f": 0.1,
-                "u": "Nm"
-            },
-            "rearLeft_Nm": {
-                "f": 0.1,
-                "u": "Nm"
-            },
-            "rearRight_Nm": {
-                "f": 0.1,
-                "u": "Nm"
-            },
-            "timeOut": 25,
-            "type": "cmr_canCDCWheelTorque_t"
         },
         "CMR_CANID_CELL_BALANCE_ENABLE": {
             "balanceRequest": {
@@ -263,69 +47,6 @@
             "cycleTime": 10,
             "timeOut": 50,
             "type": "cmr_canHVCBalanceCommand_t"
-        },
-        "CMR_CANID_CONTROLS_PID_IO": {
-            "controls_bias": {
-                "f": 0.01,
-                "p": 2
-            },
-            "controls_current_yaw_rate": {
-                "f": 0.01,
-                "p": 2
-            },
-            "controls_pid": {
-                "f": 0.01,
-                "p": 2
-            },
-            "controls_target_yaw_rate": {
-                "f": 0.01,
-                "p": 2
-            },
-            "cycleTime": 5,
-            "timeOut": 25,
-            "type": "cmr_can_controls_pid_debug_t"
-        },
-        "CMR_CANID_CONTROLS_SOLVER_AUX": {
-            "cycleTime": 10,
-            "timeOut": 50,
-            "type": "cmr_can_solver_aux_t"
-        },
-        "CMR_CANID_CONTROLS_SOLVER_INPUTS": {
-            "cycleTime": 10,
-            "lin_accel_Nm": {
-                "u": "Nm"
-            },
-            "moment_req_Nm": {
-                "u": "Nm"
-            },
-            "timeOut": 50,
-            "type": "cmr_can_solver_inputs_t"
-        },
-        "CMR_CANID_CONTROLS_SOLVER_OUTPUTS": {
-            "cycleTime": 10,
-            "frontLeft_Nm": {
-                "f": 0.1,
-                "u": "Nm"
-            },
-            "frontRight_Nm": {
-                "f": 0.1,
-                "u": "Nm"
-            },
-            "rearLeft_Nm": {
-                "f": 0.1,
-                "u": "Nm"
-            },
-            "rearRight_Nm": {
-                "f": 0.1,
-                "u": "Nm"
-            },
-            "timeOut": 50,
-            "type": "cmr_canCDCWheelTorque_t"
-        },
-        "CMR_CANID_CONTROLS_SOLVER_SETTINGS": {
-            "cycleTime": 10,
-            "timeOut": 50,
-            "type": "cmr_can_solver_settings_t"
         },
         "CMR_CANID_CUBEMARS_DATA": {
             "cycleTime": 5,
@@ -388,6 +109,69 @@
             "timeOut": 500,
             "type": "cmr_canIZZELoadCell_t"
         },
+        "CMR_CANID_DAQ_AS_PRESSURE_READINGS": {
+            "cycleTime": 100,
+            "timeOut": 500,
+            "type": "cmr_canDVPressureReadings_t"
+        },
+        "CMR_CANID_DAQ_AS_RES": {
+            "cycleTime": 100,
+            "error": {
+                "enumstruct": "cmr_canVSMHeartbeatErr_t cmr_canDIMHeartbeatErr_t cmr_canCDCHeartbeatErr_t cmr_canFSMHeartbeatErr_t cmr_canHV_BMSHeartbeatErr_t"
+            },
+            "state": {
+                "e": "State"
+            },
+            "timeOut": 500,
+            "type": "cmr_canHeartbeat_t",
+            "warning": {
+                "enumstruct": "cmr_canVSMHeartbeatWrn_t cmr_canCDCHeartbeatWrn_t cmr_canFSMHeartbeatWrn_t"
+            }
+        },
+        "CMR_CANID_DAQ_CDC_COULOMB_COUNTING": {
+            "cycleTime": 100,
+            "timeOut": 500,
+            "type": "cmr_canCDCKiloCoulombs_t"
+        },
+        "CMR_CANID_DAQ_DTI_ERROR_MESSAGES": {
+            "cycleTime": 100,
+            "timeOut": 500,
+            "type": "cmr_canDTI_ErrorMessages_t"
+        },
+        "CMR_CANID_DAQ_FSM_DATA": {
+            "brakePressureFront_PSI": {
+                "u": "PSI"
+            },
+            "cycleTime": 100,
+            "timeOut": 500,
+            "type": "cmr_canFSMData_t"
+        },
+        "CMR_CANID_DAQ_HVBMS_MINMAX_CELL_TEMPS": {
+            "cycleTime": 100,
+            "timeOut": 500,
+            "type": "cmr_canBMSMinMaxCellTemperature_t"
+        },
+        "CMR_CANID_DAQ_HVBMS_MINMAX_CELL_VOLTAGE": {
+            "cycleTime": 100,
+            "maxCellVoltage_mV": {
+                "u": "mV"
+            },
+            "minCellVoltage_mV": {
+                "u": "mV"
+            },
+            "timeOut": 500,
+            "type": "cmr_canBMSMinMaxCellVoltage_t"
+        },
+        "CMR_CANID_DAQ_HVBMS_PACK_VOLTAGE": {
+            "cycleTime": 100,
+            "timeOut": 500,
+            "type": "cmr_canHVBMSPackVoltage_t"
+        },
+        "CMR_CANID_DAQ_VSM_FIRST_ERROR": {
+            "cycleTime": 100,
+            "timeOut": 500,
+            "type": "firstError"
+        },
         "CMR_CANID_DAQ_VSM_HEARTBEAT": {
             "cycleTime": 10,
             "error": {
@@ -401,6 +185,11 @@
             "warning": {
                 "enumstruct": "cmr_canVSMHeartbeatWrn_t cmr_canCDCHeartbeatWrn_t cmr_canFSMHeartbeatWrn_t"
             }
+        },
+        "CMR_CANID_DAQ_VSM_SENSORS": {
+            "cycleTime": 100,
+            "timeOut": 500,
+            "type": "cmr_canVSMSensors_t"
         },
         "CMR_CANID_DIM_ACKNOWLEDGE": {
             "cycleTime": 100,
@@ -427,8 +216,8 @@
             "type": "cmr_canDIMRequest_t"
         },
         "CMR_CANID_DRS_STATE": {
-            "cycleTime": 100,
-            "timeOut": 500,
+            "cycleTime": 800.0,
+            "timeOut": 4000,
             "type": "cmr_canCDCDRSStates_t"
         },
         "CMR_CANID_DTI_ERROR_MESSAGES": {
@@ -481,21 +270,6 @@
             "cycleTime": 200.0,
             "timeOut": 1000,
             "type": "cmr_canCubeMarsData_t"
-        },
-        "CMR_CANID_FRONT_SLIP_RATIOS": {
-            "cycleTime": 100,
-            "timeOut": 500,
-            "type": "cmr_can_front_slip_ratio_data_t"
-        },
-        "CMR_CANID_FRONT_WHL_SETPOINTS": {
-            "cycleTime": 100,
-            "timeOut": 500,
-            "type": "cmr_can_front_slip_ratio_data_t"
-        },
-        "CMR_CANID_FRONT_WHL_VELS": {
-            "cycleTime": 100,
-            "timeOut": 500,
-            "type": "cmr_can_front_whl_velocity_t"
         },
         "CMR_CANID_FSM_DATA": {
             "brakePressureFront_PSI": {
@@ -905,31 +679,6 @@
             "timeOut": 4000,
             "type": "cmr_canMemoratorWarnings_t"
         },
-        "CMR_CANID_MOTORPOWER_STATE": {
-            "cycleTime": 5,
-            "timeOut": 25,
-            "type": "cmr_canCDCMotorPower_t"
-        },
-        "CMR_CANID_MOVELLA_STATUS": {
-            "cycleTime": 10,
-            "timeOut": 50,
-            "type": "cmr_canMovellaStatus_t"
-        },
-        "CMR_CANID_REAR_SLIP_RATIOS": {
-            "cycleTime": 100,
-            "timeOut": 500,
-            "type": "cmr_can_rear_slip_ratio_data_t"
-        },
-        "CMR_CANID_REAR_WHL_SETPOINTS": {
-            "cycleTime": 100,
-            "timeOut": 500,
-            "type": "cmr_can_rear_whl_speed_setpoint_t"
-        },
-        "CMR_CANID_REAR_WHL_VELS": {
-            "cycleTime": 100,
-            "timeOut": 500,
-            "type": "cmr_can_rear_whl_velocity_t"
-        },
         "CMR_CANID_RTC_DATE": {
             "cycleTime": 10,
             "timeOut": 50,
@@ -939,40 +688,6 @@
             "cycleTime": 10,
             "timeOut": 50,
             "type": "curTime"
-        },
-        "CMR_CANID_SBG_BODY_VEL": {
-            "cycleTime": 400.0,
-            "timeOut": 2000,
-            "type": "cmr_canSBGBodyVelocity_t"
-        },
-        "CMR_CANID_SBG_EKF_ORIENT": {
-            "cycleTime": 400.0,
-            "timeOut": 2000,
-            "type": "cmr_canSBGEKFOrient_t"
-        },
-        "CMR_CANID_SBG_EKF_POS": {
-            "cycleTime": 400.0,
-            "timeOut": 2000,
-            "type": "cmr_canSBGEKFPosition_t"
-        },
-        "CMR_CANID_SBG_EKF_VEL": {
-            "cycleTime": 400.0,
-            "timeOut": 2000,
-            "type": "cmr_canSBGEKFVelocity_t"
-        },
-        "CMR_CANID_SBG_IMU_GYRO": {
-            "cycleTime": 400.0,
-            "gyro_x_rads": {
-                "u": "rad"
-            },
-            "gyro_y_rads": {
-                "u": "rad"
-            },
-            "gyro_z_rads": {
-                "u": "rad"
-            },
-            "timeOut": 2000,
-            "type": "cmr_canSBGIMUGyro_t"
         },
         "CMR_CANID_SENSORIC_DIST": {
             "cycleTime": 10.0,
@@ -984,21 +699,10 @@
             "timeOut": 25,
             "type": "cmr_canSensoricVelAng_t"
         },
-        "CMR_CANID_SF_STATE": {
-            "cycleTime": 10,
-            "longest_power_violation_ms": {
-                "u": "ms"
-            },
-            "power_limit_max_violation_W": {
-                "u": "W"
-            },
-            "timeOut": 50,
-            "type": "cmr_canCDCSafetyFilterStates_t"
-        },
         "CMR_CANID_TEST_ID": {
-            "cycleTime": 1000,
-            "timeOut": 5000,
-            "type": "cmr_canDAQTest_t"
+            "cycleTime": 100,
+            "timeOut": 500,
+            "type": "cmr_canTestID_t"
         },
         "CMR_CANID_VSM_FIRST_ERROR": {
             "cycleTime": 10,
@@ -1046,20 +750,20 @@
         "canrx_prefixes_used": [
             "CANRX_"
         ],
-        "files_processed": 2735,
-        "files_with_matches": 2735,
+        "files_processed": 2851,
+        "files_with_matches": 2851,
         "global_mappings": {
-            "canrx_mappings": 164,
+            "canrx_mappings": 165,
             "canrx_timeouts": 155,
-            "canrx_types": 67,
-            "constants": 274,
+            "canrx_types": 61,
+            "constants": 266,
             "struct_members": 0,
-            "variable_types": 316
+            "variable_types": 277
         },
         "prefixes_used": [
             "CMR_CANID_",
             "CAN_ID_"
         ],
-        "total_canids": 114
+        "total_canids": 91
     }
 }
