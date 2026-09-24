@@ -679,8 +679,8 @@ void setBasicRegenFastTorqueWithPhantomDiff(
                 );
         float regen_torque = 
                 CLAMP(
-                    -max_regen_torque_Nm,
-                    max_regen_torque_Nm * adjusted_throttle * basicOnePedalRegenGain,
+                    max_regen_torque_Nm,
+                    -max_regen_torque_Nm * adjusted_throttle * basicOnePedalRegenGain,
                     0
                 );
         setTorqueLimsUnprotected(MOTOR_FL, 0.0f, regen_torque);
@@ -718,8 +718,8 @@ void setAdaptiveRegenFastTorqueWithPhantomDiff(
         // If the driver has released the pedal enough to start braking, apply regen gain.
         float regen_torque = 
                CLAMP(
-                      -max_regen_torque_Nm,
-                      max_regen_torque_Nm * adjusted_throttle * onePedalRegenGain,
+                      max_regen_torque_Nm,
+                      -max_regen_torque_Nm * adjusted_throttle * onePedalRegenGain,
                       0
                );
         setTorqueLimsUnprotected(MOTOR_FL, 0.0f, regen_torque);
