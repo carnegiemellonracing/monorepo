@@ -76,7 +76,7 @@ static float manual_cruise_control_speed;
 
 float getYawRateControlLeftRightBias(int32_t swAngle_millideg);
 void set_fast_torque_with_slew(uint8_t throttlePos_u8, int16_t slew);
-void setRegenTorques (uint8_t regen_pct);
+void setRegenTorques (float regen_pct);
 
 /** @brief Coulomb counting info **/
 static TickType_t previousTickCount;
@@ -655,17 +655,23 @@ void runControls (
         }
         case CMR_CAN_GEAR_ENDURANCE: {
             disableTorqueMode();
-            // uint8_t regen_pct = ((volatile cmr_canDIMActions_t *) canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON))->regenPercent;
-            // uint8_t regen_on_threshold = 20;
-            // if(regen_pct > regen_on_threshold){
-            //     setRegenTorques(regen_pct);
-            // }
-            // else{
-            //     //power limit set by daq live
-            //     setFastTorqueWithBias(throttlePos_u8, front_bias_endurance);
-            // }
-            //delete this if uncommenting above code 
-            setFastTorqueWithBias(throttlePos_u8, front_bias_endurance);
+
+            uint8_t regen_paddle_percent = ((volatile cmr_canDIMActions_t *) canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON))->regenPercent;
+
+            if(regen_paddle_percent > regenPaddlePercentThreshold)
+            {
+                const float regen_percent = 
+                    CLAMP(
+                        0.0f,
+                        (float)(regen_paddle_percent - regenPaddlePercentThreshold) / (100 - regenPaddlePercentThreshold),
+                        1.0f
+                    );
+                setRegenTorques(regen_percent);
+            }
+            else{
+                // Don't set power limit as it is being sent from DAQ-Live
+                setFastTorqueWithPhantomDiff(throttlePos_u8, swAngle_millideg, front_bias, maxPhantomDiffScalingFactor);
+            }
             break;
         }
         case CMR_CAN_GEAR_AUTOX: {
@@ -953,16 +959,14 @@ void setFastTorqueWithPhantomDiff(
     setVelocityInt16All(maxFastSpeed_rpm);
 }
 
-//kept to be tested (fix endurance case)
-//REAL OR CAKE??? 
-void setRegenTorques (uint8_t regen_pct) {
-    const float reqTorque = max_regen_torque_Nm * (float) regen_pct;
+void setRegenTorques (float regen_pct) {
+    const float reqTorque = max_regen_torque_Nm * regen_pct;
    
-   setTorqueLimsUnprotected(MOTOR_FL, 0.0f, reqTorque);
-   setTorqueLimsUnprotected(MOTOR_FR, 0.0f, reqTorque);
-   setTorqueLimsUnprotected(MOTOR_RR, 0.0f, reqTorque);
-   setTorqueLimsUnprotected(MOTOR_RL, 0.0f, reqTorque);
-   setVelocityInt16All(0);
+    setTorqueLimsUnprotected(MOTOR_FL, 0.0f, reqTorque);
+    setTorqueLimsUnprotected(MOTOR_FR, 0.0f, reqTorque);
+    setTorqueLimsUnprotected(MOTOR_RR, 0.0f, reqTorque * (1 - frontRegenBiasRatio) / frontRegenBiasRatio);
+    setTorqueLimsUnprotected(MOTOR_RL, 0.0f, reqTorque * (1 - frontRegenBiasRatio) / frontRegenBiasRatio);
+    setVelocityInt16All(0);
 }
 
 //real or cake (== one pedal regen?)
