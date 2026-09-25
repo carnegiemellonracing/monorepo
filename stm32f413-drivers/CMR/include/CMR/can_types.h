@@ -899,6 +899,7 @@ typedef struct {
     uint8_t paddle;            
     uint8_t cntrlOff;
     uint8_t dvControlMode;
+    uint16_t paddleADC;
 } cmr_canDIMActions_t;
 
 /** @brief DIM sends message to acknowledge radio message

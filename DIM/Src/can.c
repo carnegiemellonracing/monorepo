@@ -146,6 +146,9 @@ static const TickType_t canTX10Hz_period_ms = 100;
 /** @brief CAN 10 Hz TX task. */
 static cmr_task_t canTX10Hz_task;
 
+#define PADDLE_ADC_MAX 3745.0f
+#define PADDLE_ADC_MIN 14.0f
+
 // Forward declarations
 static void sendHeartbeat(TickType_t lastWakeTime);
 static void sendDVPressureReadings(void);
@@ -245,7 +248,7 @@ static void canTX100Hz(void *pvParameters) {
         sendDVPressureReadings();
         // Calculate integer regenPercent from regenStep
     	uint8_t paddle = (uint8_t) ((adcRead(ADC_PADDLE) - 16.062) / 3694.43) * 255.0;
-    	uint8_t regenPercent = (uint8_t)(((float) adcRead(ADC_PADDLE) / 435.0f) * 100.0f); // 435 empirical value
+    	uint8_t regenPercent = (uint8_t)(((float) ((adcRead(ADC_PADDLE) - PADDLE_ADC_MIN) / (PADDLE_ADC_MAX - PADDLE_ADC_MIN))) * 100.0f); // 435 empirical value
         regenPercent = CLAMP(0, regenPercent, 100);
         uint8_t packed = 0;
         uint8_t ctrlOff = !cmr_gpioRead(GPIO_CTRL_SWITCH);
@@ -260,7 +263,8 @@ static void canTX100Hz(void *pvParameters) {
             .regenPercent = regenPercent,
             .paddle = paddle,
             .cntrlOff = ctrlOff,
-			.dvControlMode = dvCtrlMode
+			.dvControlMode = dvCtrlMode,
+            .paddleADC = adcRead(ADC_PADDLE)
         };
         canTX(
             CMR_CANID_DIM_ACTIONS,
