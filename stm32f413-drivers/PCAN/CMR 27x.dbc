@@ -98,6 +98,16 @@ BO_ 308 CELL_BALANCE_ENABLE: 3 Vector__XXX
  SG_ BALANCE_balanceRequest : 0|8@1+ (1,0) [0|255] "" Vector__XXX
  SG_ BALANCE_threshold : 8|16@1+ (1,0) [0|65535] "" Vector__XXX
 
+BO_ 1767 CONTROL_LIMITS: 8 Vector__XXX
+ SG_ LIMITS_FL_torqueLimit_Nm : 0|8@1- (1,0) [-128|127] "Nm" Vector__XXX
+ SG_ LIMITS_FR_torqueLimit_Nm : 8|8@1- (1,0) [-128|127] "Nm" Vector__XXX
+ SG_ LIMITS_RL_torqueLimit_Nm : 16|8@1- (1,0) [-128|127] "Nm" Vector__XXX
+ SG_ LIMITS_RR_torqueLimit_Nm : 24|8@1- (1,0) [-128|127] "Nm" Vector__XXX
+ SG_ LIMITS_FL_velocity_hrpm : 32|8@1+ (100,0) [0|25500] "rpm" Vector__XXX
+ SG_ LIMITS_FR_velocity_hrpm : 40|8@1+ (100,0) [0|25500] "rpm" Vector__XXX
+ SG_ LIMITS_RL_velocity_hrpm : 48|8@1+ (100,0) [0|25500] "rpm" Vector__XXX
+ SG_ LIMITS_RR_velocity_hrpm : 56|8@1+ (100,0) [0|25500] "rpm" Vector__XXX
+
 BO_ 1766 CUBEMARS_DATA: 6 Vector__XXX
  SG_ DATA_position_deg : 0|16@1- (1,0) [-32768|32767] "" Vector__XXX
  SG_ DATA_speed_erpm : 16|16@1- (1,0) [-32768|32767] "" Vector__XXX
@@ -1987,6 +1997,9 @@ BA_ "Sendable" BO_ 1763 "True";
 BA_ "GenMsgCycleTime" BO_ 308 10;
 BA_ "Receivable" BO_ 308 "True";
 BA_ "Sendable" BO_ 308 "True";
+BA_ "GenMsgCycleTime" BO_ 1767 5;
+BA_ "Receivable" BO_ 1767 "True";
+BA_ "Sendable" BO_ 1767 "True";
 BA_ "GenMsgCycleTime" BO_ 1766 5;
 BA_ "Receivable" BO_ 1766 "True";
 BA_ "Sendable" BO_ 1766 "True";

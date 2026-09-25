@@ -14,7 +14,7 @@ static const uint8_t regenPaddlePercentThreshold = 10;
 
 /// Front/rear bias ratio for regen braking. The bias ratio is applied as `regenForce` for the
 /// front motors and `(1.0 - frontRegenBrakeBias) / frontRegenBrakeBias * regenForce` for the rear motors.
-static const float frontRegenBiasRatio = 0.6f;
+static const float frontRegenBiasRatio = 0.667f;
 
 static const float minTorqueLUTVal_Nm = 2.6f;
 static const float current_torque_slope = 85.0f / 31.6f;

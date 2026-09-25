@@ -48,6 +48,39 @@
             "timeOut": 50,
             "type": "cmr_canHVCBalanceCommand_t"
         },
+        "CMR_CANID_CONTROL_LIMITS": {
+            "FL_torqueLimit_Nm": {
+                "u": "Nm"
+            },
+            "FL_velocity_hrpm": {
+                "f": 100,
+                "u": "rpm"
+            },
+            "FR_torqueLimit_Nm": {
+                "u": "Nm"
+            },
+            "FR_velocity_hrpm": {
+                "f": 100,
+                "u": "rpm"
+            },
+            "RL_torqueLimit_Nm": {
+                "u": "Nm"
+            },
+            "RL_velocity_hrpm": {
+                "f": 100,
+                "u": "rpm"
+            },
+            "RR_torqueLimit_Nm": {
+                "u": "Nm"
+            },
+            "RR_velocity_hrpm": {
+                "f": 100,
+                "u": "rpm"
+            },
+            "cycleTime": 5,
+            "timeOut": 25,
+            "type": "cmr_canControlLimits_t"
+        },
         "CMR_CANID_CUBEMARS_DATA": {
             "cycleTime": 5,
             "timeOut": 25,
@@ -758,12 +791,12 @@
             "canrx_types": 61,
             "constants": 268,
             "struct_members": 0,
-            "variable_types": 277
+            "variable_types": 278
         },
         "prefixes_used": [
             "CMR_CANID_",
             "CAN_ID_"
         ],
-        "total_canids": 91
+        "total_canids": 92
     }
 }
