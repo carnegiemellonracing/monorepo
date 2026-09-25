@@ -246,10 +246,13 @@ static void canTX100Hz(void *pvParameters) {
         sendFSMData();
         sendSWAngle();
         sendDVPressureReadings();
-        // Calculate integer regenPercent from regenStep
-    	uint8_t paddle = (uint8_t) ((adcRead(ADC_PADDLE) - 16.062) / 3694.43) * 255.0;
-    	uint8_t regenPercent = (uint8_t)(((float) ((adcRead(ADC_PADDLE) - PADDLE_ADC_MIN) / (PADDLE_ADC_MAX - PADDLE_ADC_MIN))) * 100.0f); // 435 empirical value
-        regenPercent = CLAMP(0, regenPercent, 100);
+        // Paddle is unused in controls code, this line is commented out to avoid performing unnecessary 
+        // double precision math. Original line is kept as reference only.
+    	//  `uint8_t paddle = (uint8_t) ((adcRead(ADC_PADDLE) - 16.062) / 3694.43) * 255.0;`
+        uint8_t paddle = 0;
+
+        float pct = ((float) adcRead(ADC_PADDLE) - PADDLE_ADC_MIN) * 100.0f / (PADDLE_ADC_MAX - PADDLE_ADC_MIN);
+        uint8_t regenPercent = (uint8_t)CLAMP(0.0f, pct, 100.0f);
         uint8_t packed = 0;
         uint8_t ctrlOff = !cmr_gpioRead(GPIO_CTRL_SWITCH);
         uint8_t dvCtrlMode = stateGetDVMode();
@@ -257,7 +260,6 @@ static void canTX100Hz(void *pvParameters) {
             packed |= buttonStates[i].gpioState << i; 
         }
         /* Transmit action button status */
-        // TODO: test functionality of this, particularly for control switch code
         cmr_canDIMActions_t actions = {
             .buttonStates = packed,
             .regenPercent = regenPercent,
