@@ -199,12 +199,13 @@ BO_ 1777 DAQ_VSM_SENSORS: 8 Vector__XXX
 BO_ 1349 DIM_ACKNOWLEDGE: 1 Vector__XXX
  SG_ ACKNOWLEDGE_acknowledge : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 
-BO_ 1301 DIM_ACTIONS: 5 Vector__XXX
+BO_ 1301 DIM_ACTIONS: 7 Vector__XXX
  SG_ ACTIONS_buttonStates : 0|8@1+ (1,0) [0|255] "" Vector__XXX
  SG_ ACTIONS_regenPercent : 8|8@1+ (1,0) [0|255] "" Vector__XXX
  SG_ ACTIONS_paddle : 16|8@1+ (1,0) [0|255] "" Vector__XXX
  SG_ ACTIONS_cntrlOff : 24|8@1+ (1,0) [0|255] "" Vector__XXX
  SG_ ACTIONS_dvControlMode : 32|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ ACTIONS_paddleADC : 40|16@1+ (1,0) [0|65535] "" Vector__XXX
 
 BO_ 565 DIM_REQUEST: 5 Vector__XXX
  SG_ REQUEST_requestedState : 0|8@1+ (1,0) [0|255] "" Vector__XXX
