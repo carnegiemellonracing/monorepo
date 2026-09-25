@@ -40,6 +40,14 @@ static const float basicOnePedalRegenThrottleZeroTorquePoint = 0.3;
 /// Multiplier used to control regen strength
 static const float basicOnePedalRegenGain = 0.6;
 
+/// Parallel Regen constants
+// Minimum brake PSI required to start parallel regen braking
+static const uint16_t parallelRegenMinBrakePsi = 25;
+// Brake PSI at which regen braking will max out
+static const uint16_t parallelRegenMaxBrakePsi = 400;
+// Multiplier used to control regen strength
+static const float parallelRegenGain = 0.6;
+
 /** @brief Maximum motor speed
  * motor datasheet: "Nominal Speed - 13250 rpm"
  * motor datasheet: "Maximum Speed - 20000 rpm"
