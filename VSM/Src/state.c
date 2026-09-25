@@ -40,7 +40,7 @@ cmr_canState_t vsmToCANState[] = {
     [CMR_CAN_VSM_STATE_REQ_PRECHARGE]   = CMR_CAN_GLV_ON,
     [CMR_CAN_VSM_STATE_RUN_BMS]         = CMR_CAN_GLV_ON,
     [CMR_CAN_VSM_STATE_INVERTER_EN]     = CMR_CAN_GLV_ON,
-    [CMR_CAN_VSM_STATE_BRAKE_TEST]      = CMR_CAN_GLV_ON,
+    //[CMR_CAN_VSM_STATE_BRAKE_TEST]      = CMR_CAN_GLV_ON,
 
     [CMR_CAN_VSM_STATE_BRAKE_CHECK]     = CMR_CAN_GLV_ON,
     [CMR_CAN_VSM_STATE_BRAKE_CHECK_2]     = CMR_CAN_GLV_ON,
@@ -337,8 +337,8 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
         case CMR_CAN_VSM_STATE_INVERTER_EN: {
             if (invertersPass(lastWakeTime_ms)){
                 if (AutonomousClear()) { //checks TS Active
-                    lastWakeTime_ms = getTime();
-                    nextState = CMR_CAN_VSM_STATE_BRAKE_CHECK
+                    lastWakeTime_ms = xTaskGetTickCount();
+                    nextState = CMR_CAN_VSM_STATE_BRAKE_CHECK;
                     // nextState = CMR_CAN_VSM_STATE_AS_READY;
                 } else if (ASState){ 
                     //Trying to enter DV mode but failed previous conditions
@@ -359,9 +359,9 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
 
         case CMR_CAN_VSM_STATE_BRAKE_CHECK:{ //Toggle one way
             //DIM reads this state and switches valve
-            if (getTime() - DV_BRAKECHECK_VALVES_WAIT_TIME >= lastWakeTime_ms) {
+            if (xTaskGetTickCount() - DV_BRAKECHECK_VALVES_WAIT_TIME >= lastWakeTime_ms) {
                 if (checkHydraulicPressure(90, 10000, 0, 1)){ //10000 just a big number, if pressure within bounds then good
-                    lastWakeTime_ms = getTime();
+                    lastWakeTime_ms = xTaskGetTickCount();
                     nextState = CMR_CAN_VSM_STATE_BRAKE_CHECK_2; 
                 } else {
                         nextState = CMR_CAN_VSM_STATE_AS_EMERGENCY;
@@ -374,9 +374,9 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
 
         case CMR_CAN_VSM_STATE_BRAKE_CHECK_2:{ //Toggle the other way
             //DIM reads this state and switches valve
-            if (getTime() - DV_BRAKECHECK_VALVES_WAIT_TIME >= lastWakeTime_ms) {
+            if (xTaskGetTickCount() - DV_BRAKECHECK_VALVES_WAIT_TIME >= lastWakeTime_ms) {
                 if (checkHydraulicPressure(0,1,45,10000)){ //10000 just a big number, if pressure within bounds then good
-                    lastWakeTime_ms = getTime();
+                    lastWakeTime_ms = xTaskGetTickCount();
                     nextState = CMR_CAN_VSM_STATE_AS_READY; 
                 } else {
                     nextState = CMR_CAN_VSM_STATE_AS_EMERGENCY;
@@ -386,7 +386,7 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
             }
             break;
         }
-        }
+        
 
         case CMR_CAN_VSM_STATE_HV_EN: {
             // T6

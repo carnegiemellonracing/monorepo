@@ -525,11 +525,11 @@ void ebsRelayCallback(){
     volatile cmr_canVSMStatus_t *statusVSM = getPayload(CANRX_VSM_STATUS);
     uint8_t internalState = statusVSM->internalState;
     if (statusVSM->internalState == CMR_CAN_VSM_STATE_BRAKE_CHECK) {
-        cmr_gpiowrite(GPIO_VALVE_MB1, 1);
-        cmr_gpiowrite(GPIO_VALVE_MB2, 0);
+        cmr_gpioWrite(GPIO_VALVE_MB1, 1);
+        cmr_gpioWrite(GPIO_VALVE_MB2, 0);
     } else if (statusVSM->internalState == CMR_CAN_VSM_STATE_BRAKE_CHECK) {
-        cmr_gpiowrite(GPIO_VALVE_MB1, 0);
-        cmr_gpiowrite(GPIO_VALVE_MB2, 1);
+        cmr_gpioWrite(GPIO_VALVE_MB1, 0);
+        cmr_gpioWrite(GPIO_VALVE_MB2, 1);
     }
 }
 
