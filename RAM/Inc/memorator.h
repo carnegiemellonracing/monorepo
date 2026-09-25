@@ -9,6 +9,7 @@
 #include <stdint.h>     /* integer types */
 #include <stm32f4xx_hal.h>  // HAL interface
 #include <CMR/rtc.h>   // Real-Time Clock
+#include <CMR/can_types.h>  // cmr_canRAMError_t
 
 
 void memoratorWrite(    uint16_t ID, 
@@ -17,5 +18,6 @@ void memoratorWrite(    uint16_t ID,
                         uint8_t* data);
 
 void memoratorInit(void);
+cmr_canRAMError_t memoratorGetErrors(void);
 void HAL_SD_MspInit(SD_HandleTypeDef* hsd);
 
