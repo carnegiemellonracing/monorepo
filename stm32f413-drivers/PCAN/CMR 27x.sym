@@ -85,9 +85,7 @@ enum MovellaFilterMode(0="Without_GNSS_filter_profile_is_in_VRU_mode",
     3="With_GNSS_default_mode")
 enum RAMError(0="RAM_ERROR_NONE", 1="RAM_ERROR_SD_MOUNT",
     2="RAM_ERROR_SD_UNMOUNT", 4="RAM_ERROR_SD_WRITE",
-    8="RAM_ERROR_FILE_OPEN", 16="RAM_ERROR_FILE_CLOSE",
-    32="RAM_ERROR_CAN_RX_OVERFLOW")
-enum RAMState(0="RAM_STATE_OK", 1="RAM_STATE_LEN")
+    8="RAM_ERROR_FILE_OPEN", 16="RAM_ERROR_FILE_CLOSE")
 enum RES(1="TRIG", 4="GO")
 enum SBGAutomotiveStatus(1="SBG_AUTO_TRACK_VALID",
     2="SBG_AUTO_SLIP_VALID", 4="SBG_AUTO_CURVATURE_VALID")
