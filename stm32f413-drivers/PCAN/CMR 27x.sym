@@ -1,6 +1,6 @@
 FormatVersion=5.0 // Do not edit this line!
 UniqueVariables=True
-Title="CMR 26x Generated"
+Title="CMR 27x Generated"
 
 // ========== AUTO-GENERATED ENUMS ==========
 
@@ -227,6 +227,13 @@ enum Warn(0="NONE", 1="VSM_TIMEOUT", 2="BUS_VOLTAGE", 4="BUS_CURRENT",
 
 // ========== END AUTO-GENERATED ENUMS ==========
 
+[AMS_ERROR]
+ID=523h
+DLC=1
+CycleTime=10
+TimeOut=50
+Var=ERROR_uint8_t unsigned 0,8
+
 [AS_PRESSURE_READINGS]
 ID=191h
 DLC=4
@@ -234,6 +241,13 @@ CycleTime=10
 TimeOut=50
 Var=ebsPressure_1_deci_bar unsigned 0,16
 Var=ebsPressure_2_deci_bar unsigned 16,16
+
+[AS_RES]
+ID=18Ah
+DLC=1
+CycleTime=5
+TimeOut=25
+Var=RES_resData unsigned 0,8
 
 [AUTONOMOUS_ACTION]
 ID=190h
@@ -354,15 +368,61 @@ CycleTime=100
 TimeOut=500
 Var=CDC_KCoulombs float 0,32
 
-[DAQ_DTI_ERROR_MESSAGES]
-ID=6F2h
-DLC=4
+[DAQ_DTI_FL_TEMPFAULTS]
+ID=713h
+DLC=5
 CycleTime=100
 TimeOut=500
-Var=DTI_fr_fault_code unsigned 0,8
-Var=DTI_fl_fault_code unsigned 8,8
-Var=DTI_rr_fault_code unsigned 16,8
-Var=DTI_rl_fault_code unsigned 24,8
+Var=DTI_ctlr_temp signed 0,16
+Var=DTI_motor_temp signed 16,16
+Var=DTI_fault_code unsigned 32,8
+
+[DAQ_DTI_FR_TEMPFAULTS]
+ID=714h
+DLC=5
+CycleTime=100
+TimeOut=500
+Var=DTI_ctlr_temp1 signed 0,16
+Var=DTI_motor_temp1 signed 16,16
+Var=DTI_fault_code1 unsigned 32,8
+
+[DAQ_DTI_RL_TEMPFAULTS]
+ID=715h
+DLC=5
+CycleTime=100
+TimeOut=500
+Var=DTI_ctlr_temp2 signed 0,16
+Var=DTI_motor_temp2 signed 16,16
+Var=DTI_fault_code2 unsigned 32,8
+
+[DAQ_DTI_RR_TEMPFAULTS]
+ID=716h
+DLC=5
+CycleTime=100
+TimeOut=500
+Var=DTI_ctlr_temp3 signed 0,16
+Var=DTI_motor_temp3 signed 16,16
+Var=DTI_fault_code3 unsigned 32,8
+
+[DAQ_DTI_TORLIMNEG]
+ID=704h
+DLC=8
+CycleTime=100
+TimeOut=500
+Var=DTI_fl_torque_req signed 0,16
+Var=DTI_fr_torque_req signed 16,16
+Var=DTI_rl_torque_req signed 32,16
+Var=DTI_rr_torque_req signed 48,16
+
+[DAQ_DTI_TORLIMPOS]
+ID=703h
+DLC=8
+CycleTime=100
+TimeOut=500
+Var=DTI_fl_torque_req1 signed 0,16
+Var=DTI_fr_torque_req1 signed 16,16
+Var=DTI_rl_torque_req1 signed 32,16
+Var=DTI_rr_torque_req1 signed 48,16
 
 [DAQ_FSM_DATA]
 ID=6F0h
@@ -1529,23 +1589,6 @@ Var=SBG_Sol_Zupt_Used bit 26,1
 Var=SBG_Sol_Align_Valid bit 27,1
 Var=SBG_Heave_Status_GENERAL3 unsigned 32,16
 
-[ELLIPSE_IMU_UTC_0]
-ID=703h
-DLC=8
-Var=SBG_Time_Stamp_UTC0 unsigned 0,32 /u:s /f:1E-006 /d:0
-Var=SBG_Gps_Tow_UTC0 unsigned 32,32 /u:s /f:0.001 /d:0
-
-[ELLIPSE_IMU_UTC_1]
-ID=704h
-DLC=8
-Var=SBG_Year unsigned 0,8 /u:year
-Var=SBG_Month unsigned 8,8 /u:month
-Var=SBG_Day unsigned 16,8 /u:d
-Var=SBG_Hour unsigned 24,8 /u:h
-Var=SBG_Min unsigned 32,8 /u:min
-Var=SBG_Sec unsigned 40,8 /u:s
-Var=SBG_Tenthms unsigned 48,16 /u:s /f:0.0001 /max:6.5535 /d:0
-
 [ELLIPSE_IMU_INFO]
 ID=710h
 DLC=8
@@ -1566,20 +1609,6 @@ DLC=6
 Var=SBG_Gyro_X signed 0,16 /u:rad.s-1 /f:0.001 /d:0
 Var=SBG_Gyro_Y signed 16,16 /u:rad.s-1 /f:0.001 /d:0
 Var=SBG_Gyro_Z signed 32,16 /u:rad.s-1 /f:0.001 /d:0
-
-[ELLIPSE_IMU_DELTA_VEL]
-ID=713h
-DLC=6
-Var=SBG_Delta_Vel_X signed 0,16 /u:m.s-2 /f:0.01 /d:0
-Var=SBG_Delta_Vel_Y signed 16,16 /u:m.s-2 /f:0.01 /d:0
-Var=SBG_Delta_Vel_Z signed 32,16 /u:m.s-2 /f:0.01 /d:0
-
-[ELLIPSE_IMU_DELTA_ANGLE]
-ID=714h
-DLC=6
-Var=SBG_Delta_Angle_X signed 0,16 /u:rad.s-1 /f:0.001 /d:0
-Var=SBG_Delta_Angle_Y signed 16,16 /u:rad.s-1 /f:0.001 /d:0
-Var=SBG_Delta_Angle_Z signed 32,16 /u:rad.s-1 /f:0.001 /d:0
 
 [ELLIPSE_IMU_EKF_INFO]
 ID=720h
@@ -2995,14 +3024,6 @@ Timeout=200
 Var=Linpot_1_1 unsigned 0,32 /u:mm /f:0.0183105
 Var=Linpot_1_2 unsigned 32,32 /u:mm /f:0.0183105
 
-[IVT_VOLTAGE_2]
-ID=523h
-DLC=6
-Var=IVT_VOLTAGE_2 signed 16,32 -m /u:mV
-Var=IVT_VOLTAGE_2_MUX_ID unsigned 0,8 -m
-Var=IVT_VOLTAGE_2_MSG_COUNT unsigned 12,4 -m
-Var=IVT_VOLTAGE_2_STATUS unsigned 8,4 -m
-
 [IVT_VOLTAGE_3]
 ID=524h
 DLC=6
@@ -3010,11 +3031,6 @@ Var=IVT_VOLTAGE_3 signed 16,32 -m /u:mV
 Var=IVT_VOLTAGE_3_MUX_ID unsigned 0,8 -m
 Var=IVT_VOLTAGE_3_MSG_COUNT unsigned 12,4 -m
 Var=IVT_VOLTAGE_3_STATUS unsigned 8,4 -m
-
-[RES]
-ID=18Ah
-DLC=8
-Var=RES_Sig unsigned 0,32
 
 [VSM_First_Error]
 ID=10Ah

@@ -77,9 +77,15 @@ VAL_TABLE_ VtSig_VSM_internalState 0 "ERROR" 1 "CLEAR_ERROR" 2 "GLV_ON" 3 "REQ_P
 VAL_TABLE_ VtSig_VSM_state 0 "UNKNOWN" 1 "GLV_ON" 2 "HV_EN" 3 "RTD" 4 "ERROR" 5 "CLEAR_ERROR";
 VAL_TABLE_ Warn 0 "NONE" 1 "VSM_TIMEOUT" 2 "BUS_VOLTAGE" 4 "BUS_CURRENT" 8 "FSM_SS_MODULE" 16 "FSM_SS_COCKPIT" 32 "FSM_SS_FRHUB" 64 "FSM_SS_INERTIA" 128 "FSM_SS_FLHUB" 256 "FSM_SS_BOTS" 512 "CDC_MEMORATOR_DAQ_TIMEOUT" 1024 "CDC_DTI_TIMEOUT" 2048 "CDC_DTI_ERROR" 4096 "CDC_DTI_RR" 8192 "CDC_DTI_RL" 16384 "CDC_DTI_FR" 32768 "CDC_DTI_FL";
 
+BO_ 1315 AMS_ERROR: 1 Vector__XXX
+ SG_ ERROR_uint8_t : 0|8@1+ (1,0) [0|255] "" Vector__XXX
+
 BO_ 401 AS_PRESSURE_READINGS: 4 Vector__XXX
  SG_ ebsPressure_1_deci_bar : 0|16@1+ (1,0) [0|65535] "" Vector__XXX
  SG_ ebsPressure_2_deci_bar : 16|16@1+ (1,0) [0|65535] "" Vector__XXX
+
+BO_ 394 AS_RES: 1 Vector__XXX
+ SG_ RES_resData : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 
 BO_ 400 AUTONOMOUS_ACTION: 8 Vector__XXX
  SG_ ACTION_frontTorque_mNm : 0|16@1- (1,0) [-32768|32767] "" Vector__XXX
@@ -148,11 +154,37 @@ BO_ 1779 DAQ_AS_RES: 5 Vector__XXX
 BO_ 1785 DAQ_CDC_COULOMB_COUNTING: 4 Vector__XXX
  SG_ CDC_KCoulombs : 0|32@1+ (1,0) [0|4294967295] "" Vector__XXX
 
-BO_ 1778 DAQ_DTI_ERROR_MESSAGES: 4 Vector__XXX
- SG_ DTI_fr_fault_code : 0|8@1+ (1,0) [0|255] "" Vector__XXX
- SG_ DTI_fl_fault_code : 8|8@1+ (1,0) [0|255] "" Vector__XXX
- SG_ DTI_rr_fault_code : 16|8@1+ (1,0) [0|255] "" Vector__XXX
- SG_ DTI_rl_fault_code : 24|8@1+ (1,0) [0|255] "" Vector__XXX
+BO_ 1811 DAQ_DTI_FL_TEMPFAULTS: 5 Vector__XXX
+ SG_ DTI_ctlr_temp : 0|16@1- (1,0) [-32768|32767] "" Vector__XXX
+ SG_ DTI_motor_temp : 16|16@1- (1,0) [-32768|32767] "" Vector__XXX
+ SG_ DTI_fault_code : 32|8@1+ (1,0) [0|255] "" Vector__XXX
+
+BO_ 1812 DAQ_DTI_FR_TEMPFAULTS: 5 Vector__XXX
+ SG_ DTI_ctlr_temp1 : 0|16@1- (1,0) [-32768|32767] "" Vector__XXX
+ SG_ DTI_motor_temp1 : 16|16@1- (1,0) [-32768|32767] "" Vector__XXX
+ SG_ DTI_fault_code1 : 32|8@1+ (1,0) [0|255] "" Vector__XXX
+
+BO_ 1813 DAQ_DTI_RL_TEMPFAULTS: 5 Vector__XXX
+ SG_ DTI_ctlr_temp2 : 0|16@1- (1,0) [-32768|32767] "" Vector__XXX
+ SG_ DTI_motor_temp2 : 16|16@1- (1,0) [-32768|32767] "" Vector__XXX
+ SG_ DTI_fault_code2 : 32|8@1+ (1,0) [0|255] "" Vector__XXX
+
+BO_ 1814 DAQ_DTI_RR_TEMPFAULTS: 5 Vector__XXX
+ SG_ DTI_ctlr_temp3 : 0|16@1- (1,0) [-32768|32767] "" Vector__XXX
+ SG_ DTI_motor_temp3 : 16|16@1- (1,0) [-32768|32767] "" Vector__XXX
+ SG_ DTI_fault_code3 : 32|8@1+ (1,0) [0|255] "" Vector__XXX
+
+BO_ 1796 DAQ_DTI_TORLIMNEG: 8 Vector__XXX
+ SG_ DTI_fl_torque_req : 0|16@1- (1,0) [-32768|32767] "" Vector__XXX
+ SG_ DTI_fr_torque_req : 16|16@1- (1,0) [-32768|32767] "" Vector__XXX
+ SG_ DTI_rl_torque_req : 32|16@1- (1,0) [-32768|32767] "" Vector__XXX
+ SG_ DTI_rr_torque_req : 48|16@1- (1,0) [-32768|32767] "" Vector__XXX
+
+BO_ 1795 DAQ_DTI_TORLIMPOS: 8 Vector__XXX
+ SG_ DTI_fl_torque_req1 : 0|16@1- (1,0) [-32768|32767] "" Vector__XXX
+ SG_ DTI_fr_torque_req1 : 16|16@1- (1,0) [-32768|32767] "" Vector__XXX
+ SG_ DTI_rl_torque_req1 : 32|16@1- (1,0) [-32768|32767] "" Vector__XXX
+ SG_ DTI_rr_torque_req1 : 48|16@1- (1,0) [-32768|32767] "" Vector__XXX
 
 BO_ 1776 DAQ_FSM_DATA: 7 Vector__XXX
  SG_ FSM_torqueRequested : 0|8@1+ (1,0) [0|255] "" Vector__XXX
@@ -938,19 +970,6 @@ BO_ 1794 ELLIPSE_IMU_General_Status_3: 6 Vector__XXX
  SG_ SBG_Sol_Align_Valid : 27|1@1+ (1,0) [0|1] "" Vector__XXX
  SG_ SBG_Heave_Status_GENERAL3 : 32|16@1+ (1,0) [0|65535] "" Vector__XXX
 
-BO_ 1795 ELLIPSE_IMU_UTC_0: 8 Vector__XXX
- SG_ SBG_Time_Stamp_UTC0 : 0|32@1+ (0.000001,0) [0.000000|4294.967295] "s" Vector__XXX
- SG_ SBG_Gps_Tow_UTC0 : 32|32@1+ (0.001,0) [0.000|4294967.295] "s" Vector__XXX
-
-BO_ 1796 ELLIPSE_IMU_UTC_1: 8 Vector__XXX
- SG_ SBG_Year : 0|8@1+ (1,0) [0|255] "year" Vector__XXX
- SG_ SBG_Month : 8|8@1+ (1,0) [0|255] "month" Vector__XXX
- SG_ SBG_Day : 16|8@1+ (1,0) [0|255] "d" Vector__XXX
- SG_ SBG_Hour : 24|8@1+ (1,0) [0|255] "h" Vector__XXX
- SG_ SBG_Min : 32|8@1+ (1,0) [0|255] "min" Vector__XXX
- SG_ SBG_Sec : 40|8@1+ (1,0) [0|255] "s" Vector__XXX
- SG_ SBG_Tenthms : 48|16@1+ (0.0001,0) [0.0000|6.5535] "s" Vector__XXX
-
 BO_ 1808 ELLIPSE_IMU_INFO: 8 Vector__XXX
  SG_ SBG_Time_Stamp_IMU : 0|32@1+ (0.000001,0) [0.000000|4294.967295] "s" Vector__XXX
  SG_ SBG_Imu_Status : 32|16@1+ (1,0) [0|65535] "" Vector__XXX
@@ -964,16 +983,6 @@ BO_ 1810 ELLIPSE_IMU_GYRO: 6 Vector__XXX
  SG_ SBG_Gyro_X : 0|16@1- (0.001,0) [-32.768|32.767] "rad.s-1" Vector__XXX
  SG_ SBG_Gyro_Y : 16|16@1- (0.001,0) [-32.768|32.767] "rad.s-1" Vector__XXX
  SG_ SBG_Gyro_Z : 32|16@1- (0.001,0) [-32.768|32.767] "rad.s-1" Vector__XXX
-
-BO_ 1811 ELLIPSE_IMU_DELTA_VEL: 6 Vector__XXX
- SG_ SBG_Delta_Vel_X : 0|16@1- (0.01,0) [-327.68|327.67] "m.s-2" Vector__XXX
- SG_ SBG_Delta_Vel_Y : 16|16@1- (0.01,0) [-327.68|327.67] "m.s-2" Vector__XXX
- SG_ SBG_Delta_Vel_Z : 32|16@1- (0.01,0) [-327.68|327.67] "m.s-2" Vector__XXX
-
-BO_ 1812 ELLIPSE_IMU_DELTA_ANGLE: 6 Vector__XXX
- SG_ SBG_Delta_Angle_X : 0|16@1- (0.001,0) [-32.768|32.767] "rad.s-1" Vector__XXX
- SG_ SBG_Delta_Angle_Y : 16|16@1- (0.001,0) [-32.768|32.767] "rad.s-1" Vector__XXX
- SG_ SBG_Delta_Angle_Z : 32|16@1- (0.001,0) [-32.768|32.767] "rad.s-1" Vector__XXX
 
 BO_ 1824 ELLIPSE_IMU_EKF_INFO: 4 Vector__XXX
  SG_ SBG_Time_Stamp_EKF : 0|32@1+ (0.000001,0) [0.000000|4294.967295] "s" Vector__XXX
@@ -1890,20 +1899,11 @@ BO_ 1624 DAQ_Therm1: 8 Vector__XXX
  SG_ Linpot_1_1 : 0|32@1+ (0.0183105,0) [0E-007|78642998.6550975] "mm" Vector__XXX
  SG_ Linpot_1_2 : 32|32@1+ (0.0183105,0) [0E-007|78642998.6550975] "mm" Vector__XXX
 
-BO_ 1315 IVT_VOLTAGE_2: 6 Vector__XXX
- SG_ IVT_VOLTAGE_2 : 23|32@0- (1,0) [-2147483648|2147483647] "mV" Vector__XXX
- SG_ IVT_VOLTAGE_2_MUX_ID : 7|8@0+ (1,0) [0|255] "" Vector__XXX
- SG_ IVT_VOLTAGE_2_MSG_COUNT : 11|4@0+ (1,0) [0|15] "" Vector__XXX
- SG_ IVT_VOLTAGE_2_STATUS : 15|4@0+ (1,0) [0|15] "" Vector__XXX
-
 BO_ 1316 IVT_VOLTAGE_3: 6 Vector__XXX
  SG_ IVT_VOLTAGE_3 : 23|32@0- (1,0) [-2147483648|2147483647] "mV" Vector__XXX
  SG_ IVT_VOLTAGE_3_MUX_ID : 7|8@0+ (1,0) [0|255] "" Vector__XXX
  SG_ IVT_VOLTAGE_3_MSG_COUNT : 11|4@0+ (1,0) [0|15] "" Vector__XXX
  SG_ IVT_VOLTAGE_3_STATUS : 15|4@0+ (1,0) [0|15] "" Vector__XXX
-
-BO_ 394 RES: 8 Vector__XXX
- SG_ RES_Sig : 0|32@1+ (1,0) [0|4294967295] "" Vector__XXX
 
 BO_ 266 VSM_First_Error: 1 Vector__XXX
  SG_ VSM_Error_Code : 0|8@1+ (1,0) [0|1] "" Vector__XXX
@@ -2003,11 +2003,17 @@ BA_DEF_ SG_ "LongName" STRING;
 BA_DEF_  "Title" STRING;
 BA_DEF_DEF_ "Title" "canmatrix-Export";
 
-BA_ "Title"   "CMR 26x Generated";
+BA_ "Title"   "CMR 27x Generated";
 
+BA_ "GenMsgCycleTime" BO_ 1315 10;
+BA_ "Receivable" BO_ 1315 "True";
+BA_ "Sendable" BO_ 1315 "True";
 BA_ "GenMsgCycleTime" BO_ 401 10;
 BA_ "Receivable" BO_ 401 "True";
 BA_ "Sendable" BO_ 401 "True";
+BA_ "GenMsgCycleTime" BO_ 394 5;
+BA_ "Receivable" BO_ 394 "True";
+BA_ "Sendable" BO_ 394 "True";
 BA_ "GenMsgCycleTime" BO_ 400 400;
 BA_ "Receivable" BO_ 400 "True";
 BA_ "Sendable" BO_ 400 "True";
@@ -2047,9 +2053,24 @@ BA_ "Sendable" BO_ 1779 "True";
 BA_ "GenMsgCycleTime" BO_ 1785 100;
 BA_ "Receivable" BO_ 1785 "True";
 BA_ "Sendable" BO_ 1785 "True";
-BA_ "GenMsgCycleTime" BO_ 1778 100;
-BA_ "Receivable" BO_ 1778 "True";
-BA_ "Sendable" BO_ 1778 "True";
+BA_ "GenMsgCycleTime" BO_ 1811 100;
+BA_ "Receivable" BO_ 1811 "True";
+BA_ "Sendable" BO_ 1811 "True";
+BA_ "GenMsgCycleTime" BO_ 1812 100;
+BA_ "Receivable" BO_ 1812 "True";
+BA_ "Sendable" BO_ 1812 "True";
+BA_ "GenMsgCycleTime" BO_ 1813 100;
+BA_ "Receivable" BO_ 1813 "True";
+BA_ "Sendable" BO_ 1813 "True";
+BA_ "GenMsgCycleTime" BO_ 1814 100;
+BA_ "Receivable" BO_ 1814 "True";
+BA_ "Sendable" BO_ 1814 "True";
+BA_ "GenMsgCycleTime" BO_ 1796 100;
+BA_ "Receivable" BO_ 1796 "True";
+BA_ "Sendable" BO_ 1796 "True";
+BA_ "GenMsgCycleTime" BO_ 1795 100;
+BA_ "Receivable" BO_ 1795 "True";
+BA_ "Sendable" BO_ 1795 "True";
 BA_ "GenMsgCycleTime" BO_ 1776 100;
 BA_ "Receivable" BO_ 1776 "True";
 BA_ "Sendable" BO_ 1776 "True";
@@ -2372,20 +2393,12 @@ BA_ "Receivable" BO_ 1793 "True";
 BA_ "Sendable" BO_ 1793 "True";
 BA_ "Receivable" BO_ 1794 "True";
 BA_ "Sendable" BO_ 1794 "True";
-BA_ "Receivable" BO_ 1795 "True";
-BA_ "Sendable" BO_ 1795 "True";
-BA_ "Receivable" BO_ 1796 "True";
-BA_ "Sendable" BO_ 1796 "True";
 BA_ "Receivable" BO_ 1808 "True";
 BA_ "Sendable" BO_ 1808 "True";
 BA_ "Receivable" BO_ 1809 "True";
 BA_ "Sendable" BO_ 1809 "True";
 BA_ "Receivable" BO_ 1810 "True";
 BA_ "Sendable" BO_ 1810 "True";
-BA_ "Receivable" BO_ 1811 "True";
-BA_ "Sendable" BO_ 1811 "True";
-BA_ "Receivable" BO_ 1812 "True";
-BA_ "Sendable" BO_ 1812 "True";
 BA_ "Receivable" BO_ 1824 "True";
 BA_ "Sendable" BO_ 1824 "True";
 BA_ "Receivable" BO_ 1825 "True";
@@ -2866,12 +2879,8 @@ BA_ "Sendable" BO_ 794 "True";
 BA_ "GenMsgCycleTime" BO_ 1624 100;
 BA_ "Receivable" BO_ 1624 "True";
 BA_ "Sendable" BO_ 1624 "True";
-BA_ "Receivable" BO_ 1315 "True";
-BA_ "Sendable" BO_ 1315 "True";
 BA_ "Receivable" BO_ 1316 "True";
 BA_ "Sendable" BO_ 1316 "True";
-BA_ "Receivable" BO_ 394 "True";
-BA_ "Sendable" BO_ 394 "True";
 BA_ "Receivable" BO_ 266 "True";
 BA_ "Sendable" BO_ 266 "True";
 BA_ "GenMsgCycleTime" BO_ 1911 100;
