@@ -11,7 +11,7 @@ static const float max_regen_torque_Nm = -20.0f;
 
 /// Front/rear bias ratio for regen braking. The bias ratio is applied as `regenForce` for the
 /// front motors and `(1.0 - frontRegenBrakeBias) / frontRegenBrakeBias * regenForce` for the rear motors.
-static const float frontRegenBiasRatio = 0.667f;
+static const float frontRegenBiasRatio = 0.714f;
 
 static const float minTorqueLUTVal_Nm = 2.6f;
 static const float current_torque_slope = 85.0f / 31.6f;
@@ -48,7 +48,7 @@ static const float basicOnePedalRegenGain = 0.6;
 /// Minimum brake PSI required to start parallel regen braking.
 static const uint16_t parallelRegenMinBrakePsi = 25;
 /// Brake PSI at which regen braking will max out.
-static const uint16_t parallelRegenMaxBrakePsi = 527;
+static const uint16_t parallelRegenMaxBrakePsi = 750;
 /// Multiplier used to control regen strength.
 static const float parallelRegenGain = 0.2;
 
