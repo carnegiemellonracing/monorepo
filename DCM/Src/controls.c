@@ -920,7 +920,8 @@ void runControls (
         }
         case CMR_CAN_GEAR_TEST: {
             disableTorqueMode();
-            setBasicRegenFastTorqueWithPhantomDiff(throttlePos_u8, swAngle_millideg);
+            setFastTorqueWithPhantomDiff(throttlePos_u8, swAngle_millideg, front_bias, maxPhantomDiffScalingFactor);
+            //setBasicRegenFastTorqueWithPhantomDiff(throttlePos_u8, swAngle_millideg);
             setPowerLimit(false, MOTOR_FL, maxPowerPerMotor_kW * front_bias);
             setPowerLimit(false, MOTOR_FR, maxPowerPerMotor_kW * front_bias);
             setPowerLimit(false, MOTOR_RL, maxPowerPerMotor_kW * (1 - front_bias));
