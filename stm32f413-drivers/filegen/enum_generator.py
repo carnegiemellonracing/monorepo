@@ -1,6 +1,7 @@
 import os
 import re
 import canmatrix.formats
+import canmatrix.formats
 
 def _find_matching_paren(sym_section, open_paren_idx):
     #Find the right paren that closes left paren at open_paren_idx
@@ -246,7 +247,7 @@ def generate_symbol_enums(
     output_file="stm32f413-drivers/PCAN/CMR 27x.sym",
     sym_25e_file=None,
 ):
-    #merge in enums from 25e, without replacing existing 26x enums
+    #merge in enums from 25e, without replacing existing 27x enums
 
     script_dir = os.path.dirname(os.path.abspath(__file__))
     if sym_25e_file is None:
@@ -294,7 +295,7 @@ def generate_symbol_enums(
     header_content = [
         'FormatVersion=5.0 // Do not edit this line!',
         'UniqueVariables=True',
-        'Title="CMR 26x Generated"',
+        'Title="CMR 27x Generated"',
         ''
     ]
     final_content_parts.extend(header_content)

@@ -248,6 +248,27 @@ def parse_sizeof_argument(sizeof_arg):
     
     return sizeof_arg
 
+def parse_data_argument(data_arg):
+    """Parse a canTX data pointer argument into a usable signal name."""
+    data_arg = data_arg.strip()
+    data_arg = data_arg.strip("()")
+    if data_arg.startswith('&'):
+        data_arg = data_arg[1:].strip()
+        data_arg = data_arg.strip("()")
+    if data_arg.startswith('*'):
+        data_arg = data_arg[1:].strip()
+    if '->' in data_arg:
+        return data_arg.split('->')[-1].strip()
+    if '.' in data_arg:
+        return data_arg.split('.')[-1].strip()
+    return data_arg
+
+def type_from_literal_size(size_arg):
+    size_arg = size_arg.strip()
+    if re.fullmatch(r'\d+', size_arg):
+        return f"uint{int(size_arg)}_t"
+    return None
+
 def resolve_constant_value(constant_name, local_constants, global_constants):
     constant_name = constant_name.strip()
     
@@ -329,6 +350,69 @@ def extract_canids_from_file(filepath, global_var_types, global_struct_members, 
         local_canrx_types = extract_canrx_type_mappings(content)
         
         result = {}
+
+        CAN_CALL_5_ARGS_LITERAL_SIZE = re.compile(
+            r'\bcanTX\s*\(\s*([^,]+)\s*,\s*([^,]+)\s*,\s*([^,]+)\s*,\s*(\d+)\s*,\s*([^)]+)\s*\)',
+            re.MULTILINE | re.DOTALL
+        )
+
+        for match in CAN_CALL_5_ARGS_LITERAL_SIZE.finditer(content):
+            arg1, arg2, arg3, size_arg, period = match.groups()
+            arg1 = arg1.strip()
+            arg2 = arg2.strip()
+            arg3 = arg3.strip()
+            period = period.strip()
+
+            canid = None
+            if is_canid(arg1):
+                canid = clean_canid(arg1)
+            elif is_canid(arg2):
+                canid = clean_canid(arg2)
+            elif is_canid(arg3):
+                canid = clean_canid(arg3)
+
+            resolved_type = type_from_literal_size(size_arg)
+            if canid and resolved_type:
+                cycle_time = resolve_constant_value(period, local_constants, global_constants)
+                cycle_time, time_out = calculate_cycle_time_and_timeout(cycle_time)
+
+                result[canid] = {
+                    "type": resolved_type,
+                    "name": parse_data_argument(arg3),
+                    "cycleTime": cycle_time,
+                    "timeOut": time_out,
+                    "source": "canTX"
+                }
+
+        CAN_CALL_4_ARGS_LITERAL_SIZE = re.compile(
+            r'\bcanTX\s*\(\s*([^,]+)\s*,\s*([^,]+)\s*,\s*(\d+)\s*,\s*([^)]+)\s*\)',
+            re.MULTILINE | re.DOTALL
+        )
+
+        for match in CAN_CALL_4_ARGS_LITERAL_SIZE.finditer(content):
+            arg1, arg2, size_arg, period = match.groups()
+            arg1 = arg1.strip()
+            arg2 = arg2.strip()
+            period = period.strip()
+
+            canid = None
+            if is_canid(arg1):
+                canid = clean_canid(arg1)
+            elif is_canid(arg2):
+                canid = clean_canid(arg2)
+
+            resolved_type = type_from_literal_size(size_arg)
+            if canid and resolved_type and canid not in result:
+                cycle_time = resolve_constant_value(period, local_constants, global_constants)
+                cycle_time, time_out = calculate_cycle_time_and_timeout(cycle_time)
+
+                result[canid] = {
+                    "type": resolved_type,
+                    "name": parse_data_argument(arg2),
+                    "cycleTime": cycle_time,
+                    "timeOut": time_out,
+                    "source": "canTX"
+                }
         
         CAN_CALL_5_ARGS_FULL = re.compile(
             r'\bcanTX\s*\(\s*([^,]+)\s*,\s*([^,]+)\s*,\s*([^,]+)\s*,\s*sizeof\s*\(\s*([^)]+)\s*\)\s*,\s*([^)]+)\s*\)',
@@ -535,6 +619,8 @@ def main():
             "cycleTime": info["cycleTime"],
             "timeOut": info["timeOut"]
         }
+        if "name" in info:
+            cleaned_info["name"] = info["name"]
         cleaned_canid_to_info[canid] = cleaned_info
     
     output_dir = os.path.dirname(OUTPUT_FILE)

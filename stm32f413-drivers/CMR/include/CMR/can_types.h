@@ -1643,4 +1643,11 @@ typedef struct {
     uint8_t  year;
 } cmr_canRTCDate;
 
+typedef struct {
+    int16_t fl_torque_req;
+    int16_t fr_torque_req;
+    int16_t rl_torque_req;
+    int16_t rr_torque_req;
+} cmr_canTorqueReq_t; 
+
 #endif /* CMR_CAN_TYPES_H */

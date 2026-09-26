@@ -356,6 +356,26 @@ def format_fields(canid, matches, structlines, enums, field_params=None):
             structlines.append("Issue with type of field")
     return str(int(atbit/8))
 
+def parse_primitive_type(cantype):
+    match = re.fullmatch(r'([us]?int)(\d+)_t', cantype)
+    if not match:
+        return None
+    signedness, size = match.groups()
+    vartype = "unsigned" if signedness == "uint" else "signed"
+    return vartype, int(size)
+
+def format_primitive_field(canid, canid_data, structlines):
+    primitive = parse_primitive_type(canid_data['type'])
+    if not primitive:
+        return None
+
+    vartype, size = primitive
+    name = canid_data.get('name', canid_data['type'])
+    append_can_name = create_prefix(name, canid)
+    append_can_name = check_repeat_varname(append_can_name)
+    structlines.append(f"Var={append_can_name} {vartype} 0,{size}")
+    return str(math.ceil(size / 8))
+
 def extract_field_params(canid_data):
     """Extract field-specific parameters from the canid data"""
     field_params = {}
@@ -400,7 +420,7 @@ def main():
             # Extract field-specific parameters
             field_params = extract_field_params(canid_data)
             
-            if re.fullmatch(r'(cmr_[a-zA-Z0-9_]*_t)', cantype):
+            if re.fullmatch(r'(cmr_[a-zA-Z0-9_]*_t)', cantype) or parse_primitive_type(cantype):
                 #check repeat, delete once canids fixed 
                 info = get_canid_info(canid)
                 if not info:
@@ -417,8 +437,12 @@ def main():
                 #look at mapper json for data
                 add_mapper_data(canid, cycletime, timeout, structlines)
                 #find and format the correct struct in cantypes.h 
-                matches = get_cantypes_data(cantype, structs)
-                if matches: 
+                dlc = format_primitive_field(canid, canid_data, structlines)
+                matches = None if dlc else get_cantypes_data(cantype, structs)
+                if dlc:
+                    dlc_index = 3 if info["is_extended"] else 2
+                    structlines.insert(dlc_index, "DLC="+dlc)
+                elif matches:
                     dlc = format_fields(canid, matches, structlines, enums, field_params) 
                     dlc_index = 3 if info["is_extended"] else 2
                     structlines.insert(dlc_index, "DLC="+dlc)

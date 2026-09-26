@@ -1735,6 +1735,28 @@ static void forwardDVToDAQ(void) {
     const cmr_canDTI_TX_TempFault_t *dtiTempFaultRR = getDTITempFault(MOTOR_RR);
     cmr_canDTI_ErrorMessages_t dtiErrorMessages;
 
+    const cmr_DTI_RX_Message_t *dtiSetpointsFL = getDTISetpoints(MOTOR_FL);
+    const cmr_DTI_RX_Message_t *dtiSetpointsFR = getDTISetpoints(MOTOR_FR);
+    const cmr_DTI_RX_Message_t *dtiSetpointsRL = getDTISetpoints(MOTOR_RL);
+    const cmr_DTI_RX_Message_t *dtiSetpointsRR = getDTISetpoints(MOTOR_RR);
+
+    cmr_canTorqueReq_t posTorqueReqs = {
+        .fl_torque_req = dtiSetpointsFL->torqueLimPos_dA,
+        .fr_torque_req = dtiSetpointsFR->torqueLimPos_dA,
+        .rl_torque_req = dtiSetpointsRR->torqueLimPos_dA,
+        .rr_torque_req = dtiSetpointsRL->torqueLimPos_dA
+    }; 
+
+    cmr_canTorqueReq_t negTorqueReqs = {
+        .fl_torque_req = dtiSetpointsFL->torqueLimNeg_dA,
+        .fr_torque_req = dtiSetpointsFR->torqueLimNeg_dA,
+        .rl_torque_req = dtiSetpointsRR->torqueLimNeg_dA,
+        .rr_torque_req = dtiSetpointsRL->torqueLimNeg_dA
+    }; 
+   
+    canTX(CMR_CAN_BUS_DAQ, CMR_CANID_DAQ_DTI_TORLIMNEG, &(posTorqueReqs), sizeof(cmr_canTorqueReq_t), canTX10Hz_period_ms);
+    canTX(CMR_CAN_BUS_DAQ, CMR_CANID_DAQ_DTI_TORLIMPOS, &(negTorqueReqs), sizeof(cmr_canTorqueReq_t), canTX10Hz_period_ms);
+
     canTX(CMR_CAN_BUS_DAQ, CMR_CANID_DAQ_FSM_DATA, fsmData, sizeof(cmr_canFSMData_t), canTX10Hz_period_ms);
     canTX(CMR_CAN_BUS_DAQ, CMR_CANID_DAQ_VSM_SENSORS, vsmSensors, sizeof(cmr_canVSMSensors_t), canTX10Hz_period_ms);
     canTX(CMR_CAN_BUS_DAQ, CMR_CANID_DAQ_AS_PRESSURE_READINGS, dvPressure, sizeof(cmr_canDVPressureReadings_t), canTX10Hz_period_ms);
@@ -1746,10 +1768,9 @@ static void forwardDVToDAQ(void) {
     canTX(CMR_CAN_BUS_DAQ, CMR_CANID_DAQ_CDC_COULOMB_COUNTING, &coulombCounting, sizeof(cmr_canCDCKiloCoulombs_t), canTX10Hz_period_ms);
 
     if(inverterMessagesValid()) {
-        dtiErrorMessages.fl_fault_code = dtiTempFaultFL->fault_code;
-        dtiErrorMessages.fr_fault_code = dtiTempFaultFR->fault_code;
-        dtiErrorMessages.rl_fault_code = dtiTempFaultRL->fault_code;
-        dtiErrorMessages.rr_fault_code = dtiTempFaultRR->fault_code;
-        canTX(CMR_CAN_BUS_DAQ, CMR_CANID_DAQ_DTI_ERROR_MESSAGES, &dtiErrorMessages, sizeof(dtiErrorMessages), canTX10Hz_period_ms);
+        canTX(CMR_CAN_BUS_DAQ, CMR_CANID_DAQ_DTI_FL_TEMPFAULTS, &dtiTempFaultFL, sizeof(cmr_canDTI_TX_TempFault_t), canTX10Hz_period_ms);
+        canTX(CMR_CAN_BUS_DAQ, CMR_CANID_DAQ_DTI_FR_TEMPFAULTS, &dtiTempFaultFR, sizeof(cmr_canDTI_TX_TempFault_t), canTX10Hz_period_ms);
+        canTX(CMR_CAN_BUS_DAQ, CMR_CANID_DAQ_DTI_RL_TEMPFAULTS, &dtiTempFaultRL, sizeof(cmr_canDTI_TX_TempFault_t), canTX10Hz_period_ms);
+        canTX(CMR_CAN_BUS_DAQ, CMR_CANID_DAQ_DTI_RR_TEMPFAULTS, &dtiTempFaultRR, sizeof(cmr_canDTI_TX_TempFault_t), canTX10Hz_period_ms);
     }
 }

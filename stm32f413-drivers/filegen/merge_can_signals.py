@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Merges messages from CMR 25e.sym into CMR 27x.sym based on can id
-Only adds messages with CAN IDs that don't already exist in 26x sym
+Only adds messages with CAN IDs that don't already exist in 27x sym
 """
 
 import re
