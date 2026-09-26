@@ -29,7 +29,8 @@
 #define DV_TANK_PRESSURE_MINIMUM_DECIBAR 50
 #define FRONT_MINIMUM_BRAKING_PSI 650
 #define REAR_MINIMUM_BRAKING_PSI  400
-
+#define FRONT_BRAKECHECK_RANGE_HIGH_BAR 90
+#define BACK_BRAKECHECK_RANGE_HIGH_BAR  45
 #define DV_BRAKECHECK_VALVES_WAIT_TIME 5000
 
 /** @brief Mapping of VSM internal states to vehicle states. Indexed by cmr_canVSMState_t. */
@@ -360,7 +361,7 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
         case CMR_CAN_VSM_STATE_BRAKE_CHECK:{ //Toggle one way
             //DIM reads this state and switches valve
             if (xTaskGetTickCount() - DV_BRAKECHECK_VALVES_WAIT_TIME >= lastWakeTime_ms) {
-                if (checkHydraulicPressure(90, 10000, 0, 1)){ //10000 just a big number, if pressure within bounds then good
+                if (checkHydraulicPressure(FRONT_BRAKECHECK_RANGE_HIGH_BAR, 100000, 0, 1)){ //100000 is infinity
                     lastWakeTime_ms = xTaskGetTickCount();
                     nextState = CMR_CAN_VSM_STATE_BRAKE_CHECK_2; 
                 } else {
@@ -375,7 +376,7 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
         case CMR_CAN_VSM_STATE_BRAKE_CHECK_2:{ //Toggle the other way
             //DIM reads this state and switches valve
             if (xTaskGetTickCount() - DV_BRAKECHECK_VALVES_WAIT_TIME >= lastWakeTime_ms) {
-                if (checkHydraulicPressure(0,1,45,10000)){ //10000 just a big number, if pressure within bounds then good
+                if (checkHydraulicPressure(0,1,BACK_BRAKECHECK_RANGE_HIGH_BAR,100000)){ 
                     lastWakeTime_ms = xTaskGetTickCount();
                     nextState = CMR_CAN_VSM_STATE_AS_READY; 
                 } else {

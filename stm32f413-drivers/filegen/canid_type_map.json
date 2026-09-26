@@ -1023,7 +1023,7 @@
             "canrx_mappings": 193,
             "canrx_timeouts": 183,
             "canrx_types": 64,
-            "constants": 270,
+            "constants": 272,
             "struct_members": 0,
             "variable_types": 331
         },
