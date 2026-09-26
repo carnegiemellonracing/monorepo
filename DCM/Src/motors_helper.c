@@ -13,10 +13,8 @@
 #include <math.h>
 #include "can.h"
 #include "controls_helper.h"
+#include <CMR/utils.h>
 
-// Macros
-#define CLAMP(x, min, max) ((x) < (min) ? (min) : ((x) > (max) ? (max) : (x)));
-    
 /**
  * @brief Retrieve ERPM, duty cycle, voltage for DTI inverter
  */
@@ -431,7 +429,7 @@ int16_t torqueToCurrent(float torque_mNm){
     }
 
     // temporary linear torque-current scaling
-    torque_Nm = CLAMP(torque_Nm, 0.0f, maxTorque_Nm);
+    torque_Nm = CLAMP(0.0f, torque_Nm, maxTorque_Nm);
     int16_t current_dA = (int)(torque_Nm * current_torque_slope * 10.0f);
     return sign * current_dA;
 
@@ -481,7 +479,7 @@ float currentToTorque(int16_t current_dA){
     /* Scale deciAmps back to Arms for LUT */
     float current_Arms = current_dA / 10.0f;
 
-    current_Arms = CLAMP(current_Arms, DTI_torque_current_LUT[0].current_Arms,
+    current_Arms = CLAMP(DTI_torque_current_LUT[0].current_Arms, current_Arms,
                                    DTI_torque_current_LUT[DTI_TORQUE_CURRENT_LUT_LEN].current_Arms);
 
     int i;

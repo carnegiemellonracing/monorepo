@@ -96,6 +96,37 @@ void sendBlankCommand() {
     }
 }
 
+/// Gets a motor's torque limit in the active direction.
+static int8_t getActiveTorqueLimit_Nm(motorLocation_t motor) {
+    const float torqueLimPos_Nm = motorSetpoints[motor].torqueLimPos_mNm / 1000.0f;
+    const float torqueLimNeg_Nm = motorSetpoints[motor].torqueLimNeg_mNm / 1000.0f;
+    
+    const float torqueLimit_Nm = (torqueLimNeg_Nm < 0) ? torqueLimNeg_Nm : torqueLimPos_Nm;
+    return (int8_t) CLAMP((float) INT8_MIN, roundf(torqueLimit_Nm), (float) INT8_MAX);
+}
+
+/// Gets a motor's velocity setpoint in hecto-rpm (rpm / 100).
+static uint8_t getVelocity_hrpm(motorLocation_t motor) {
+    const float velocity_hrpm = motorSetpoints[motor].velocity_rpm / 100.0f;
+    return (uint8_t) CLAMP(0.0f, roundf(velocity_hrpm), (float) UINT8_MAX);
+}
+
+/// Send the most recent torque and velocity limits for each wheel.
+static void sendControlLimits(void) {
+    const cmr_canControlLimits_t limits = {
+        .FL_torqueLimit_Nm = getActiveTorqueLimit_Nm(MOTOR_FL),
+        .FR_torqueLimit_Nm = getActiveTorqueLimit_Nm(MOTOR_FR),
+        .RL_torqueLimit_Nm = getActiveTorqueLimit_Nm(MOTOR_RL),
+        .RR_torqueLimit_Nm = getActiveTorqueLimit_Nm(MOTOR_RR),
+        .FL_velocity_hrpm = getVelocity_hrpm(MOTOR_FL),
+        .FR_velocity_hrpm = getVelocity_hrpm(MOTOR_FR),
+        .RL_velocity_hrpm = getVelocity_hrpm(MOTOR_RL),
+        .RR_velocity_hrpm = getVelocity_hrpm(MOTOR_RR),
+    };
+
+    canTX(CMR_CAN_BUS_VEH, CMR_CANID_CONTROL_LIMITS, &limits, sizeof(limits), motorsCommand_period_ms);
+}
+
 /**
  * @brief Task for setting motors command.
  *
@@ -253,6 +284,8 @@ static void motorsCommand (
                 break;
             }
         }
+
+        sendControlLimits();
 
         // Update gear in transition from HV_EN to RTD
         if ((prevState == CMR_CAN_HV_EN && heartbeatVSM->state == CMR_CAN_RTD)

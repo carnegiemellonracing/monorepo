@@ -90,6 +90,7 @@ typedef enum {
     CMR_CANID_CDC_POWER_LOG = 0x6E4,             /**< @brief DAQ Live to CDC - changing power limit. */
 
     CMR_CANID_CUBEMARS_DATA = 0x6E6,
+    CMR_CANID_CONTROL_LIMITS = 0x6E7,       /**< @brief VCU's most recently commanded torque/velocity limits for each motor. */
 
     CMR_CANID_FSM_DATA = 0x133,                 /**< @brief FSM data. */
     CMR_CANID_CELL_BALANCE_ENABLE = 0x134,
