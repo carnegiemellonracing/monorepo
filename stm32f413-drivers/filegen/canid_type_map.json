@@ -1017,13 +1017,13 @@
         "canrx_prefixes_used": [
             "CANRX_"
         ],
-        "files_processed": 2853,
-        "files_with_matches": 2853,
+        "files_processed": 2851,
+        "files_with_matches": 2851,
         "global_mappings": {
             "canrx_mappings": 193,
             "canrx_timeouts": 183,
             "canrx_types": 64,
-            "constants": 273,
+            "constants": 270,
             "struct_members": 0,
             "variable_types": 331
         },

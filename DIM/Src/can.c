@@ -347,7 +347,6 @@ static void canTX10Hz(void *pvParameters) {
                 .requestedDrsMode = drsReq,
                 .requestedDriver = (uint8_t)config_menu_main_array[DRIVER_PROFILE_INDEX].value.value,
                 .requestedDVCtrl = dvReq,
-                .brakeCheckResult = 0, // TODO put brakecheck here
             };
             canTX(
                 CMR_CANID_DIM_REQUEST,
