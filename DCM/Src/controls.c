@@ -74,7 +74,7 @@ static float manual_cruise_control_speed;
 
 float getYawRateControlLeftRightBias(int32_t swAngle_millideg);
 void set_fast_torque_with_slew(uint8_t throttlePos_u8, int16_t slew);
-void setRegenTorques (uint8_t regen_pct);
+void setRegenTorques (float regen_pct, float regen_gain, float front_bias_ratio);
 
 /** @brief Coulomb counting info **/
 static TickType_t previousTickCount;
@@ -670,17 +670,8 @@ void setParallelRegenFastTorqueWithPhantomDiff(
 ) {
      
     if (brakePressurePsi_u8 > parallelRegenMinBrakePsi) {
-        float regen_torque =
-            CLAMP(
-                max_regen_torque_Nm,
-                max_regen_torque_Nm * parallelRegenGain * (brakePressurePsi_u8 - parallelRegenMinBrakePsi) / (parallelRegenMaxBrakePsi - parallelRegenMinBrakePsi),
-                0
-            );
-        setTorqueLimsUnprotected(MOTOR_FL, 0.0f, regen_torque);
-        setTorqueLimsUnprotected(MOTOR_FR, 0.0f, regen_torque);
-        setTorqueLimsUnprotected(MOTOR_RL, 0.0f, regen_torque);
-        setTorqueLimsUnprotected(MOTOR_RR, 0.0f, regen_torque);
-        setVelocityInt16All(0);
+        float regen_pct = (float) (brakePressurePsi_u8 - parallelRegenMinBrakePsi) / (parallelRegenMaxBrakePsi - parallelRegenMinBrakePsi);
+        setRegenTorques(regen_pct, parallelRegenGain, frontRegenBiasRatio);
     }
     else {
         setFastTorqueWithPhantomDiff(throttlePos_u8, swAngle_millideg, front_bias, maxPhantomDiffScalingFactor);
@@ -700,17 +691,7 @@ void setBasicRegenFastTorqueWithPhantomDiff(
                     (throttle - basicOnePedalRegenThrottleZeroTorquePoint) / basicOnePedalRegenThrottleZeroTorquePoint, 
                     0
                 );
-        float regen_torque = 
-                CLAMP(
-                    max_regen_torque_Nm,
-                    -max_regen_torque_Nm * adjusted_throttle * basicOnePedalRegenGain,
-                    0
-                );
-        setTorqueLimsUnprotected(MOTOR_FL, 0.0f, regen_torque);
-        setTorqueLimsUnprotected(MOTOR_FR, 0.0f, regen_torque);
-        setTorqueLimsUnprotected(MOTOR_RL, 0.0f, regen_torque);
-        setTorqueLimsUnprotected(MOTOR_RR, 0.0f, regen_torque);
-        setVelocityInt16All(0);
+        setRegenTorques(-adjusted_throttle, basicOnePedalRegenGain, frontRegenBiasRatio);
     }
     else {
         float adjusted_throttle = 
@@ -739,17 +720,7 @@ void setAdaptiveRegenFastTorqueWithPhantomDiff(
     // Decide whether to use regen or phantom diff control
     if (adjusted_throttle < 0) {
         // If the driver has released the pedal enough to start braking, apply regen gain.
-        float regen_torque = 
-               CLAMP(
-                      max_regen_torque_Nm,
-                      -max_regen_torque_Nm * adjusted_throttle * onePedalRegenGain,
-                      0
-               );
-        setTorqueLimsUnprotected(MOTOR_FL, 0.0f, regen_torque);
-        setTorqueLimsUnprotected(MOTOR_FR, 0.0f, regen_torque);
-        setTorqueLimsUnprotected(MOTOR_RL, 0.0f, regen_torque);
-        setTorqueLimsUnprotected(MOTOR_RR, 0.0f, regen_torque);
-        setVelocityInt16All(0);
+        setRegenTorques(-adjusted_throttle, onePedalRegenGain, frontRegenBiasRatio);
     }
     else {
         int adjusted_throttle_u8 = (int) (adjusted_throttle * UINT8_MAX);
@@ -1243,14 +1214,20 @@ void setFastTorqueWithPhantomDiff(
     setVelocityInt16All(maxFastSpeed_rpm);
 }
 
-void setRegenTorques (uint8_t regen_pct) {
-    const float reqTorque = max_regen_torque_Nm * (float) regen_pct;
-   
-   setTorqueLimsUnprotected(MOTOR_FL, 0.0f, reqTorque);
-   setTorqueLimsUnprotected(MOTOR_FR, 0.0f, reqTorque);
-   setTorqueLimsUnprotected(MOTOR_RR, 0.0f, reqTorque);
-   setTorqueLimsUnprotected(MOTOR_RL, 0.0f, reqTorque);
-   setVelocityInt16All(0);
+/// Helper for commanding regen torque. Applies a front-rear braking bias and expects
+/// all parameters to span [0, 1].
+void setRegenTorques (float regen_pct, float regen_gain, float front_bias_ratio) {
+    const float reqTorque = CLAMP(
+        max_regen_torque_Nm,
+        max_regen_torque_Nm * regen_pct * regen_gain,
+        0.0
+    );
+
+    setTorqueLimsUnprotected(MOTOR_FL, 0.0f, reqTorque);
+    setTorqueLimsUnprotected(MOTOR_FR, 0.0f, reqTorque);
+    setTorqueLimsUnprotected(MOTOR_RR, 0.0f, reqTorque * (1 - front_bias_ratio) / front_bias_ratio);
+    setTorqueLimsUnprotected(MOTOR_RL, 0.0f, reqTorque * (1 - front_bias_ratio) / front_bias_ratio);
+    setVelocityInt16All(0);
 }
 
 void set_fast_torque_with_slew(uint8_t throttlePos_u8, int16_t slew) {

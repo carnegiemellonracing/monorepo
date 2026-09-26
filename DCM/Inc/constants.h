@@ -9,6 +9,10 @@
 static const float maxTorque_Nm = 31.6f;
 static const float max_regen_torque_Nm = -20.0f;
 
+/// Front/rear bias ratio for regen braking. The bias ratio is applied as `regenForce` for the
+/// front motors and `(1.0 - frontRegenBrakeBias) / frontRegenBrakeBias * regenForce` for the rear motors.
+static const float frontRegenBiasRatio = 0.667f;
+
 static const float minTorqueLUTVal_Nm = 2.6f;
 static const float current_torque_slope = 85.0f / 31.6f;
 
