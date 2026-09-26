@@ -268,6 +268,20 @@ TimeOut=50
 Var=BALANCE_balanceRequest unsigned 0,8 /e:HVC_Balance_State
 Var=BALANCE_threshold unsigned 8,16
 
+[CONTROL_LIMITS]
+ID=6E7h
+DLC=8
+CycleTime=5
+TimeOut=25
+Var=LIMITS_FL_torqueLimit_Nm signed 0,8 /u:Nm
+Var=LIMITS_FR_torqueLimit_Nm signed 8,8 /u:Nm
+Var=LIMITS_RL_torqueLimit_Nm signed 16,8 /u:Nm
+Var=LIMITS_RR_torqueLimit_Nm signed 24,8 /u:Nm
+Var=LIMITS_FL_velocity_hrpm unsigned 32,8 /u:rpm /f:100
+Var=LIMITS_FR_velocity_hrpm unsigned 40,8 /u:rpm /f:100
+Var=LIMITS_RL_velocity_hrpm unsigned 48,8 /u:rpm /f:100
+Var=LIMITS_RR_velocity_hrpm unsigned 56,8 /u:rpm /f:100
+
 [CUBEMARS_DATA]
 ID=6E6h
 DLC=6
@@ -435,7 +449,7 @@ Var=ACKNOWLEDGE_acknowledge unsigned 0,8
 
 [DIM_ACTIONS]
 ID=515h
-DLC=5
+DLC=7
 CycleTime=10
 TimeOut=50
 Var=ACTIONS_buttonStates unsigned 0,8
@@ -443,6 +457,7 @@ Var=ACTIONS_regenPercent unsigned 8,8
 Var=ACTIONS_paddle unsigned 16,8
 Var=ACTIONS_cntrlOff unsigned 24,8
 Var=ACTIONS_dvControlMode unsigned 32,8
+Var=ACTIONS_paddleADC unsigned 40,16
 
 [DIM_REQUEST]
 ID=235h

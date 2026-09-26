@@ -772,6 +772,22 @@ typedef struct {
     int16_t lateralVel_mps;         //u: mps, f:0.01 /**< @brief Velocity of the car in the right direction (m/s * 100). */
     int16_t verticalVel_mps;        //u: mps, f:0.01 /**< @brief Velocity of the car in the down direction (m/s * 100). */
 } cmr_canCDCPoseVelocity_t;
+// ------------------------------------------------------------------------------------------------
+// Vehicle Control Unit (VCU)
+
+/// Most recently commanded control limits by the dynamics controller for a single control period.
+typedef struct {
+    /// Torque limit in the active direction. Positive is drive, negative is regen.
+    int8_t FL_torqueLimit_Nm;   //u: Nm
+    int8_t FR_torqueLimit_Nm;   //u: Nm
+    int8_t RL_torqueLimit_Nm;   //u: Nm
+    int8_t RR_torqueLimit_Nm;   //u: Nm
+    /// Velocity setpoint, represented in hecto-rpm (rpm / 100).
+    uint8_t FL_velocity_hrpm;   //u: rpm, f:100
+    uint8_t FR_velocity_hrpm;   //u: rpm, f:100
+    uint8_t RL_velocity_hrpm;   //u: rpm, f:100
+    uint8_t RR_velocity_hrpm;   //u: rpm, f:100
+} cmr_canControlLimits_t;
 
 // ------------------------------------------------------------------------------------------------
 // Sensoric (DCM)
@@ -899,6 +915,7 @@ typedef struct {
     uint8_t paddle;            
     uint8_t cntrlOff;
     uint8_t dvControlMode;
+    uint16_t paddleADC;
 } cmr_canDIMActions_t;
 
 /** @brief DIM sends message to acknowledge radio message
