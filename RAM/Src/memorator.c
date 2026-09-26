@@ -179,10 +179,19 @@ static void writeToSDCard(void *pvParameters)
         if(cmr_SDIO_unmount() != FR_OK) {
             errorRegister |= CMR_CAN_RAM_ERROR_SD_UNMOUNT;
         }
-        sendHeartbeat(errorRegister);
+        // sendHeartbeat(errorRegister);
         vTaskDelayUntil(&lastWakeTime, memorator_period_ms);
     }
 
+}
+
+/**
+ * @brief Gets the memorator's SD card error vector.
+ *
+ * @return The error vector.
+ */
+cmr_canRAMError_t memoratorGetErrors(void) {
+    return errorRegister;
 }
 
 /**
