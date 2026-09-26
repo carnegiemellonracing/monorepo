@@ -262,7 +262,7 @@ BO_ 1280 EMD_EBS_PRESSURE: 8 Vector__XXX
  SG_ EBS_hydraulicPressure1_psi : 32|16@1+ (1,0) [0|65535] "" Vector__XXX
  SG_ EBS_hydraulicPressure2_psi : 48|16@1+ (1,0) [0|65535] "" Vector__XXX
 
-BO_ 1025 EMD_MEASUREMENT: 8 Vector__XXX
+BO_ 269 EMD_MEASUREMENT: 8 Vector__XXX
  SG_ MEASUREMENT_current : 0|32@1+ (1,0) [0|4294967295] "A" Vector__XXX
  SG_ MEASUREMENT_voltage : 32|32@1+ (1,0) [0|4294967295] "V" Vector__XXX
 
@@ -275,7 +275,7 @@ BO_ 1549 EMD_TEMPERATURE: 8 Vector__XXX
  SG_ TEMPERATURE_temp4_2C : 48|8@1+ (1,0) [0|255] "" Vector__XXX
  SG_ TEMPERATURE_temp5_2C : 56|8@1+ (1,0) [0|255] "" Vector__XXX
 
-BO_ 256 EXTENDED_CUBEMARS_DATA: 6 Vector__XXX
+BO_ 2147483904 EXTENDED_CUBEMARS_DATA: 6 Vector__XXX
  SG_ CUBEMARS_position_deg : 0|16@1- (1,0) [-32768|32767] "" Vector__XXX
  SG_ CUBEMARS_speed_erpm : 16|16@1- (1,0) [-32768|32767] "" Vector__XXX
  SG_ CUBEMARS_motorTemp_C : 32|8@1- (1,0) [-128|127] "" Vector__XXX
@@ -363,6 +363,23 @@ BO_ 263 LV_BMS_HEARTBEAT: 5 Vector__XXX
 
 BO_ 265 MEMORATOR_HEARTBEAT: 5 Vector__XXX
  SG_ MEMORATOR_HEARTBEAT_state : 0|8@1+ (1,0) [0|255] "" Vector__XXX
+
+BO_ 256 VSM_HEARTBEAT: 5 Vector__XXX
+ SG_ VSM_HEARTBEAT_state : 0|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ VSM_ERR_BRAKEPRESSOOR1 : 18|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ VSM_ERR_HALLEFFECTOOR1 : 19|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ VSM_ERR_DCDCFAULT1 : 20|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ VSM_ERR_LATCHEDERROR1 : 21|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ VSM_ERR_MODULE_STATE1 : 22|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ VSM_ERR_MODULE_TIMEOUT1 : 23|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ VSM_WRN_VOLTAGEOOR1 : 25|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ VSM_WRN_CURRENTOOR1 : 26|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ VSM_WRN_DIM_REQ_NAK1 : 31|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ VSM_WRN_HVI_TIMEOUT1 : 32|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ VSM_WRN_DIM_TIMEOUT1 : 35|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ VSM_WRN_FSM_TIMEOUT1 : 36|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ VSM_WRN_CDC_TIMEOUT1 : 37|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ VSM_WRN_HVC_TIMEOUT1 : 38|1@1+ (1,0) [0|1] "" Vector__XXX
 
 BO_ 897 HVBMS_BMB_0_STATUS_TEMP: 6 Vector__XXX
  SG_ BMB_maxTempIndex : 0|8@1+ (1,0) [0|255] "" Vector__XXX
@@ -467,12 +484,12 @@ BO_ 310 LV_CELL_BALANCE_ENABLE: 3 Vector__XXX
 BO_ 1312 MEMORATOR_WARNINGS: 1 Vector__XXX
  SG_ WARNINGS_warnings : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 
-BO_ 1537 SENSORIC_DIST: 8 Vector__XXX
+BO_ 1542 SENSORIC_DIST: 8 Vector__XXX
  SG_ DIST_dist_A : 0|32@1- (1,0) [-2147483648|2147483647] "" Vector__XXX
  SG_ DIST_radius : 32|16@1- (1,0) [-32768|32767] "" Vector__XXX
  SG_ DIST_acc_C : 48|16@1- (1,0) [-32768|32767] "" Vector__XXX
 
-BO_ 1536 SENSORIC_VEL_ANG: 8 Vector__XXX
+BO_ 1541 SENSORIC_VEL_ANG: 8 Vector__XXX
  SG_ VEL_vel_X : 0|16@1- (1,0) [-32768|32767] "" Vector__XXX
  SG_ VEL_vel_Y : 16|16@1- (1,0) [-32768|32767] "" Vector__XXX
  SG_ VEL_vel_A : 32|16@1- (1,0) [-32768|32767] "" Vector__XXX
@@ -1419,6 +1436,17 @@ BO_ 1076 CIA_LoadCell1: 4 Vector__XXX
 BO_ 1077 CIA_UKLoadCell3: 4 Vector__XXX
  SG_ Unknown_Load_cell_3 : 0|32@1+ (1,0) [0|4294967295] "" Vector__XXX
 
+BO_ 1536 VelAndAngPOI: 8 Vector__XXX
+ SG_ VelXPoi : 0|16@1- (0.02,0) [-450|450] "km/h" Vector__XXX
+ SG_ VelYPoi : 16|16@1- (0.02,0) [-100|100] "km/h" Vector__XXX
+ SG_ VelAPoi : 32|16@1- (0.02,0) [0|450] "km/h" Vector__XXX
+ SG_ AngSPoi : 48|16@1- (0.003,0) [-40|40] "�" Vector__XXX
+
+BO_ 1537 DistPOI: 8 Vector__XXX
+ SG_ DistAPoi : 0|32@1- (0.001,0) [-2000000|2000000] "m" Vector__XXX
+ SG_ RadiusPoi : 32|16@1- (0.01,0) [-327.68|327.67] "m" Vector__XXX
+ SG_ AccCPoi : 48|16@1- (0.02,0) [-200|200] "m/s^2" Vector__XXX
+
 BO_ 1538 PitchAndRoll: 4 Vector__XXX
  SG_ Roll : 0|16@1- (0.003,0) [-90|90] "�" Vector__XXX
  SG_ Pitch : 16|16@1- (0.003,0) [-90|90] "�" Vector__XXX
@@ -1432,17 +1460,6 @@ BO_ 1540 RateHor: 6 Vector__XXX
  SG_ RateXHor : 0|16@1- (0.02,0) [-500|500] "�/s" Vector__XXX
  SG_ RateYHor : 16|16@1- (0.02,0) [-500|500] "�/s" Vector__XXX
  SG_ RateZHor : 32|16@1- (0.02,0) [-500|500] "�/s" Vector__XXX
-
-BO_ 1541 VelAndAng: 8 Vector__XXX
- SG_ VelX : 0|16@1- (0.02,0) [-450|450] "km/h" Vector__XXX
- SG_ VelY : 16|16@1- (0.02,0) [-100|100] "km/h" Vector__XXX
- SG_ VelA : 32|16@1- (0.02,0) [0|450] "km/h" Vector__XXX
- SG_ AngS : 48|16@1- (0.003,0) [-40|40] "�" Vector__XXX
-
-BO_ 1542 Dist: 8 Vector__XXX
- SG_ DistA : 0|32@1- (0.001,0) [-2000000|2000000] "m" Vector__XXX
- SG_ Radius : 32|16@1- (0.01,0) [-327.68|327.67] "m" Vector__XXX
- SG_ AccC : 48|16@1- (0.02,0) [-200|200] "m/s^2" Vector__XXX
 
 BO_ 1543 Acc: 6 Vector__XXX
  SG_ AccX : 0|16@1- (0.02,0) [-200|200] "m/s^2" Vector__XXX
@@ -1496,6 +1513,11 @@ BO_ 1083 RR_CIA_linpot: 4 Vector__XXX
 
 BO_ 1082 RR_CIA_loadcell: 4 Vector__XXX
  SG_ RR_loadcell : 0|24@1+ (1,0) [0|1] "" Vector__XXX
+
+BO_ 1025 HV500_ERPM_DUTY_VOLTAGE_FL: 8 Vector__XXX
+ SG_ Actual_ERPM_FL : 7|32@0- (1,0) [-120000|120000] "ERPM" Vector__XXX
+ SG_ Actual_Duty_FL : 39|16@0- (0.1,0) [-100|100] "%" Vector__XXX
+ SG_ Actual_InputVoltage_FL : 55|16@0- (1,0) [0|1000] "V" Vector__XXX
 
 BO_ 1026 HV500_ERPM_DUTY_VOLTAGE_FR: 8 Vector__XXX
  SG_ Actual_ERPM_FR : 7|32@0- (1,0) [-120000|120000] "ERPM" Vector__XXX
@@ -1892,6 +1914,7 @@ BO_ 1911 AS_Finished: 1 Vector__XXX
 
 CM_ BO_ 2023  "This CAN id is used for communication between the energy meter and the download tool.";
 CM_ BO_ 2031  "This CAN id is used for communication between the energy meter and the download tool.";
+CM_ BO_ 1025  "Node ID: 1";
 CM_ BO_ 1026  "Node ID: 2";
 CM_ BO_ 1027  "Node ID: 3";
 CM_ BO_ 1028  "Node ID: 4";
@@ -2075,15 +2098,15 @@ BA_ "Sendable" BO_ 1091 "True";
 BA_ "GenMsgCycleTime" BO_ 1280 100;
 BA_ "Receivable" BO_ 1280 "True";
 BA_ "Sendable" BO_ 1280 "True";
-BA_ "GenMsgCycleTime" BO_ 1025 100;
-BA_ "Receivable" BO_ 1025 "True";
-BA_ "Sendable" BO_ 1025 "True";
+BA_ "GenMsgCycleTime" BO_ 269 100;
+BA_ "Receivable" BO_ 269 "True";
+BA_ "Sendable" BO_ 269 "True";
 BA_ "GenMsgCycleTime" BO_ 1549 100;
 BA_ "Receivable" BO_ 1549 "True";
 BA_ "Sendable" BO_ 1549 "True";
-BA_ "GenMsgCycleTime" BO_ 256 200;
-BA_ "Receivable" BO_ 256 "True";
-BA_ "Sendable" BO_ 256 "True";
+BA_ "GenMsgCycleTime" BO_ 2147483904 200;
+BA_ "Receivable" BO_ 2147483904 "True";
+BA_ "Sendable" BO_ 2147483904 "True";
 BA_ "GenMsgCycleTime" BO_ 307 10;
 BA_ "Receivable" BO_ 307 "True";
 BA_ "Sendable" BO_ 307 "True";
@@ -2117,6 +2140,9 @@ BA_ "Sendable" BO_ 263 "True";
 BA_ "GenMsgCycleTime" BO_ 265 10;
 BA_ "Receivable" BO_ 265 "True";
 BA_ "Sendable" BO_ 265 "True";
+BA_ "GenMsgCycleTime" BO_ 256 10;
+BA_ "Receivable" BO_ 256 "True";
+BA_ "Sendable" BO_ 256 "True";
 BA_ "GenMsgCycleTime" BO_ 897 1000;
 BA_ "Receivable" BO_ 897 "True";
 BA_ "Sendable" BO_ 897 "True";
@@ -2171,12 +2197,12 @@ BA_ "Sendable" BO_ 310 "True";
 BA_ "GenMsgCycleTime" BO_ 1312 800;
 BA_ "Receivable" BO_ 1312 "True";
 BA_ "Sendable" BO_ 1312 "True";
-BA_ "GenMsgCycleTime" BO_ 1537 10;
-BA_ "Receivable" BO_ 1537 "True";
-BA_ "Sendable" BO_ 1537 "True";
-BA_ "GenMsgCycleTime" BO_ 1536 5;
-BA_ "Receivable" BO_ 1536 "True";
-BA_ "Sendable" BO_ 1536 "True";
+BA_ "GenMsgCycleTime" BO_ 1542 10;
+BA_ "Receivable" BO_ 1542 "True";
+BA_ "Sendable" BO_ 1542 "True";
+BA_ "GenMsgCycleTime" BO_ 1541 5;
+BA_ "Receivable" BO_ 1541 "True";
+BA_ "Sendable" BO_ 1541 "True";
 BA_ "GenMsgCycleTime" BO_ 1296 10000;
 BA_ "Receivable" BO_ 1296 "True";
 BA_ "Sendable" BO_ 1296 "True";
@@ -2593,16 +2619,16 @@ BA_ "Sendable" BO_ 1076 "True";
 BA_ "GenMsgCycleTime" BO_ 1077 200;
 BA_ "Receivable" BO_ 1077 "True";
 BA_ "Sendable" BO_ 1077 "True";
+BA_ "Receivable" BO_ 1536 "True";
+BA_ "Sendable" BO_ 1536 "True";
+BA_ "Receivable" BO_ 1537 "True";
+BA_ "Sendable" BO_ 1537 "True";
 BA_ "Receivable" BO_ 1538 "True";
 BA_ "Sendable" BO_ 1538 "True";
 BA_ "Receivable" BO_ 1539 "True";
 BA_ "Sendable" BO_ 1539 "True";
 BA_ "Receivable" BO_ 1540 "True";
 BA_ "Sendable" BO_ 1540 "True";
-BA_ "Receivable" BO_ 1541 "True";
-BA_ "Sendable" BO_ 1541 "True";
-BA_ "Receivable" BO_ 1542 "True";
-BA_ "Sendable" BO_ 1542 "True";
 BA_ "Receivable" BO_ 1543 "True";
 BA_ "Sendable" BO_ 1543 "True";
 BA_ "Receivable" BO_ 1544 "True";
@@ -2619,6 +2645,9 @@ BA_ "Receivable" BO_ 1083 "True";
 BA_ "Sendable" BO_ 1083 "True";
 BA_ "Receivable" BO_ 1082 "True";
 BA_ "Sendable" BO_ 1082 "True";
+BA_ "GenMsgCycleTime" BO_ 1025 100;
+BA_ "Receivable" BO_ 1025 "True";
+BA_ "Sendable" BO_ 1025 "True";
 BA_ "GenMsgCycleTime" BO_ 1026 100;
 BA_ "Receivable" BO_ 1026 "True";
 BA_ "Sendable" BO_ 1026 "True";
@@ -2862,6 +2891,7 @@ VAL_ 260 DIM_HEARTBEAT_state 0 "UNKNOWN" 1 "GLV_ON" 2 "HV_EN" 3 "RTD" 4 "ERROR" 
 VAL_ 264 HV_BMS_HEARTBEAT_state 0 "UNKNOWN" 1 "GLV_ON" 2 "HV_EN" 3 "RTD" 4 "ERROR" 5 "CLEAR_ERROR" 6 "AS_READY" 7 "AS_DRIVING" 8 "AS_FINISHED" 9 "AS_EMERGENCY" 10 "LEN";
 VAL_ 263 LV_BMS_HEARTBEAT_state 0 "UNKNOWN" 1 "GLV_ON" 2 "HV_EN" 3 "RTD" 4 "ERROR" 5 "CLEAR_ERROR" 6 "AS_READY" 7 "AS_DRIVING" 8 "AS_FINISHED" 9 "AS_EMERGENCY" 10 "LEN";
 VAL_ 265 MEMORATOR_HEARTBEAT_state 0 "UNKNOWN" 1 "GLV_ON" 2 "HV_EN" 3 "RTD" 4 "ERROR" 5 "CLEAR_ERROR" 6 "AS_READY" 7 "AS_DRIVING" 8 "AS_FINISHED" 9 "AS_EMERGENCY" 10 "LEN";
+VAL_ 256 VSM_HEARTBEAT_state 0 "UNKNOWN" 1 "GLV_ON" 2 "HV_EN" 3 "RTD" 4 "ERROR" 5 "CLEAR_ERROR" 6 "AS_READY" 7 "AS_DRIVING" 8 "AS_FINISHED" 9 "AS_EMERGENCY" 10 "LEN";
 VAL_ 304 COMMAND_modeRequest 0 "HVC_MODE_ERROR" 1 "HVC_MODE_IDLE" 2 "HVC_MODE_START" 4 "HVC_MODE_RUN" 8 "HVC_MODE_CHARGE";
 VAL_ 310 CELL_balanceRequest 0 "BALANCE_DIS" 1 "BALANCE_EN";
 VAL_ 272 STATUS_internalState 0 "VSM_STATE_ERROR" 1 "VSM_STATE_CLEAR_ERROR" 2 "VSM_STATE_GLV_ON" 3 "VSM_STATE_REQ_PRECHARGE" 4 "VSM_STATE_RUN_BMS" 5 "VSM_STATE_DCDC_EN" 6 "VSM_STATE_INVERTER_EN" 7 "VSM_STATE_BRAKE_TEST" 8 "VSM_STATE_HV_EN" 9 "VSM_STATE_RTD" 10 "VSM_STATE_AS_READY" 11 "VSM_STATE_AS_DRIVING" 12 "VSM_STATE_AS_FINISHED" 13 "VSM_STATE_AS_EMERGENCY" 14 "VSM_STATE_LEN";
@@ -2957,8 +2987,8 @@ VAL_ 387 CMD_DriveEnable_RR 0 "Drive_not_allowed" 1 "Drive allowed";
 VAL_ 388 CMD_DriveEnable_RL 0 "Drive_not_allowed" 1 "Drive allowed";
 SIG_VALTYPE_ 1763 COULOMB_KCoulombs : 1;
 SIG_VALTYPE_ 1785 CDC_KCoulombs : 1;
-SIG_VALTYPE_ 1025 MEASUREMENT_current : 1;
-SIG_VALTYPE_ 1025 MEASUREMENT_voltage : 1;
+SIG_VALTYPE_ 269 MEASUREMENT_current : 1;
+SIG_VALTYPE_ 269 MEASUREMENT_voltage : 1;
 SIG_VALTYPE_ 642 CDC_Latitude : 1;
 SIG_VALTYPE_ 642 CDC_Longitude : 1;
 SIG_VALTYPE_ 1860 SBG_Velocity_ODO : 1;

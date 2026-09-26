@@ -6,7 +6,8 @@ import sys
 output = "stm32f413-drivers/PCAN/CMR 27x.sym"
 symlines = [] 
 used_varnames = [] 
-used_canids = [] #delete once canids fixed, shouldn't need 
+used_canids = set() #delete once canids fixed, shouldn't need 
+canid_info = None
 bitfields = False 
 #maps heartbeat name to real board name, should become just list after renamings
 boardnames = {
@@ -117,22 +118,55 @@ def resolve_can_id_expression(expr, constants):
             parse_int_expr(node, constants)
         )
 
-    return int(expr, 0)
+    try:
+        return int(expr, 0)
+    except ValueError:
+        pass
 
-def id2hex(id):
-    #uses can_ids.h to map id(from canid_type_map) to the hex number
-    numbercanids() 
+    safe_expr = expr
+    for name, value in constants.items():
+        safe_expr = re.sub(rf'\b{name}\b', str(value), safe_expr)
+
+    if not re.fullmatch(r'[0-9xXa-fA-F\s()+\-*/%<>&|^~]+', safe_expr):
+        raise ValueError(f"Unsupported CAN ID expression: {expr}")
+
+    return int(eval(safe_expr, {"__builtins__": {}}, {}))
+
+def parse_canid_values():
+    #uses can_ids.h to map ids(from canid_type_map) to their numeric value and frame type
+    numbercanids()
     canidfile = "stm32f413-drivers/CMR/include/CMR/can_ids.h"
     constants = get_can_id_defines(canidfile)
-    with open(canidfile, "r") as file:
-        for line in file:
-            if id in line:
-                if '=' not in line:
-                    continue
+    values = {}
 
-                value_expr = line.split('=', 1)[1]
-                value = resolve_can_id_expression(value_expr, constants)
-                return f"{value:X}"
+    with open(canidfile, "r") as file:
+        contents = file.read()
+
+    for enum_body, enum_name in re.findall(r"typedef\s+enum\s*{([\s\S]*?)}\s*(cmr_can\w+)\s*;", contents):
+        for line in enum_body.splitlines():
+            entry = line.split("/*")[0].split("//")[0].strip().rstrip(",")
+            match = re.match(r"(CMR_CANID_\w+)\s*=\s*(.+)", entry)
+            if not match:
+                continue
+
+            name, value_expr = match.groups()
+            value = resolve_can_id_expression(value_expr, constants)
+            values[name] = {
+                "value": value,
+                "is_extended": enum_name == "cmr_canExtendedID_t",
+            }
+    return values
+
+def get_canid_info(canid):
+    global canid_info
+    if canid_info is None:
+        canid_info = parse_canid_values()
+    return canid_info.get(canid)
+
+def id2hex(canid):
+    info = get_canid_info(canid)
+    if info:
+        return f"{info['value']:X}"
 
 def add_mapper_data(canid, cycletime, timeout, structlines):
         name = re.findall(r'CMR_CANID_(\w+)',canid) 
@@ -142,8 +176,11 @@ def add_mapper_data(canid, cycletime, timeout, structlines):
             structlines.append("["+boardname[1]+"_HEARTBEAT]") 
         else: 
             structlines.append("["+name[0]+"]")
-        if id2hex(name[0]):
-            structlines.append("ID="+id2hex(name[0])+"h")  
+        info = get_canid_info(canid)
+        if info:
+            structlines.append("ID="+id2hex(canid)+"h")
+            if info["is_extended"]:
+                structlines.append("Type=Extended")
         structlines.append("CycleTime="+str(cycletime))
         structlines.append("TimeOut="+str(timeout))
 
@@ -365,10 +402,13 @@ def main():
             
             if re.fullmatch(r'(cmr_[a-zA-Z0-9_]*_t)', cantype):
                 #check repeat, delete once canids fixed 
-                id_num = id2hex(canid)
-                if id_num in used_canids:
+                info = get_canid_info(canid)
+                if not info:
                     continue
-                used_canids.append(id_num) 
+                id_key = (info["is_extended"], info["value"])
+                if id_key in used_canids:
+                    continue
+                used_canids.add(id_key) 
 
                 found = True 
                 #check_repeat(canid)
@@ -380,7 +420,8 @@ def main():
                 matches = get_cantypes_data(cantype, structs)
                 if matches: 
                     dlc = format_fields(canid, matches, structlines, enums, field_params) 
-                    structlines.insert(2, "DLC="+dlc)
+                    dlc_index = 3 if info["is_extended"] else 2
+                    structlines.insert(dlc_index, "DLC="+dlc)
                 else:
                     found = False
                     #structlines.append("error with this struct in can_types.h")
