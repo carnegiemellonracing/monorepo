@@ -81,6 +81,13 @@ cmr_canRXMeta_t canVehicleRXMeta[CANRX_VEH_LEN] = {
         .errorFlag = CMR_CAN_ERROR_VSM_TIMEOUT,
         .warnFlag = CMR_CAN_WARN_VSM_TIMEOUT
     },
+    [CANRX_VEH_HEARTBEAT_HVC] = {
+        .canID = CMR_CANID_HEARTBEAT_HVC,
+        .timeoutError_ms = 2500,
+        .timeoutWarn_ms = 25,
+        .errorFlag = CMR_CAN_ERROR_NONE,
+        .warnFlag = CMR_CAN_WARN_NONE
+    },
     [CANRX_VSM_STATUS] = {
         .canID = CMR_CANID_VSM_STATUS,
         .timeoutError_ms = 2500,
@@ -1934,6 +1941,8 @@ static void forwardDVToDAQ(void) {
     cmr_canDVPressureReadings_t *dvPressure = canVehicleGetPayload(CANRX_VEH_AS_TANK_PRESSURE);
     //hv voltage TODO: should be CANRX_VEH_VOLTAGE_HVBMS (need to change some var names as well)
     cmr_canHVBMSPackVoltage_t *packVoltage = canVehicleGetPayload(CANRX_VEH_VOLTAGE_HVC);
+    cmr_canHVCHeartbeat_t *hvcHeartbeat = canVehicleGetPayload(CANRX_VEH_HEARTBEAT_HVC); 
+    cmr_canVSMStatus_t *vsmStatus = canVehicleGetPayload(CANRX_VSM_STATUS); 
     //min max cell voltages
     cmr_canBMSMinMaxCellVoltage_t *cellVoltages = canVehicleGetPayload(CANRX_VEH_PACK_CELL_VOLTAGE);
     //min max cell temps
@@ -1958,6 +1967,8 @@ static void forwardDVToDAQ(void) {
     canTX(CMR_CAN_BUS_DAQ, CMR_CANID_DAQ_HVBMS_MINMAX_CELL_VOLTAGE, cellVoltages, sizeof(cmr_canBMSMinMaxCellVoltage_t), canTX10Hz_period_ms);
     canTX(CMR_CAN_BUS_DAQ, CMR_CANID_DAQ_HVBMS_MINMAX_CELL_TEMPS, cellTemps, sizeof(cmr_canBMSMinMaxCellTemperature_t), canTX10Hz_period_ms);
     canTX(CMR_CAN_BUS_DAQ, CMR_CANID_DAQ_CDC_COULOMB_COUNTING, &coulombCounting, sizeof(cmr_canCDCKiloCoulombs_t), canTX10Hz_period_ms);
+    canTX(CMR_CAN_BUS_DAQ, CMR_CANID_DAQ_VSM_STATUS, &vsmStatus, sizeof(cmr_canVSMStatus_t), canTX10Hz_period_ms);
+    canTX(CMR_CAN_BUS_DAQ, CMR_CANID_DAQ_HVC_HEARTBEAT, &hvcHeartbeat, sizeof(cmr_canHVCHeartbeat_t), canTX10Hz_period_ms);
 
     if(inverterMessagesValid()) {
         dtiErrorMessages.fl_fault_code = dtiTempFaultFL->fault_code;
