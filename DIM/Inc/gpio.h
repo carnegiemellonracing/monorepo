@@ -32,6 +32,7 @@ typedef enum {
     GPIO_LED_STATUS,          /**< @brief Status LED */
     GPIO_PD_N,                /**< @brief GPIO Output for the screen */
     GPIO_AS_ERROR,            /**< @brief AS Error GPIO Output */
+    GPIO_OUT_RTD_SIGNAL,       /**< @brief GPIO Output for the RTD Buzzer */
     GPIO_LEN                  /**< @brief Total GPIO pins. */
 } gpio_t;
 

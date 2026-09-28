@@ -34,6 +34,8 @@ cmr_state nextState;
 
 cmr_state currState;
 
+cmr_state lastState;
+
 volatile int8_t config_move_request;
 
 
@@ -318,7 +320,36 @@ bool DRSOpen(void)
     return drsState->state == CMR_CAN_DRS_STATE_OPEN;
 }
 
+void RTD_Buzzer(TickType_t lastWakeTime, volatile TickType_t lastStateChangeTime_ms) {
+    static const TickType_t rtdBuzzerTime_ms = 1500;
+    static const TickType_t ASEmergencyBuzzerTime_ms = 9000;
+    static const TickType_t ASEmergencySwitchingTime_ms = 100;
 
+    if(stateGetVSM() == CMR_CAN_RTD || stateGetVSM() == CMR_CAN_AS_DRIVING) {
+        // Enable RTD buzzer for the first rtdBuzzerTime_ms after getting into RTD
+        if (lastWakeTime < lastStateChangeTime_ms + rtdBuzzerTime_ms) {
+            cmr_gpioWrite(GPIO_OUT_RTD_SIGNAL, 1);
+        }
+        else {
+            cmr_gpioWrite(GPIO_OUT_RTD_SIGNAL, 0);
+        }
+    } else if (stateGetVSM() == CMR_CAN_AS_EMERGENCY) {
+        TickType_t timeinASEmergency_ms = lastWakeTime - lastStateChangeTime_ms;
+        if (timeinASEmergency_ms < ASEmergencyBuzzerTime_ms)
+        {
+            //Modulate buzzer at 2.5 Hz
+            TickType_t cyclesPassed = timeinASEmergency_ms / ASEmergencySwitchingTime_ms;
+            cmr_gpioWrite(GPIO_OUT_RTD_SIGNAL, cyclesPassed % 2);
+        }
+        else
+        {
+            cmr_gpioWrite(GPIO_OUT_RTD_SIGNAL, 0);
+        }
+    } else {
+        cmr_gpioWrite(GPIO_OUT_RTD_SIGNAL, 0);
+    }
+
+}
 
 static cmr_state getNextState(void) {
     if(stateGetVSM() == CMR_CAN_ERROR){
@@ -759,7 +790,9 @@ cmr_canState_t vsmStateGlobalReq;
 static void stateMachine(void *pvParameters){
     (void)pvParameters;
     TickType_t lastWakeTime = xTaskGetTickCount();
+    volatile TickType_t lastStateChangeTime_ms = 0;
     currState = INIT;
+    lastState = INIT;
     while (1) {
         // taskENTER_CRITICAL();
         currState = getNextState();
@@ -769,6 +802,13 @@ static void stateMachine(void *pvParameters){
 		//vsmStateGlobal = stateGetVSM();
 		//vsmStateGlobalReq = stateGetVSMReq();
         // taskEXIT_CRITICAL();
+
+        if (nextState != lastState) {
+            lastStateChangeTime_ms = lastWakeTime;
+            lastState = currState;
+        }
+        RTD_Buzzer(lastWakeTime, lastStateChangeTime_ms);
+
 		vTaskDelayUntil(&lastWakeTime, stateMachine_period);
     }
 }
