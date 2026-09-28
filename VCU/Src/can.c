@@ -2048,15 +2048,6 @@ static void sendVSMLatchedStatus(void) {
 }
 
 /**
- * @brief Update RTD Buzzer from DIM. 
- *
- */
-
- static void sendRTDRequest(void) {
-    f
- }
-
-/**
  * @brief Update HVC with current requested state.
  *
  */
@@ -2085,4 +2076,15 @@ void sendFirstError(uint8_t error_code) {
 
 void resetError() {
     detectedFirstError = false;
+}
+
+/**
+ * @brief Bring software error GPIO Low 
+    when HVC Heartbeat timeout
+ */
+
+void hvcTimeout() {
+    cmr_canHVCHeartbeat_t *hvcHeartbeat = getPayload(getCANRX_HEARTBEAT_HVC);
+    
+    (if hvcHeartbeat->hvcState)
 }
