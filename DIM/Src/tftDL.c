@@ -709,7 +709,6 @@ void tftDL_errorUpdate(
     tftDL_showErrorState(ESE_PTC_COLOR, err->ptcTimeout);
     tftDL_showErrorState(ESE_HVC_COLOR, err->hvcTimeout);
     tftDL_showErrorState(ESE_VSM_COLOR, err->vsmTimeout);
-    tftDL_showErrorState(ESE_CDC_COLOR, err->cdcTimeout);
 
     /* HVC */
     tftDL_showErrorState(ESE_HVC_OVERVOLT_COLOR, err->overVolt);

@@ -346,7 +346,6 @@ static void drawErrorScreen(void) {
     err.glvLowVolt = voltage_qV < (20 * 4);
 
     /* Timeouts */
-    err.cdcTimeout = (canVSMStatus->moduleTimeoutMatrix & CMR_CAN_VSM_BADSTATE_SOURCE_CDC);
     // err.ptcTimeout = (canVSMStatus->moduleTimeoutMatrix & CMR_CAN_VSM_BADSTATE_SOURCE_PTC);
     err.hvcTimeout = (canVSMStatus->moduleTimeoutMatrix & CMR_CAN_VSM_BADSTATE_SOURCE_HVC);
     err.vsmTimeout = 0;
