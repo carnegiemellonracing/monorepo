@@ -23,10 +23,10 @@
 
 // ------------------------------------------------------------------------------------------------
 // Globals
-#define AS_WAKEUP_TIME 5000
-#define AS_FINISHED_TIME 30000
-#define AS_EMERGENCY_TIME 10000
-#define DV_TANK_PRESSURE_MINIMUM_DECIBAR 50
+#define AS_WAKEUP_TIME_MS 5000 // 5 seconds
+#define AS_FINISHED_TIME_MS 30000 // 30 seconds
+#define AS_EMERGENCY_TIME_MS 10000 // 10 seconds
+#define DV_TANK_PRESSURE_MINIMUM_DECIBAR 50 
 #define FRONT_MINIMUM_BRAKING_PSI 650
 #define REAR_MINIMUM_BRAKING_PSI  400
 
@@ -113,15 +113,15 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms);
 static void setStateOutputs(TickType_t lastWakeTime_ms);
 static void stateUpdate(void *pvParameters);
 
-static bool getDVBrakeActive();
-static bool getDVBrakeDeployable();
-static bool getMissionFinished();
-static bool getMissionSelected();
-static bool TSActive();
-static bool AutonomousClear();
-static bool getVehicleFinished();
-static bool getRESGo();
-static bool RESTriggered();
+static bool getDVBrakeActive(void);
+static bool getDVBrakeDeployable(void);
+static bool getMissionFinished(void);
+static bool getMissionSelected(void);
+static bool TSActive(void);
+static bool AutonomousClear(void);
+static bool getVehicleFinished(void);
+static bool getRESGo(void);
+static bool RESTriggered(void);
 
 // ------------------------------------------------------------------------------------------------
 // Interface functions
@@ -155,7 +155,7 @@ cmr_canVSMState_t getCurrentState(void) {
  * @return Pointer to const struct containing current status.
  */
 const vsmStatus_t *getCurrentStatus(void) {
-    return (const vsmStatus_t *)(&vsmStatus);
+    return (const vsmStatus_t*)(&vsmStatus);
 }
 
 /**
@@ -391,7 +391,7 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
                 nextState = CMR_CAN_VSM_STATE_AS_EMERGENCY;
             }
             else if (getRESGo()){
-                if (lastWakeTime_ms > lastStateChangeTime_ms + AS_WAKEUP_TIME){
+                if (lastWakeTime_ms > lastStateChangeTime_ms + AS_WAKEUP_TIME_MS){
                     nextState = CMR_CAN_VSM_STATE_AS_DRIVING;
                 }
                 else{
@@ -434,7 +434,7 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
             else if (!getDVBrakeActive()){
                 nextState = CMR_CAN_VSM_STATE_AS_EMERGENCY;
             }
-            else if ((lastWakeTime_ms > lastStateChangeTime_ms + AS_FINISHED_TIME)){
+            else if ((lastWakeTime_ms > lastStateChangeTime_ms + AS_FINISHED_TIME_MS)){
                 nextState = CMR_CAN_VSM_STATE_GLV_ON;
             }
             else{
@@ -564,7 +564,7 @@ static void stateUpdate(void *pvParameters) {
  * @brief Checks if we are able to deploy the DV Brakes
  * @note This should be active for the entirety of DV
  */
-static bool getDVBrakeDeployable(){
+static bool getDVBrakeDeployable(void){
     cmr_canDVPressureReadings_t* pressureReading = (cmr_canDVPressureReadings_t*) getPayload(CANRX_AS_PRESSURE_READING);
    bool brakes_deployable = pressureReading->ebsPressure_1_deci_bar > DV_TANK_PRESSURE_MINIMUM_DECIBAR &&  
             pressureReading->ebsPressure_2_deci_bar > DV_TANK_PRESSURE_MINIMUM_DECIBAR;
@@ -578,7 +578,7 @@ static bool getDVBrakeDeployable(){
  * @brief Checks if the DV brakes are currently deployed
  * @note  This should be active before attempting to state up
  */
-static bool getDVBrakeActive(){
+static bool getDVBrakeActive(void){
     uint32_t brakePressureRear_PSI = cmr_sensorListGetValue(&sensorList, SENSOR_CH_BPRES_PSI);
     cmr_canFSMData_t *fsmData = getPayload(CANRX_FSM_DATA);
     uint16_t brakePressureFront_PSI = fsmData->brakePressureFront_PSI;
@@ -594,7 +594,7 @@ static bool getDVBrakeActive(){
 /**
  * @brief Checks if an autonomous mission is selected
  */
-static inline bool getMissionSelected(){
+static inline bool getMissionSelected(void){
     cmr_canDIMRequest_t *dimRequest = getPayload(CANRX_DIM_REQUEST);
     bool mission_good = (dimRequest->requestedGear > CMR_CAN_GEAR_DV_MISSION_MIN && dimRequest->requestedGear < CMR_CAN_GEAR_DV_MISSION_MAX);
     if (!mission_good){
@@ -607,7 +607,7 @@ static inline bool getMissionSelected(){
 /**
  * @brief Checks if TS is active
  */
-static inline bool TSActive(){
+static inline bool TSActive(void){
     cmr_canHVCHeartbeat_t* HVCState = (cmr_canHVCHeartbeat_t*) (getPayload(CANRX_HEARTBEAT_HVC));
     bool ts_active = CMR_CAN_HVC_STATE_DRIVE == HVCState->hvcState;
     if (!ts_active) {
@@ -627,7 +627,7 @@ static inline bool AutonomousClear(){
 /**
  * @brief Check if autonomous mission has finshed.  
  */
-static inline bool getMissionFinished(){ //can from compute
+static inline bool getMissionFinished(void){ //can from compute
     uint8_t *missionFinished = getPayload(CANRX_AS_MISSION_FINISHED);
     return *missionFinished;
 }
@@ -655,7 +655,7 @@ static bool getVehicleFinished(){
  * 
  * More: https://doc.fs-quiz.eu/FSG2017_DV_Technical_Specifications_v1.0.pdf
  */
-static inline bool getRESGo() {
+static inline bool getRESGo(void) {
 	uint8_t *data = (uint8_t*)(getPayload(CANRX_RES));
     return (data[0] & CMR_CAN_RES_GO);
 }
@@ -663,7 +663,7 @@ static inline bool getRESGo() {
 /**
  * @brief Checks if RES is activated
  */
-static inline bool RESTriggered(){
+static inline bool RESTriggered(void){
 	uint8_t *data = (uint8_t*)(getPayload(CANRX_RES));
 	bool res_triggered = !(data[0] & CMR_CAN_RES_TRIG);
 	return res_triggered; 
