@@ -423,15 +423,47 @@ CycleTime=100
 TimeOut=500
 Var=CDC_KCoulombs float 0,32
 
-[DAQ_DTI_ERROR_MESSAGES]
+[DAQ_CONTROL_LIMITS]
 ID=6F2h
-DLC=4
+DLC=8
 CycleTime=100
 TimeOut=500
-Var=DTI_fr_fault_code unsigned 0,8
-Var=DTI_fl_fault_code unsigned 8,8
-Var=DTI_rr_fault_code unsigned 16,8
-Var=DTI_rl_fault_code unsigned 24,8
+Var=CONTROL_FL_torqueLimit_Nm signed 0,8 /u:Nm
+Var=CONTROL_FR_torqueLimit_Nm signed 8,8 /u:Nm
+Var=CONTROL_RL_torqueLimit_Nm signed 16,8 /u:Nm
+Var=CONTROL_RR_torqueLimit_Nm signed 24,8 /u:Nm
+Var=CONTROL_FL_velocity_hrpm unsigned 32,8 /u:rpm /f:100
+Var=CONTROL_FR_velocity_hrpm unsigned 40,8 /u:rpm /f:100
+Var=CONTROL_RL_velocity_hrpm unsigned 48,8 /u:rpm /f:100
+Var=CONTROL_RR_velocity_hrpm unsigned 56,8 /u:rpm /f:100
+
+[DAQ_DTI_FL_TEMP_FAULT]
+ID=703h
+DLC=1
+CycleTime=100
+TimeOut=500
+Var=DTI_fault_code unsigned 0,8
+
+[DAQ_DTI_FR_TEMP_FAULT]
+ID=704h
+DLC=1
+CycleTime=100
+TimeOut=500
+Var=DTI_fault_code1 unsigned 0,8
+
+[DAQ_DTI_RL_TEMP_FAULT]
+ID=705h
+DLC=1
+CycleTime=100
+TimeOut=500
+Var=DTI_fault_code2 unsigned 0,8
+
+[DAQ_DTI_RR_TEMP_FAULT]
+ID=706h
+DLC=1
+CycleTime=100
+TimeOut=500
+Var=DTI_fault_code3 unsigned 0,8
 
 [DAQ_FSM_DATA]
 ID=6F0h
@@ -477,7 +509,7 @@ TimeOut=500
 Var=HVBMS_battVoltage_mV unsigned 0,32
 
 [DAQ_HVC_HEARTBEAT]
-ID=705h
+ID=707h
 DLC=6
 CycleTime=100
 TimeOut=500
@@ -541,7 +573,7 @@ Var=VSM_EAB_pressed unsigned 48,8
 Var=VSM_hv_current_A signed 56,8
 
 [DAQ_VSM_STATUS]
-ID=706h
+ID=708h
 DLC=4
 CycleTime=100
 TimeOut=500
