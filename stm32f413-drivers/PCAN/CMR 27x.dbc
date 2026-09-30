@@ -484,6 +484,36 @@ BO_ 310 LV_CELL_BALANCE_ENABLE: 3 Vector__XXX
  SG_ CELL_balanceRequest : 0|8@1+ (1,0) [0|255] "" Vector__XXX
  SG_ CELL_threshold : 8|16@1+ (1,0) [0|65535] "" Vector__XXX
 
+BO_ 1986 MEMORATOR_BUS_ERRORS_DAQ: 8 Vector__XXX
+ SG_ BUS_flags : 0|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ BUS_tec : 8|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ BUS_rec : 16|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ BUS_txArbitrationLost : 24|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ BUS_txError : 32|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ BUS_rxOverrun : 40|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ BUS_protocolErrors : 48|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ BUS_lastLEC : 56|8@1+ (1,0) [0|255] "" Vector__XXX
+
+BO_ 1987 MEMORATOR_BUS_ERRORS_TRAC: 8 Vector__XXX
+ SG_ BUS_flags1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ BUS_tec1 : 8|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ BUS_rec1 : 16|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ BUS_txArbitrationLost1 : 24|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ BUS_txError1 : 32|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ BUS_rxOverrun1 : 40|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ BUS_protocolErrors1 : 48|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ BUS_lastLEC1 : 56|8@1+ (1,0) [0|255] "" Vector__XXX
+
+BO_ 1985 MEMORATOR_BUS_ERRORS_VEH: 8 Vector__XXX
+ SG_ BUS_flags2 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ BUS_tec2 : 8|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ BUS_rec2 : 16|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ BUS_txArbitrationLost2 : 24|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ BUS_txError2 : 32|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ BUS_rxOverrun2 : 40|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ BUS_protocolErrors2 : 48|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ BUS_lastLEC2 : 56|8@1+ (1,0) [0|255] "" Vector__XXX
+
 BO_ 1312 MEMORATOR_WARNINGS: 1 Vector__XXX
  SG_ WARNINGS_warnings : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 
@@ -2197,6 +2227,15 @@ BA_ "Sendable" BO_ 2002 "True";
 BA_ "GenMsgCycleTime" BO_ 310 10;
 BA_ "Receivable" BO_ 310 "True";
 BA_ "Sendable" BO_ 310 "True";
+BA_ "GenMsgCycleTime" BO_ 1986 1000;
+BA_ "Receivable" BO_ 1986 "True";
+BA_ "Sendable" BO_ 1986 "True";
+BA_ "GenMsgCycleTime" BO_ 1987 1000;
+BA_ "Receivable" BO_ 1987 "True";
+BA_ "Sendable" BO_ 1987 "True";
+BA_ "GenMsgCycleTime" BO_ 1985 1000;
+BA_ "Receivable" BO_ 1985 "True";
+BA_ "Sendable" BO_ 1985 "True";
 BA_ "GenMsgCycleTime" BO_ 1312 800;
 BA_ "Receivable" BO_ 1312 "True";
 BA_ "Sendable" BO_ 1312 "True";

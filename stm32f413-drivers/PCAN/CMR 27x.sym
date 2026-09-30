@@ -896,6 +896,48 @@ TimeOut=50
 Var=CELL_balanceRequest unsigned 0,8 /e:HVC_Balance_State
 Var=CELL_threshold unsigned 8,16
 
+[MEMORATOR_BUS_ERRORS_DAQ]
+ID=7C2h
+DLC=8
+CycleTime=1000
+TimeOut=5000
+Var=BUS_flags unsigned 0,8
+Var=BUS_tec unsigned 8,8
+Var=BUS_rec unsigned 16,8
+Var=BUS_txArbitrationLost unsigned 24,8
+Var=BUS_txError unsigned 32,8
+Var=BUS_rxOverrun unsigned 40,8
+Var=BUS_protocolErrors unsigned 48,8
+Var=BUS_lastLEC unsigned 56,8
+
+[MEMORATOR_BUS_ERRORS_TRAC]
+ID=7C3h
+DLC=8
+CycleTime=1000
+TimeOut=5000
+Var=BUS_flags1 unsigned 0,8
+Var=BUS_tec1 unsigned 8,8
+Var=BUS_rec1 unsigned 16,8
+Var=BUS_txArbitrationLost1 unsigned 24,8
+Var=BUS_txError1 unsigned 32,8
+Var=BUS_rxOverrun1 unsigned 40,8
+Var=BUS_protocolErrors1 unsigned 48,8
+Var=BUS_lastLEC1 unsigned 56,8
+
+[MEMORATOR_BUS_ERRORS_VEH]
+ID=7C1h
+DLC=8
+CycleTime=1000
+TimeOut=5000
+Var=BUS_flags2 unsigned 0,8
+Var=BUS_tec2 unsigned 8,8
+Var=BUS_rec2 unsigned 16,8
+Var=BUS_txArbitrationLost2 unsigned 24,8
+Var=BUS_txError2 unsigned 32,8
+Var=BUS_rxOverrun2 unsigned 40,8
+Var=BUS_protocolErrors2 unsigned 48,8
+Var=BUS_lastLEC2 unsigned 56,8
+
 [MEMORATOR_WARNINGS]
 ID=520h
 DLC=1
