@@ -264,6 +264,47 @@ typedef enum {
     CMR_CAN_RAM_STATE_LEN       /**< @brief Number of CAN states */
 } cmr_canRAMState_t;
 
+/** @brief bxCAN last error code (ESR.LEC) values. See RM0430 CAN_ESR. */
+typedef enum {
+    CMR_CAN_RAM_LEC_NONE = 0,           /**< @brief No error. */
+    CMR_CAN_RAM_LEC_STUFF,              /**< @brief Stuff error. */
+    CMR_CAN_RAM_LEC_FORM,               /**< @brief Form error. */
+    CMR_CAN_RAM_LEC_ACK,                /**< @brief Acknowledgment error. */
+    CMR_CAN_RAM_LEC_BIT_RECESSIVE,      /**< @brief Bit recessive error. */
+    CMR_CAN_RAM_LEC_BIT_DOMINANT,       /**< @brief Bit dominant error. */
+    CMR_CAN_RAM_LEC_CRC,                /**< @brief CRC error. */
+    CMR_CAN_RAM_LEC_SOFTWARE,           /**< @brief Set by software (unused). */
+    CMR_CAN_RAM_LEC_LEN                 /**< @brief Number of LEC values. */
+} cmr_canRAMLEC_t;
+
+/** @brief RAM bus error summary flag bits (`cmr_canRAMBusErrors_t.flags`). */
+typedef enum {
+    CMR_CAN_RAM_BUS_WARNING       = (1 << 0),   /**< @brief Currently error warning. */
+    CMR_CAN_RAM_BUS_PASSIVE       = (1 << 1),   /**< @brief Currently error passive. */
+    CMR_CAN_RAM_BUS_OFF           = (1 << 2),   /**< @brief Currently bus-off. */
+    CMR_CAN_RAM_BUS_WARNING_ENTER = (1 << 3),   /**< @brief Entered error warning this period. */
+    CMR_CAN_RAM_BUS_PASSIVE_ENTER = (1 << 4),   /**< @brief Entered error passive this period. */
+    CMR_CAN_RAM_BUS_OFF_ENTER     = (1 << 5),   /**< @brief Entered bus-off this period. */
+    CMR_CAN_RAM_BUS_SATURATED     = (1 << 6),   /**< @brief A count below hit 255. */
+} cmr_canRAMBusErrorFlags_t;
+
+/**
+ * @brief RAM per-bus CAN error summary (`CMR_CANID_RAM_BUS_ERRORS_*`).
+ *
+ * @note Sent at 1 Hz on every bus. Counts are errors since the previous
+ * summary, saturating at 255.
+ */
+typedef struct {
+    uint8_t flags;              /**< @brief `cmr_canRAMBusErrorFlags_t` bits. */
+    uint8_t tec;                /**< @brief Current transmit error counter. */
+    uint8_t rec;                /**< @brief Current receive error counter. */
+    uint8_t txArbitrationLost;  /**< @brief TX arbitration lost, all mailboxes. */
+    uint8_t txError;            /**< @brief TX errors, all mailboxes. */
+    uint8_t rxOverrun;          /**< @brief RX FIFO overruns, both FIFOs. */
+    uint8_t protocolErrors;     /**< @brief LEC errors (stuff/form/ack/bit/CRC). */
+    uint8_t lastLEC;            /**< @brief Most recent `cmr_canRAMLEC_t` ever seen. */
+} cmr_canRAMBusErrors_t;
+
 
 // ------------------------------------------------------------------------------------------------
 // Vehicle Safety Module

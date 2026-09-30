@@ -33,9 +33,9 @@ typedef struct {
     uint32_t errorPassive;      /**< @brief Entries into error passive (ESR.EPVF). */
     uint32_t busOff;            /**< @brief Entries into bus-off (ESR.BOFF). */
 
-    /** @brief Protocol errors (ESR.LEC), indexed by `canErrorLEC_t`. */
-    uint32_t lec[CAN_ERROR_LEC_LEN];
-    uint8_t lastLEC;            /**< @brief Most recent nonzero `canErrorLEC_t`. */
+    /** @brief Protocol errors (ESR.LEC), indexed by `cmr_canRAMLEC_t`. */
+    uint32_t lec[CMR_CAN_RAM_LEC_LEN];
+    uint8_t lastLEC;            /**< @brief Most recent nonzero `cmr_canRAMLEC_t`. */
 
     uint8_t tecMax;            /**< @brief Peak transmit error counter (ESR.TEC). */
     uint8_t recMax;             /**< @brief Peak receive error counter (ESR.REC). */
@@ -146,7 +146,7 @@ static void canErrorRecord(
     // Protocol error (LEC); HAL clears LEC after handling ERRI.
     if ((ier & CAN_IER_ERRIE) && (ier & CAN_IER_LECIE) && (msr & CAN_MSR_ERRI)) {
         uint32_t lec = (esr & CAN_ESR_LEC) >> CAN_ESR_LEC_Pos;
-        if (lec != CAN_ERROR_LEC_NONE) {
+        if (lec != CMR_CAN_RAM_LEC_NONE) {
             log->lec[lec]++;
             log->lastLEC = (uint8_t) lec;
             events++;
@@ -200,6 +200,15 @@ typedef struct {
     uint32_t busOff;
 } canErrorTotals_t;
 
+_Static_assert(sizeof(cmr_canRAMBusErrors_t) == 8, "Summary must fit one CAN frame");
+
+/** @brief Error summary CAN ID for each bus being summarized. */
+static const cmr_canID_t canErrorSummaryID[CMR_CAN_BUS_NUM] = {
+    [CMR_CAN_BUS_VEH] = CMR_CANID_MEMORATOR_BUS_ERRORS_VEH,
+    [CMR_CAN_BUS_DAQ] = CMR_CANID_MEMORATOR_BUS_ERRORS_DAQ,
+    [CMR_CAN_BUS_TRAC] = CMR_CANID_MEMORATOR_BUS_ERRORS_TRAC,
+};
+
 /** @brief Error summary task priority. */
 static const uint32_t canErrorSummary_priority = 2;
 
@@ -231,7 +240,7 @@ static canErrorTotals_t canErrorTotals(const volatile canErrorLog_t *log) {
     for (size_t i = 0; i < CAN_ERROR_RX_FIFOS; i++) {
         totals.rxOverrun += log->rxOverrun[i];
     }
-    for (size_t i = CAN_ERROR_LEC_STUFF; i <= CAN_ERROR_LEC_CRC; i++) {
+    for (size_t i = CMR_CAN_RAM_LEC_STUFF; i <= CMR_CAN_RAM_LEC_CRC; i++) {
         totals.protocolErrors += log->lec[i];
     }
     return totals;
@@ -262,7 +271,7 @@ static void canErrorSummary(void *pvParameters) {
     (void) pvParameters;
 
     canErrorTotals_t prev[CMR_CAN_BUS_NUM] = { 0 };
-    canErrorSummary_t summaries[CMR_CAN_BUS_NUM];
+    cmr_canRAMBusErrors_t summaries[CMR_CAN_BUS_NUM];
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
@@ -273,7 +282,7 @@ static void canErrorSummary(void *pvParameters) {
             uint32_t esr = READ_REG(canErrorInstance[bus]->ESR);
 
             bool saturated = false;
-            canErrorSummary_t summary = {
+            cmr_canRAMBusErrors_t summary = {
                 .tec = (uint8_t) ((esr & CAN_ESR_TEC) >> CAN_ESR_TEC_Pos),
                 .rec = (uint8_t) ((esr & CAN_ESR_REC) >> CAN_ESR_REC_Pos),
                 .txArbitrationLost = canErrorDelta(
@@ -287,19 +296,19 @@ static void canErrorSummary(void *pvParameters) {
                 .lastLEC = canErrorLog[bus].lastLEC,
             };
 
-            if (esr & CAN_ESR_EWGF) summary.flags |= CAN_ERROR_SUMMARY_WARNING;
-            if (esr & CAN_ESR_EPVF) summary.flags |= CAN_ERROR_SUMMARY_PASSIVE;
-            if (esr & CAN_ESR_BOFF) summary.flags |= CAN_ERROR_SUMMARY_BUS_OFF;
+            if (esr & CAN_ESR_EWGF) summary.flags |= CMR_CAN_RAM_BUS_WARNING;
+            if (esr & CAN_ESR_EPVF) summary.flags |= CMR_CAN_RAM_BUS_PASSIVE;
+            if (esr & CAN_ESR_BOFF) summary.flags |= CMR_CAN_RAM_BUS_OFF;
             if (now.errorWarning != prev[bus].errorWarning) {
-                summary.flags |= CAN_ERROR_SUMMARY_WARNING_ENTER;
+                summary.flags |= CMR_CAN_RAM_BUS_WARNING_ENTER;
             }
             if (now.errorPassive != prev[bus].errorPassive) {
-                summary.flags |= CAN_ERROR_SUMMARY_PASSIVE_ENTER;
+                summary.flags |= CMR_CAN_RAM_BUS_PASSIVE_ENTER;
             }
             if (now.busOff != prev[bus].busOff) {
-                summary.flags |= CAN_ERROR_SUMMARY_BUS_OFF_ENTER;
+                summary.flags |= CMR_CAN_RAM_BUS_OFF_ENTER;
             }
-            if (saturated) summary.flags |= CAN_ERROR_SUMMARY_SATURATED;
+            if (saturated) summary.flags |= CMR_CAN_RAM_BUS_SATURATED;
 
             prev[bus] = now;
             summaries[bus] = summary;
@@ -309,7 +318,7 @@ static void canErrorSummary(void *pvParameters) {
         for (cmr_canBusID_t txBus = 0; txBus < CMR_CAN_BUS_NUM; txBus++) {
             for (cmr_canBusID_t bus = 0; bus < CMR_CAN_BUS_NUM; bus++) {
                 canTX(
-                    txBus, CAN_ERROR_SUMMARY_ID_BASE + bus,
+                    txBus, canErrorSummaryID[bus],
                     &summaries[bus], sizeof(summaries[bus]),
                     canErrorSummary_timeout_ms
                 );
