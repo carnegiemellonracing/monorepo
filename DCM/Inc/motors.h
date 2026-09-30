@@ -58,6 +58,8 @@ void setVelocityInt16(motorLocation_t motor, int16_t velocity_rpm);
 void setVelocityFloat(motorLocation_t motor, float velocity_rpm);
 void setVelocityInt16All(int16_t velocity_rpm);
 void setVelocityFloatAll(float velocity_rpm);
+int8_t getActiveTorqueLimit_Nm(motorLocation_t motor); 
+uint8_t getVelocity_hrpm(motorLocation_t motor);
 cmr_torque_limit_t getTorqueBudget();
 const cmr_DTI_RX_Message_t *getDTISetpoints(motorLocation_t motor);
 cmr_canDAQTest_t getDAQTest();

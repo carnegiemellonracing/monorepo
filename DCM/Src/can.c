@@ -1956,7 +1956,6 @@ static void forwardDVToDAQ(void) {
     const cmr_canDTI_TX_TempFault_t *dtiTempFaultFR = getDTITempFault(MOTOR_FR);
     const cmr_canDTI_TX_TempFault_t *dtiTempFaultRL = getDTITempFault(MOTOR_RL);
     const cmr_canDTI_TX_TempFault_t *dtiTempFaultRR = getDTITempFault(MOTOR_RR);
-    cmr_canDTI_ErrorMessages_t dtiErrorMessages;
 
     canTX(CMR_CAN_BUS_DAQ, CMR_CANID_DAQ_FSM_DATA, fsmData, sizeof(cmr_canFSMData_t), canTX10Hz_period_ms);
     canTX(CMR_CAN_BUS_DAQ, CMR_CANID_DAQ_VSM_SENSORS, vsmSensors, sizeof(cmr_canVSMSensors_t), canTX10Hz_period_ms);
@@ -1971,10 +1970,22 @@ static void forwardDVToDAQ(void) {
     canTX(CMR_CAN_BUS_DAQ, CMR_CANID_DAQ_HVC_HEARTBEAT, &hvcHeartbeat, sizeof(cmr_canHVCHeartbeat_t), canTX10Hz_period_ms);
 
     if(inverterMessagesValid()) {
-        dtiErrorMessages.fl_fault_code = dtiTempFaultFL->fault_code;
-        dtiErrorMessages.fr_fault_code = dtiTempFaultFR->fault_code;
-        dtiErrorMessages.rl_fault_code = dtiTempFaultRL->fault_code;
-        dtiErrorMessages.rr_fault_code = dtiTempFaultRR->fault_code;
-        canTX(CMR_CAN_BUS_DAQ, CMR_CANID_DAQ_DTI_ERROR_MESSAGES, &dtiErrorMessages, sizeof(dtiErrorMessages), canTX10Hz_period_ms);
+        canTX(CMR_CAN_BUS_DAQ, CMR_CANID_DAQ_DTI_FL_TEMP_FAULT, dtiTempFaultFL, sizeof(cmr_canDTI_TX_TempFault_t), canTX10Hz_period_ms);
+        canTX(CMR_CAN_BUS_DAQ, CMR_CANID_DAQ_DTI_FR_TEMP_FAULT, dtiTempFaultFL, sizeof(cmr_canDTI_TX_TempFault_t), canTX10Hz_period_ms);
+        canTX(CMR_CAN_BUS_DAQ, CMR_CANID_DAQ_DTI_RL_TEMP_FAULT, dtiTempFaultFL, sizeof(cmr_canDTI_TX_TempFault_t), canTX10Hz_period_ms);
+        canTX(CMR_CAN_BUS_DAQ, CMR_CANID_DAQ_DTI_RR_TEMP_FAULT, dtiTempFaultFL, sizeof(cmr_canDTI_TX_TempFault_t), canTX10Hz_period_ms);
     }
+
+    const cmr_canControlLimits_t limits = {
+        .FL_torqueLimit_Nm = getActiveTorqueLimit_Nm(MOTOR_FL),
+        .FR_torqueLimit_Nm = getActiveTorqueLimit_Nm(MOTOR_FR),
+        .RL_torqueLimit_Nm = getActiveTorqueLimit_Nm(MOTOR_RL),
+        .RR_torqueLimit_Nm = getActiveTorqueLimit_Nm(MOTOR_RR),
+        .FL_velocity_hrpm = getVelocity_hrpm(MOTOR_FL),
+        .FR_velocity_hrpm = getVelocity_hrpm(MOTOR_FR),
+        .RL_velocity_hrpm = getVelocity_hrpm(MOTOR_RL),
+        .RR_velocity_hrpm = getVelocity_hrpm(MOTOR_RR),
+    };
+
+    canTX(CMR_CAN_BUS_DAQ, CMR_CANID_DAQ_CONTROL_LIMITS, &limits, sizeof(limits), canTX10Hz_period_ms);
 }

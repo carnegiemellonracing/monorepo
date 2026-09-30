@@ -97,7 +97,7 @@ void sendBlankCommand() {
 }
 
 /// Gets a motor's torque limit in the active direction.
-static int8_t getActiveTorqueLimit_Nm(motorLocation_t motor) {
+int8_t getActiveTorqueLimit_Nm(motorLocation_t motor) {
     const float torqueLimPos_Nm = motorSetpoints[motor].torqueLimPos_mNm / 1000.0f;
     const float torqueLimNeg_Nm = motorSetpoints[motor].torqueLimNeg_mNm / 1000.0f;
     
@@ -106,7 +106,7 @@ static int8_t getActiveTorqueLimit_Nm(motorLocation_t motor) {
 }
 
 /// Gets a motor's velocity setpoint in hecto-rpm (rpm / 100).
-static uint8_t getVelocity_hrpm(motorLocation_t motor) {
+uint8_t getVelocity_hrpm(motorLocation_t motor) {
     const float velocity_hrpm = motorSetpoints[motor].velocity_rpm / 100.0f;
     return (uint8_t) CLAMP(0.0f, roundf(velocity_hrpm), (float) UINT8_MAX);
 }
