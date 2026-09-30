@@ -202,21 +202,17 @@ typedef struct {
 
 _Static_assert(sizeof(cmr_canRAMBusErrors_t) == 8, "Summary must fit one CAN frame");
 
-/** @brief Error summary CAN ID for each bus being summarized. */
-static const cmr_canID_t canErrorSummaryID[CMR_CAN_BUS_NUM] = {
-    [CMR_CAN_BUS_VEH] = CMR_CANID_MEMORATOR_BUS_ERRORS_VEH,
-    [CMR_CAN_BUS_DAQ] = CMR_CANID_MEMORATOR_BUS_ERRORS_DAQ,
-    [CMR_CAN_BUS_TRAC] = CMR_CANID_MEMORATOR_BUS_ERRORS_TRAC,
-};
-
 /** @brief Error summary task priority. */
 static const uint32_t canErrorSummary_priority = 2;
 
-/** @brief Error summary period (milliseconds). */
+/**
+ * @brief Error summary period (milliseconds).
+ *
+ * @note Also used as the TX timeout, since filegen/canid_mapper.py reads the
+ * last `canTX()` argument as the cycle time. A dead bus can therefore stretch
+ * the actual period.
+ */
 static const TickType_t canErrorSummary_period_ms = 1000;
-
-/** @brief Error summary TX timeout (milliseconds). */
-static const TickType_t canErrorSummary_timeout_ms = 10;
 
 /** @brief Error summary task. */
 static cmr_task_t canErrorSummary_task;
@@ -315,14 +311,14 @@ static void canErrorSummary(void *pvParameters) {
         }
 
         // Send every summary on every bus, so a dead bus is still reported.
+        // IDs are written out literally so filegen/canid_mapper.py finds them.
+        const cmr_canRAMBusErrors_t *vehErrors = &summaries[CMR_CAN_BUS_VEH];
+        const cmr_canRAMBusErrors_t *daqErrors = &summaries[CMR_CAN_BUS_DAQ];
+        const cmr_canRAMBusErrors_t *tracErrors = &summaries[CMR_CAN_BUS_TRAC];
         for (cmr_canBusID_t txBus = 0; txBus < CMR_CAN_BUS_NUM; txBus++) {
-            for (cmr_canBusID_t bus = 0; bus < CMR_CAN_BUS_NUM; bus++) {
-                canTX(
-                    txBus, canErrorSummaryID[bus],
-                    &summaries[bus], sizeof(summaries[bus]),
-                    canErrorSummary_timeout_ms
-                );
-            }
+            canTX(txBus, CMR_CANID_MEMORATOR_BUS_ERRORS_VEH, vehErrors, sizeof(*vehErrors), canErrorSummary_period_ms);
+            canTX(txBus, CMR_CANID_MEMORATOR_BUS_ERRORS_DAQ, daqErrors, sizeof(*daqErrors), canErrorSummary_period_ms);
+            canTX(txBus, CMR_CANID_MEMORATOR_BUS_ERRORS_TRAC, tracErrors, sizeof(*tracErrors), canErrorSummary_period_ms);
         }
     }
 }
