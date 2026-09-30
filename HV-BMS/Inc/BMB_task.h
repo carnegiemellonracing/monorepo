@@ -8,7 +8,6 @@
 #ifndef BMB_TASK_H_
 #define BMB_TASK_H_
 
-/* #include "stm32f413-drivers/CMR/can_types.h" */
 #include <CMR/can_types.h>
 #include <stdint.h>
 #include <stdbool.h>
