@@ -83,10 +83,18 @@ enum MemoWarnMode(0="MEMO_WARN_NONE", 1="MEMO_WARN_SD_FULL",
 enum MovellaFilterMode(0="Without_GNSS_filter_profile_is_in_VRU_mode",
     1="Coasting_mode_GNSS_has_been_lost_less_than_60_sec_ago",
     3="With_GNSS_default_mode")
+enum RAMBusErrorFlags(1="RAM_BUS_WARNING", 2="RAM_BUS_PASSIVE",
+    4="RAM_BUS_OFF", 8="RAM_BUS_WARNING_ENTER",
+    16="RAM_BUS_PASSIVE_ENTER", 32="RAM_BUS_OFF_ENTER",
+    64="RAM_BUS_SATURATED")
 enum RAMError(0="RAM_ERROR_NONE", 1="RAM_ERROR_SD_MOUNT",
     2="RAM_ERROR_SD_UNMOUNT", 4="RAM_ERROR_SD_WRITE",
     8="RAM_ERROR_FILE_OPEN", 16="RAM_ERROR_FILE_CLOSE",
     32="RAM_ERROR_CAN_RX_OVERFLOW")
+enum RAMLEC(0="RAM_LEC_NONE", 1="RAM_LEC_STUFF", 2="RAM_LEC_FORM",
+    3="RAM_LEC_ACK", 4="RAM_LEC_BIT_RECESSIVE",
+    5="RAM_LEC_BIT_DOMINANT", 6="RAM_LEC_CRC", 7="RAM_LEC_SOFTWARE",
+    8="RAM_LEC_LEN")
 enum RAMState(0="RAM_STATE_OK", 1="RAM_STATE_LEN")
 enum RES(1="TRIG", 4="GO")
 enum SBGAutomotiveStatus(1="SBG_AUTO_TRACK_VALID",
