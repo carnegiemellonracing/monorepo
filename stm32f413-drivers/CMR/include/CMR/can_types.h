@@ -254,7 +254,16 @@ typedef enum {
     CMR_CAN_RAM_ERROR_SD_WRITE      = (1 << 2),    /**< @brief SD write failed. */
     CMR_CAN_RAM_ERROR_FILE_OPEN     = (1 << 3),    /**< @brief File open failed. */
     CMR_CAN_RAM_ERROR_FILE_CLOSE    = (1 << 4),    /**< @brief SD write failed. */
+
+    // CAN errors
+    CMR_CAN_RAM_ERROR_CAN_RX_OVERFLOW = (1 << 5),  /**< @brief CAN RX queue overflowed; messages dropped. */
 } cmr_canRAMError_t;
+
+typedef enum {
+    CMR_CAN_RAM_STATE_OK = 0,        /**< @brief Error state. */
+    CMR_CAN_RAM_STATE_LEN       /**< @brief Number of CAN states */
+} cmr_canRAMState_t;
+
 
 // ------------------------------------------------------------------------------------------------
 // Vehicle Safety Module
