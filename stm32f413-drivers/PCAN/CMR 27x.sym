@@ -83,10 +83,18 @@ enum MemoWarnMode(0="MEMO_WARN_NONE", 1="MEMO_WARN_SD_FULL",
 enum MovellaFilterMode(0="Without_GNSS_filter_profile_is_in_VRU_mode",
     1="Coasting_mode_GNSS_has_been_lost_less_than_60_sec_ago",
     3="With_GNSS_default_mode")
+enum RAMBusErrorFlags(1="RAM_BUS_WARNING", 2="RAM_BUS_PASSIVE",
+    4="RAM_BUS_OFF", 8="RAM_BUS_WARNING_ENTER",
+    16="RAM_BUS_PASSIVE_ENTER", 32="RAM_BUS_OFF_ENTER",
+    64="RAM_BUS_SATURATED")
 enum RAMError(0="RAM_ERROR_NONE", 1="RAM_ERROR_SD_MOUNT",
     2="RAM_ERROR_SD_UNMOUNT", 4="RAM_ERROR_SD_WRITE",
     8="RAM_ERROR_FILE_OPEN", 16="RAM_ERROR_FILE_CLOSE",
     32="RAM_ERROR_CAN_RX_OVERFLOW")
+enum RAMLEC(0="RAM_LEC_NONE", 1="RAM_LEC_STUFF", 2="RAM_LEC_FORM",
+    3="RAM_LEC_ACK", 4="RAM_LEC_BIT_RECESSIVE",
+    5="RAM_LEC_BIT_DOMINANT", 6="RAM_LEC_CRC", 7="RAM_LEC_SOFTWARE",
+    8="RAM_LEC_LEN")
 enum RAMState(0="RAM_STATE_OK", 1="RAM_STATE_LEN")
 enum RES(1="TRIG", 4="GO")
 enum SBGAutomotiveStatus(1="SBG_AUTO_TRACK_VALID",
@@ -887,6 +895,48 @@ CycleTime=10
 TimeOut=50
 Var=CELL_balanceRequest unsigned 0,8 /e:HVC_Balance_State
 Var=CELL_threshold unsigned 8,16
+
+[MEMORATOR_BUS_ERRORS_DAQ]
+ID=7C2h
+DLC=8
+CycleTime=1000
+TimeOut=5000
+Var=BUS_flags unsigned 0,8
+Var=BUS_tec unsigned 8,8
+Var=BUS_rec unsigned 16,8
+Var=BUS_txArbitrationLost unsigned 24,8
+Var=BUS_txError unsigned 32,8
+Var=BUS_rxOverrun unsigned 40,8
+Var=BUS_protocolErrors unsigned 48,8
+Var=BUS_lastLEC unsigned 56,8
+
+[MEMORATOR_BUS_ERRORS_TRAC]
+ID=7C3h
+DLC=8
+CycleTime=1000
+TimeOut=5000
+Var=BUS_flags1 unsigned 0,8
+Var=BUS_tec1 unsigned 8,8
+Var=BUS_rec1 unsigned 16,8
+Var=BUS_txArbitrationLost1 unsigned 24,8
+Var=BUS_txError1 unsigned 32,8
+Var=BUS_rxOverrun1 unsigned 40,8
+Var=BUS_protocolErrors1 unsigned 48,8
+Var=BUS_lastLEC1 unsigned 56,8
+
+[MEMORATOR_BUS_ERRORS_VEH]
+ID=7C1h
+DLC=8
+CycleTime=1000
+TimeOut=5000
+Var=BUS_flags2 unsigned 0,8
+Var=BUS_tec2 unsigned 8,8
+Var=BUS_rec2 unsigned 16,8
+Var=BUS_txArbitrationLost2 unsigned 24,8
+Var=BUS_txError2 unsigned 32,8
+Var=BUS_rxOverrun2 unsigned 40,8
+Var=BUS_protocolErrors2 unsigned 48,8
+Var=BUS_lastLEC2 unsigned 56,8
 
 [MEMORATOR_WARNINGS]
 ID=520h

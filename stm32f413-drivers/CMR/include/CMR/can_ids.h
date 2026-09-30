@@ -570,7 +570,11 @@ typedef enum {
     CMR_CANID_RTC_DATE = 0x513,
     CMR_CANID_RTC_TIME = 0x514,
 
-    CMR_CANID_MEMORATOR_WARNINGS = 0x520, 
+    CMR_CANID_MEMORATOR_WARNINGS = 0x520,
+
+    CMR_CANID_MEMORATOR_BUS_ERRORS_VEH = 0x7C1,       /**< @brief RAM VEH-CAN error summary. */
+    CMR_CANID_MEMORATOR_BUS_ERRORS_DAQ = 0x7C2,       /**< @brief RAM DAQ-CAN error summary. */
+    CMR_CANID_MEMORATOR_BUS_ERRORS_TRAC = 0x7C3,      /**< @brief RAM TRAC-CAN error summary. */
 
 } cmr_canID_t;
 
