@@ -31,19 +31,6 @@ static const float maxPowerPerMotor_kW = 35.0f;
 
 static const uint16_t DTI_MAX_DC_CURRENT_PER_MOTOR_DA = 850;
 
-
-/// Speed-Adaptive One-Pedal Regen constants
-/// The maximum motor rpm used when reinterpreting the driver's throttle input during one pedal regen. This value determines how fast the car is going relative to its max speed, the higher this value, the more the driver has to release the pedal for regen braking to kick in.
-static const int onePedalRegenMaxRpm = 60000;
-/// Multiplier used to control regen strength
-static const float onePedalRegenGain = 0.6;
-
-/// Basic One-Pedal Regen constants
-// The normalized throttle position at which the car will start regen braking. [0, 1]
-static const float basicOnePedalRegenThrottleZeroTorquePoint = 0.3;
-/// Multiplier used to control regen strength
-static const float basicOnePedalRegenGain = 0.6;
-
 /// Parallel Regen constants
 /// Minimum brake PSI required to start parallel regen braking.
 static const uint16_t parallelRegenMinBrakePsi = 25;

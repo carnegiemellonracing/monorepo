@@ -678,57 +678,6 @@ void setParallelRegenFastTorqueWithPhantomDiff(
     }
 }
 
-void setBasicRegenFastTorqueWithPhantomDiff(
-    int throttlePos_u8,
-    int32_t swAngle_millideg
-) {
-
-    float throttle = (float) throttlePos_u8 / UINT8_MAX;
-    if (throttle < basicOnePedalRegenThrottleZeroTorquePoint) {
-        float adjusted_throttle = 
-                CLAMP(
-                    -1, 
-                    (throttle - basicOnePedalRegenThrottleZeroTorquePoint) / basicOnePedalRegenThrottleZeroTorquePoint, 
-                    0
-                );
-        setRegenTorques(-adjusted_throttle, basicOnePedalRegenGain, frontRegenBiasRatio);
-    }
-    else {
-        float adjusted_throttle = 
-                CLAMP(
-                    0, 
-                    (throttle - basicOnePedalRegenThrottleZeroTorquePoint) / (1 - basicOnePedalRegenThrottleZeroTorquePoint), 
-                    1
-                );
-        int adjusted_throttle_u8 = (int) (adjusted_throttle * UINT8_MAX);
-        setFastTorqueWithPhantomDiff(adjusted_throttle_u8, swAngle_millideg, front_bias, maxPhantomDiffScalingFactor);
-    }
-
-}
-
-void setAdaptiveRegenFastTorqueWithPhantomDiff(
-	int throttlePos_u8,
-	int32_t swAngle_millideg,
-    int32_t avgMotorRPM
-) {
-
-    float throttle = (float) throttlePos_u8 / UINT8_MAX;
-
-    float normalized_motor_rpm = CLAMP(0, avgMotorRPM / onePedalRegenMaxRpm, 1);
-    float adjusted_throttle = CLAMP(-1, throttle * (1.0 + normalized_motor_rpm) - normalized_motor_rpm, 1);
-
-    // Decide whether to use regen or phantom diff control
-    if (adjusted_throttle < 0) {
-        // If the driver has released the pedal enough to start braking, apply regen gain.
-        setRegenTorques(-adjusted_throttle, onePedalRegenGain, frontRegenBiasRatio);
-    }
-    else {
-        int adjusted_throttle_u8 = (int) (adjusted_throttle * UINT8_MAX);
-        setFastTorqueWithPhantomDiff(adjusted_throttle_u8, swAngle_millideg, front_bias, maxPhantomDiffScalingFactor);
-    }
-
-}
-
 static void set_regen(uint8_t throttlePos_u8) {
     uint8_t paddle_pressure = ((volatile cmr_canDIMActions_t *) canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON))->regenPercent;
 
@@ -846,16 +795,16 @@ void runControls (
         }
         case CMR_CAN_GEAR_FAST: {
             disableTorqueMode();
-            setParallelRegenFastTorqueWithPhantomDiff(throttlePos_u8, swAngle_millideg, brakePressurePsi_u8);
-            setPowerLimit(false, MOTOR_FL, maxPowerPerMotor_kW * front_bias);
-            setPowerLimit(false, MOTOR_FR, maxPowerPerMotor_kW * front_bias);
-            setPowerLimit(false, MOTOR_RL, maxPowerPerMotor_kW * (1 - front_bias));
-            setPowerLimit(false, MOTOR_RR, maxPowerPerMotor_kW * (1 - front_bias));
+            setFastTorqueWithBias(throttlePos_u8, front_bias);
+            setPowerLimit(false, MOTOR_FL, 35.0f * front_bias);
+            setPowerLimit(false, MOTOR_FR, 35.0f * front_bias);
+            setPowerLimit(false, MOTOR_RL, 35.0f * (1 - front_bias));
+            setPowerLimit(false, MOTOR_RR, 35.0f * (1 - front_bias));
             break;
         }
         case CMR_CAN_GEAR_ENDURANCE: {
             disableTorqueMode();
-            setAdaptiveRegenFastTorqueWithPhantomDiff(throttlePos_u8, swAngle_millideg, avgMotorSpeed_RPM);
+            setParallelRegenFastTorqueWithPhantomDiff(throttlePos_u8, swAngle_millideg, avgMotorSpeed_RPM);
             setPowerLimit(false, MOTOR_FL, maxPowerPerMotor_kW * front_bias);
             setPowerLimit(false, MOTOR_FR, maxPowerPerMotor_kW * front_bias);
             setPowerLimit(false, MOTOR_RL, maxPowerPerMotor_kW * (1 - front_bias));
@@ -920,8 +869,10 @@ void runControls (
         }
         case CMR_CAN_GEAR_TEST: {
             disableTorqueMode();
+            int send = (int)(maxPhantomDiffScalingFactor * 100.0f); 
+            canTX(CMR_CAN_BUS_VEH, 0x526, &send, sizeof(int), 200); 
+
             setFastTorqueWithPhantomDiff(throttlePos_u8, swAngle_millideg, front_bias, maxPhantomDiffScalingFactor);
-            //setBasicRegenFastTorqueWithPhantomDiff(throttlePos_u8, swAngle_millideg);
             setPowerLimit(false, MOTOR_FL, maxPowerPerMotor_kW * front_bias);
             setPowerLimit(false, MOTOR_FR, maxPowerPerMotor_kW * front_bias);
             setPowerLimit(false, MOTOR_RL, maxPowerPerMotor_kW * (1 - front_bias));
