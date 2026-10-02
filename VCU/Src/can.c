@@ -243,13 +243,6 @@ cmr_canRXMeta_t canVehicleRXMeta[CANRX_VEH_LEN] = {
         .timeoutWarn_ms = 750,
         .warnFlag = CMR_CAN_WARN_NONE
     },
-    [CANRX_HEARTBEAT_DCM] = {
-        .canID = CMR_CANID_HEARTBEAT_DCM,
-        .timeoutError_ms = 100,
-        .errorFlag = CMR_CAN_ERROR_VSM_MODULE_TIMEOUT,
-        .timeoutWarn_ms = 25,
-        .warnFlag = CMR_CAN_WARN_VSM_DCM_TIMEOUT
-    },
     [CANRX_HEARTBEAT_DIM] = {
         .canID = CMR_CANID_HEARTBEAT_DIM,
         .timeoutError_ms = 2500,
@@ -768,7 +761,6 @@ cmr_canRXMeta_t canDaqRXMeta[CANRX_DAQ_LEN] = {
  */
 const cmr_canVSMTimeoutErrorSource_t vsmErrorSourceFlags[CANRX_LEN] = {
     [CANRX_HEARTBEAT_HVC]       = CMR_CAN_VSM_TIMEOUT_SOURCE_NONE,
-    [CANRX_HEARTBEAT_DCM]       = CMR_CAN_VSM_TIMEOUT_SOURCE_DCM,
     [CANRX_HEARTBEAT_DIM]       = CMR_CAN_VSM_TIMEOUT_SOURCE_DIM,
     [CANRX_HEARTBEAT_HVBMS]     = CMR_CAN_VSM_TIMEOUT_SOURCE_NONE,
     [CANRX_FSM_DATA]            = CMR_CAN_VSM_TIMEOUT_SOURCE_DIM,
@@ -953,7 +945,7 @@ static void canTX200Hz(void *pvParameters) {
 
     cmr_canDCMPosePosition_t posePos;
     cmr_canDCMPoseOrientation_t poseOrient;
-    cmr_canDCMPoseVelocity_t poseVel;
+    cmr_canVCUMotorPower_t poseVel;
 
     cmr_canCOGVelocity_t cog_velocity;
     cmr_canFrontWheelVelocity_t front_velocity;
@@ -1403,7 +1395,7 @@ void canInit(void) {
     const cmr_canFilter_t canVehicleFilters[] = {
         {
             .isMask = true,
-            .rxFIFO = FDCAN_RX_FIFO1,
+            .rxFIFO = CAN_RX_FIFO1,
 
             // Match all even IDs (bottom bit 0, all others don't care).
             .ids = {0x000,0x000}
@@ -1411,14 +1403,14 @@ void canInit(void) {
 
         {
             .isMask = false,
-            .rxFIFO = FDCAN_RX_FIFO0,
+            .rxFIFO = CAN_RX_FIFO0,
             .ids = {CMR_CANID_DCM_RTC_DATA_IN,
                     CMR_CANID_VSM_SENSORS}
         },
 
         {
             .isMask = false,
-            .rxFIFO = FDCAN_RX_FIFO0,
+            .rxFIFO = CAN_RX_FIFO0,
             .ids = {CMR_CANID_AS_PRESSURE_READINGS}
         }
 

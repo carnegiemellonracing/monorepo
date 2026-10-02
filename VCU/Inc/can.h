@@ -20,8 +20,7 @@
  * @warning New messages MUST be added before `CANRX_VEH_LEN`.
  */
 typedef enum {
-    CANRX_VEH_HEARTBEAT_VSM = 0,    /**< @brief VSM heartbeat. */
-    CANRX_VSM_STATUS,
+    CANRX_VSM_STATUS = 0,
     CANRX_VEH_DATA_FSM,             /**< @brief FSM data. */
     CANRX_VEH_SWANGLE_FSM,          /**< @brief VSM status */
     CANRX_VEH_REQUEST_DIM,          /**< @brief DIM state and gear request. */
@@ -164,8 +163,7 @@ typedef enum {
 } cmr_canBusID_t;
 
 typedef enum {
-    CANRX_HEARTBEAT_VSM = 0,    /**< @brief VSM heartbeat. */
-    CANRX_VSM_SENSORS,          /**< @brief VSM sensors. */
+    CANRX_VSM_SENSORS = 0,          /**< @brief VSM sensors. */
     CANRX_FSM_DATA,             /**< @brief FSM data. */
     CANRX_FSM_SWANGLE,
     CANRX_HVC_MINMAX_TEMPS,     /**< @brief HVC min/max cell temps. */

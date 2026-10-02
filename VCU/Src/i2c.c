@@ -60,7 +60,7 @@ static void framUpdate(void *pvParameters);
  * COMMON *
  **********/
 
-/** @brief Initializes I2C stuff for the DCM */
+/** @brief Initializes I2C stuff for the VCU */
 void i2cInit() {
     cmr_i2cInit(
         &i2c_fram, I2C3,                // TODO: Increase Clock Speed if can't hit deadlines
@@ -182,7 +182,7 @@ static void framInit()
 		config_menu_main_array[i].value.value = currentParameters[i];
 	}
 
-    //Use the below to flash FRAM default params the first time the DCM is setup
+    //Use the below to flash FRAM default params the first time the VCU is setup
      for (int i = 0; i < MAX_MENU_ITEMS; i++) {
      	currentParameters[i] = config_menu_main_array[i].value.value;
      }

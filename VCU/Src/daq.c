@@ -34,7 +34,7 @@ float motorSetpointPercentToTorque10(int16_t sp) {
     return ((float) sp) * PCT10_TO_NM10 * gear_ratio; 
 }
 
-void daqWheelSpeedFeedback(cmr_canDCMWheelVelocity_t *speedFeedback) {
+void daqWheelSpeedFeedback(cmr_canVCUWheelVelocity_t *speedFeedback) {
 
     int32_t dtiERPM_FL = getDTIERPM(CANRX_TRAC_FL_ERPM);
     int32_t dtiERPM_FR = getDTIERPM(CANRX_TRAC_FR_ERPM);
@@ -47,7 +47,7 @@ void daqWheelSpeedFeedback(cmr_canDCMWheelVelocity_t *speedFeedback) {
     speedFeedback->rearRight_rpm =  dtiERPM_RR / pole_pairs;
 }
 
-void daqWheelTorqueFeedback(cmr_canDCMWheelTorque_t *torqueFeedback) {
+void daqWheelTorqueFeedback(cmr_canVCUWheelTorque_t *torqueFeedback) {
     int16_t dtiCurrentFL = getDTIACCurrent_dA(CANRX_TRAC_FL_CURRENT);
     int16_t dtiCurrentFR = getDTIACCurrent_dA(CANRX_TRAC_FR_CURRENT);
     int16_t dtiCurrentRL = getDTIACCurrent_dA(CANRX_TRAC_RL_CURRENT);
@@ -59,7 +59,7 @@ void daqWheelTorqueFeedback(cmr_canDCMWheelTorque_t *torqueFeedback) {
     torqueFeedback->rearRight_Nm =  dtiCurrentRR;
 }
 
-void daqWheelSpeedSetpoints(cmr_canDCMWheelVelocity_t *speedSetpoint) {
+void daqWheelSpeedSetpoints(cmr_canVCUWheelVelocity_t *speedSetpoint) {
     const cmr_DTI_RX_Message_t *dtiSetpoint1FL = getDTISetpoints(MOTOR_FL);
     const cmr_DTI_RX_Message_t *dtiSetpoint1FR = getDTISetpoints(MOTOR_FR);
     const cmr_DTI_RX_Message_t *dtiSetpoint1RL = getDTISetpoints(MOTOR_RL);
@@ -71,14 +71,14 @@ void daqWheelSpeedSetpoints(cmr_canDCMWheelVelocity_t *speedSetpoint) {
     speedSetpoint->rearRight_rpm =  dtiSetpoint1RR->velocity_erpm;
 }
 
-void daqWheelTorqueSetpoints(cmr_canDCMWheelTorque_t *torqueSetpoint) {
+void daqWheelTorqueSetpoints(cmr_canVCUWheelTorque_t *torqueSetpoint) {
     torqueSetpoint->frontLeft_Nm =  getMotorTorqueRequest(MOTOR_FL);
     torqueSetpoint->frontRight_Nm = getMotorTorqueRequest(MOTOR_FR);
     torqueSetpoint->rearLeft_Nm =   getMotorTorqueRequest(MOTOR_RL);
     torqueSetpoint->rearRight_Nm =  getMotorTorqueRequest(MOTOR_RR);
 }
 
-void daqPosePosition(cmr_canDCMPosePosition_t *posePos) {
+void daqPosePosition(cmr_canVCUPosePosition_t *posePos) {
     volatile cmr_canSBGEKFPosition_t *sbgPos = canDAQGetPayload(CANRX_DAQ_SBG_POS);
 
     posePos->latitude_deg = ((float) sbgPos->latitude) / 10000000;
@@ -99,7 +99,7 @@ float daqPoseOrientationRad(int16_t rad) {
     return ((float) rad) * RAD_TO_DEG;
 }
 
-void daqPoseOrientation(cmr_canDCMPoseOrientation_t *poseOrient) {
+void daqPoseOrientation(cmr_canVCUPoseOrientation_t *poseOrient) {
     volatile cmr_canSBGEKFOrient_t *sbgOrient = canDAQGetPayload(CANRX_DAQ_SBG_ORIENT);
 
     poseOrient->roll_deg = (int16_t) (daqPoseOrientationRadToDeg(sbgOrient->roll) * 10);
@@ -120,7 +120,7 @@ void daqPoseOrientation(cmr_canDCMPoseOrientation_t *poseOrient) {
     poseOrient->velocity_deg = (int16_t) (daqPoseOrientationRad(slip_ang) * 10);
 }
 
-void daqPoseVelocity(cmr_canDCMPoseVelocity_t *poseVel) {
+void daqPoseVelocity(cmr_canVCUMotorPower_t *poseVel) {
     volatile cmr_canSBGBodyVelocity_t *sbgBodyVel = canDAQGetPayload(CANRX_DAQ_SBG_BODY_VEL);
 
     poseVel->longitudinalVel_mps = sbgBodyVel->velocity_forward;
