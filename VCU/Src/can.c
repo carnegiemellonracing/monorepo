@@ -698,20 +698,6 @@ cmr_canRXMeta_t canDaqRXMeta[CANRX_DAQ_LEN] = {
         .errorFlag = CMR_CAN_ERROR_NONE,
         .warnFlag = CMR_CAN_WARN_NONE
 	},
-    [CANRX_DAQ_LINPOTS_RIGHTS] = {
-        .canID  = CMR_CANID_DAQ_0_THERMISTOR,
-        .timeoutError_ms = 500,
-        .timeoutWarn_ms = 250,
-        .errorFlag = CMR_CAN_ERROR_NONE,
-        .warnFlag = CMR_CAN_WARN_NONE
-	},
-    [CANRX_DAQ_LINPOTS_LEFTS] = {
-        .canID  = CMR_CANID_DAQ_3_THERMISTOR,
-        .timeoutError_ms = 500,
-        .timeoutWarn_ms = 250,
-        .errorFlag = CMR_CAN_ERROR_NONE,
-        .warnFlag = CMR_CAN_WARN_NONE
-	},
     [CANRX_DAQ_MEMORATOR_BROADCAST] = {
         .canID = CMR_CANID_HEARTBEAT_MEMORATOR,
         .timeoutError_ms = 5000,

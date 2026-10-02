@@ -151,8 +151,6 @@ typedef enum {
     CANRX_DAQ_LOAD_RL,          /**< @brief rear left load cell/newtons. */
     CANRX_DAQ_LOAD_RR,          /**< @brief rear right load cell/newtons. */
 	CANRX_DAQ_SBG_SLIPANGLE,    /**< @brief Slip Angle Radians 10^4. */
-    CANRX_DAQ_LINPOTS_LEFTS,    /**< @brief front left load cell/newtons. */
-    CANRX_DAQ_LINPOTS_RIGHTS,   /**< @brief front right load cell/newtons. */
     CANRX_DAQ_MEMORATOR_BROADCAST,
     CANRX_DAQ_HEARTBEAT_COMPUTE,
     CANRX_DAQ_AUTONOMOUS_ACTION,
