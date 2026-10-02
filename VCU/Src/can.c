@@ -155,13 +155,6 @@ cmr_canRXMeta_t canVehicleRXMeta[CANRX_VEH_LEN] = {
         .errorFlag = CMR_CAN_ERROR_NONE,
         .warnFlag = CMR_CAN_WARN_NONE
     },
-    [CANRX_RTC_SET] = {
-        .canID = CMR_CANID_DCM_RTC_DATA_IN,
-	    .timeoutError_ms = 1500,
-	    .timeoutWarn_ms = 50,
-        .errorFlag = CMR_CAN_ERROR_NONE,
-        .warnFlag = CMR_CAN_WARN_NONE
-    },
 	[CANRX_HVI_SENSE] = {
 	        .canID = CMR_CANID_HV_SENSORS,
 	        .timeoutError_ms = 100,

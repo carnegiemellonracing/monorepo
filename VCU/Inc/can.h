@@ -30,7 +30,6 @@ typedef enum {
     CANRX_VEH_PACK_CELL_VOLTAGE,    /**< @brief Min/Max Cell voltage*/
     CANRX_VEH_PACK_CELL_TEMP,       /**< @brief Min/Max Cell temp*/
     CANRX_VEH_VSM_SENSORS,          /**< @brief VSM Sensors */
-	CANRX_RTC_SET,
 	CANRX_HVI_SENSE,
     CANRX_VEH_MOVELLA_STATUS,
     CANRX_VEH_MOVELLA_QUATERNION,
