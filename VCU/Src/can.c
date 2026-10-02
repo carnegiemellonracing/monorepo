@@ -82,7 +82,7 @@ cmr_canRXMeta_t canVehicleRXMeta[CANRX_VEH_LEN] = {
         .timeoutWarn_ms = 25,
         .errorFlag = CMR_CAN_ERROR_VSM_TIMEOUT,
         .warnFlag = CMR_CAN_WARN_VSM_TIMEOUT
-    },
+    }, 
     [CANRX_VSM_STATUS] = {
         .canID = CMR_CANID_VSM_STATUS,
         .timeoutError_ms = 2500,
@@ -755,49 +755,6 @@ cmr_canRXMeta_t canDaqRXMeta[CANRX_DAQ_LEN] = {
         .canID = CMR_CANID_AS_MISSION_FINISHED,
         .timeoutError_ms = 1000,
         .timeoutWarn_ms = 250
-    },
-};
-
-/**
- * @brief CAN periodic message receive metadata
- *
- * @note Indexed by `canRX_t`.
- */
-cmr_canRXMeta_t canRXMeta[] = {
-    [CANRX_HEARTBEAT_VSM] = {
-        .canID = CMR_CANID_HEARTBEAT_VSM,
-        .timeoutError_ms = 2500,
-        .timeoutWarn_ms = 25,
-        .errorFlag = CMR_CAN_ERROR_VSM_TIMEOUT,
-        .warnFlag = CMR_CAN_WARN_VSM_TIMEOUT
-    },
-    [CANRX_VSM_STATUS] = {
-        .canID = CMR_CANID_VSM_STATUS,
-        .timeoutError_ms = 2500,
-        .timeoutWarn_ms = 25,
-        .errorFlag = CMR_CAN_ERROR_VSM_TIMEOUT,
-        .warnFlag = CMR_CAN_WARN_VSM_TIMEOUT,
-    },
-    [CANRX_VSM_SENSORS] = {
-        .canID = CMR_CANID_VSM_SENSORS,
-        .timeoutError_ms = 2500,
-        .timeoutWarn_ms = 250,
-        .errorFlag = CMR_CAN_ERROR_VSM_TIMEOUT,
-        .warnFlag = CMR_CAN_WARN_VSM_TIMEOUT
-    },
-    [CANRX_FSM_DATA] = {
-        .canID = CMR_CANID_FSM_DATA,
-        .timeoutError_ms = 100,
-        .timeoutWarn_ms = 50,
-        .errorFlag = CMR_CAN_ERROR_NONE,
-        .warnFlag = CMR_CAN_WARN_NONE
-    },
-    [CANRX_FSM_SWANGLE] = {
-        .canID = CMR_CANID_FSM_SWANGLE,
-        .timeoutError_ms = 100,
-        .timeoutWarn_ms = 50,
-        .errorFlag = CMR_CAN_ERROR_NONE,
-        .warnFlag = CMR_CAN_WARN_NONE
     },
 };
 
