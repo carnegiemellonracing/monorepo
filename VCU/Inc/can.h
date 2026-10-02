@@ -14,16 +14,6 @@
 
 #include "motors_helper.h"
 
-//TODO: Check if these are redundant with existing CAN IDs
-typedef enum {
-    CANRX_HVC_MINMAX_TEMPS = 0,     /**< @brief HVC min/max cell temps. */
-    CANRX_INV1_STATUS,          /**< @brief Inverter 1 temp. */
-    CANRX_INV2_STATUS,          /**< @brief Inverter 2 temp. */
-    CANRX_INV3_STATUS,          /**< @brief Inverter 3 temp. */
-    CANRX_INV4_STATUS,          /**< @brief Inverter 4 temp. */
-    CANRX_LEN,     /**< @brief Number of periodic CAN messages. */
-} canRX_t;
-
 /**
  * @brief Vehicle CAN receive metadata indices.
  *
