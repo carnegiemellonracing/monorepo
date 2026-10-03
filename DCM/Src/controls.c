@@ -670,7 +670,8 @@ void runControls (
             }
             else{
                 // Don't set power limit as it is being sent from DAQ-Live
-                setFastTorqueWithPhantomDiff(throttlePos_u8, swAngle_millideg, front_bias, maxPhantomDiffScalingFactor);
+                const float reqTorque = maxFastTorque_Nm * (float)throttlePos_u8 / (float)UINT8_MAX;
+                setFastTorqueWithPhantomDiff(reqTorque, swAngle_millideg, front_bias, maxPhantomDiffScalingFactor, maxFastSpeed_rpm);
             }
             break;
         }
@@ -730,7 +731,8 @@ void runControls (
             int send = (int)(maxPhantomDiffScalingFactor * 100.0f); 
             canTX(CMR_CAN_BUS_VEH, 0x526, &send, sizeof(int), 200); 
 
-            setFastTorqueWithPhantomDiff(throttlePos_u8, swAngle_millideg, front_bias, maxPhantomDiffScalingFactor);
+            const float reqTorque = maxFastTorque_Nm * (float)throttlePos_u8 / (float)UINT8_MAX;
+            setFastTorqueWithPhantomDiff(reqTorque, swAngle_millideg, front_bias, maxPhantomDiffScalingFactor, maxFastSpeed_rpm);
             setPowerLimit(false, MOTOR_FL, maxPowerPerMotor_kW * front_bias);
             setPowerLimit(false, MOTOR_FR, maxPowerPerMotor_kW * front_bias);
             setPowerLimit(false, MOTOR_RL, maxPowerPerMotor_kW * (1 - front_bias));
@@ -778,9 +780,47 @@ void runControls (
             }
             break;
         }
-
-        case CMR_CAN_GEAR_DV_MISSION_ACCEL: 
         case CMR_CAN_GEAR_DV_MISSION_SKIDPAD:
+        {
+            disableTorqueMode();
+            volatile cmr_canAutonomousControlAction_t*  autonomousAction = canDAQGetPayload(CANRX_DAQ_AUTONOMOUS_ACTION);
+
+            /// Use a single torque value.
+            float reqTorque;
+            float maxVelocity_rpm;
+
+            if(cmr_canRXMetaTimeoutError(&canDaqRXMeta[CANRX_DAQ_AUTONOMOUS_ACTION], xTaskGetTickCount())) {
+                reqTorque = 0;
+                maxVelocity_rpm = 0;
+            }
+            else
+            {
+                reqTorque = CLAMP(maxRegenTorque_Nm, ((float)(autonomousAction->frontTorque_mNm))/1000.0f, maxDVTorque_Nm);
+                maxVelocity_rpm = (float)(autonomousAction->maxVelocity_decimeters_s) * 60.0f / 10.0f / ( PI * effective_wheel_dia_m) * gear_ratio;
+                maxVelocity_rpm = CLAMP(0, maxVelocity_rpm, maxDVSpeed_rpm); 
+            }
+
+            if (reqTorque > 0)
+            {
+                int send = (int)(maxPhantomDiffScalingFactor * 100.0f); 
+                canTX(CMR_CAN_BUS_VEH, 0x526, &send, sizeof(int), 200); 
+
+                setFastTorqueWithPhantomDiff(reqTorque, swAngle_millideg, front_bias, maxPhantomDiffScalingFactor, maxVelocity_rpm);
+            }
+            else
+            {
+                // setRegenTorques scales by maxRegenTorque_Nm (negative), so normalize against it
+                float regenPct = CLAMP(0.0f, reqTorque / maxRegenTorque_Nm, 1.0f);
+                setRegenTorques(regenPct);
+            }
+
+            setPowerLimit(false, MOTOR_FL, maxPowerPerMotor_kW * front_bias);
+            setPowerLimit(false, MOTOR_FR, maxPowerPerMotor_kW * front_bias);
+            setPowerLimit(false, MOTOR_RL, maxPowerPerMotor_kW * (1 - front_bias));
+            setPowerLimit(false, MOTOR_RR, maxPowerPerMotor_kW * (1 - front_bias));
+            break;
+        }
+        case CMR_CAN_GEAR_DV_MISSION_ACCEL: 
         case CMR_CAN_GEAR_DV_MISSION_AUTOX:     
         case CMR_CAN_GEAR_DV_MISSION_TRACKD:     
         case CMR_CAN_GEAR_DV_MISSION_EBS: {
@@ -797,8 +837,8 @@ void runControls (
                 maxVelocity_rpm = 0;
             }
             else {
-                front_torque_Nm = CLAMP(-maxDVTorque_Nm, ((float)(autonomousAction->frontTorque_mNm))/1000.0f, maxDVTorque_Nm); 
-                rear_torque_Nm  = CLAMP(-maxDVTorque_Nm, ((float)(autonomousAction->rearTorque_mNm))/1000.0f, maxDVTorque_Nm); 
+                front_torque_Nm = CLAMP(maxRegenTorque_Nm, ((float)(autonomousAction->frontTorque_mNm))/1000.0f, maxDVTorque_Nm); 
+                rear_torque_Nm  = CLAMP(maxRegenTorque_Nm, ((float)(autonomousAction->rearTorque_mNm))/1000.0f, maxDVTorque_Nm); 
                 maxVelocity_rpm = (float)(autonomousAction->maxVelocity_decimeters_s) * 60.0f / 10.0f / ( PI * effective_wheel_dia_m) * gear_ratio;
                 maxVelocity_rpm = CLAMP(0, maxVelocity_rpm, maxDVSpeed_rpm); 
             }
@@ -900,15 +940,13 @@ void setFastTorqueWithBias (uint8_t throttlePos_u8, float front_bias) {
 }
 
 void setFastTorqueWithPhantomDiff(
-    uint8_t throttlePos_u8,
+    float reqTorque,
     int32_t swAngle_millideg,
     float front_bias,
-    float phantom_diff_scaling_factor
+    float phantom_diff_scaling_factor,
+    float velocity_rpm
 )
 {
-    const float reqTorque =
-        maxFastTorque_Nm * (float)throttlePos_u8 / (float)UINT8_MAX;
-
     // Compute a base set of torques with persistent front-rear bias.
     const float reqTorque_front =
         reqTorque * front_bias / (1.0f - front_bias);
@@ -956,16 +994,17 @@ void setFastTorqueWithPhantomDiff(
         setTorqueLimsUnprotected(MOTOR_RR, reqTorque_rear, 0.0f);
     }
 
-    setVelocityInt16All(maxFastSpeed_rpm);
+    setVelocityFloatAll(velocity_rpm);
 }
 
 void setRegenTorques (float regen_pct) {
-    const float reqTorque = max_regen_torque_Nm * regen_pct;
+    const float reqTorque = maxRegenTorque_Nm * regen_pct;
    
     setTorqueLimsUnprotected(MOTOR_FL, 0.0f, reqTorque);
     setTorqueLimsUnprotected(MOTOR_FR, 0.0f, reqTorque);
     setTorqueLimsUnprotected(MOTOR_RR, 0.0f, reqTorque * (1 - frontRegenBiasRatio) / frontRegenBiasRatio);
     setTorqueLimsUnprotected(MOTOR_RL, 0.0f, reqTorque * (1 - frontRegenBiasRatio) / frontRegenBiasRatio);
+    
     setVelocityInt16All(0);
 }
 
