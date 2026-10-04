@@ -270,7 +270,7 @@ cmr_canRXMeta_t canVehicleRXMeta[CANRX_VEH_LEN] = {
         .timeoutWarn_ms = 25,
         .errorFlag = CMR_CAN_ERROR_NONE
     },
-    [CANRX_AS_PRESSURE_READING] = {
+    [CANRX_VEH_AS_TANK_PRESSURE] = {
         .canID = CMR_CANID_AS_PRESSURE_READINGS,
         .timeoutError_ms = 100,
         .timeoutWarn_ms = 25,

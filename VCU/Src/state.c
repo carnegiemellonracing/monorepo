@@ -575,7 +575,7 @@ static void stateUpdate(void *pvParameters) {
  * @note This should be active for the entirety of DV
  */
 static bool getDVBrakeDeployable(void){
-    cmr_canDVPressureReadings_t* pressureReading = (cmr_canDVPressureReadings_t*) getPayload(CANRX_AS_PRESSURE_READING);
+    cmr_canDVPressureReadings_t* pressureReading = (cmr_canDVPressureReadings_t*) getPayload(CANRX_VEH_AS_TANK_PRESSURE);
    bool brakes_deployable = pressureReading->ebsPressure_1_deci_bar > DV_TANK_PRESSURE_MINIMUM_DECIBAR &&  
             pressureReading->ebsPressure_2_deci_bar > DV_TANK_PRESSURE_MINIMUM_DECIBAR;
     if (!brakes_deployable) {
