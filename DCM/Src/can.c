@@ -904,6 +904,13 @@ static void canTX200Hz(void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
+
+        // This is needed to recompute the AC current limit within the dst buffer. Temporary.
+        getDTISetpoints(MOTOR_FL);
+        getDTISetpoints(MOTOR_FR);
+        getDTISetpoints(MOTOR_RL);
+        getDTISetpoints(MOTOR_RR);
+
         if (heartbeatVSM->state == CMR_CAN_RTD || 
             heartbeatVSM->state == CMR_CAN_AS_DRIVING){
             drive_enable = 1;

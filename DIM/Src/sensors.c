@@ -32,18 +32,18 @@
 /** @brief  Experimentally determined right TPOS ADC Maximum*/
 #define RIGHT_TPOS_MAX_ADC 1180
 
-#define LEFT_SWANGLE_MIN_ADC 132.0f
+#define LEFT_SWANGLE_MIN_ADC 270.0f
 #define CENTER_SWANGLE_ADC 1584.0f
-#define RIGHT_SWANGLE_MAX_ADC 2943.0f
+#define RIGHT_SWANGLE_MAX_ADC 2800.0f
 
-#define MAX_OUTER_WHEEL_ANGLE_MILLIDEG 25282.0f
-#define MAX_INNER_WHEEL_ANGLE_MILLIDEG 30139.0f
+#define MAX_OUTER_WHEEL_ANGLE_MILLIDEG 20500.0f
+#define MAX_INNER_WHEEL_ANGLE_MILLIDEG 23400.0f
 
 /** @brief See FSAE rule T.6.2.3 for definition of throttle implausibility. */
 static const TickType_t TPOS_IMPLAUS_THRES_MS = 100;
 /** @brief See FSAE rule T.6.2.3 for definition of throttle implausibility. */
 static const uint32_t TPOS_IMPLAUS_THRES = 50;
-
+ 
 /** @brief Throttle threshold for brake implausibility. See FSAE rule EV.2.4. */
 static const uint8_t BPP_TPOS_IMPLAUS_THRES = UINT8_MAX / 4;
 /** @brief Throttle threshold for clearing brake implausibility. See FSAE rule EV.2.4. */

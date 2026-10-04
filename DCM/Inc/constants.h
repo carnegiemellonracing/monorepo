@@ -7,7 +7,7 @@
  * motor datasheet: "Peak Torque - 31.6 Nm"
 */
 static const float maxTorque_Nm = 31.6f;
-static const float max_regen_torque_Nm = -20.0f;
+static const float maxRegenTorque_Nm = -20.0f;
 
 /// Integer percentage of allowed paddle travel before regen force starts being applied.
 static const uint8_t regenPaddlePercentThreshold = 10;
@@ -19,7 +19,7 @@ static const float frontRegenBiasRatio = 0.667f;
 static const float minTorqueLUTVal_Nm = 2.6f;
 static const float current_torque_slope = 85.0f / 31.6f;
 
-static const float front_bias = 0.25f;
+static const float front_bias = 0.35f;
 static const float front_bias_endurance = 0.25f;
 
 /// GVC v1 constants.
@@ -56,8 +56,8 @@ static const float maxFastTorque_Nm = maxTorque_continuous_stall_Nm;
  */
 static const int16_t maxSlowSpeed_rpm = 1500;
 
-/** @brief Maximum motor speed in dv gear. Roughly 10m/s */
-static const int16_t maxDVSpeed_rpm = 6000;
+/** @brief Maximum motor speed in dv gear. */
+static const int16_t maxDVSpeed_rpm = maxSpeed_rpm;
 
 /** @brief Maximum motor speed in medium gear. Roughly 20m/s */
 static const int16_t maxMediumSpeed_rpm = 13000;

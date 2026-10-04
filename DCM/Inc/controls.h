@@ -30,10 +30,11 @@ void setSlowTorque(uint8_t throttlePos_u8, int32_t swAngle_millideg);
 void setFastTorque(uint8_t throttlePos_u8);
 void setFastTorqueWithBias(uint8_t throttlePos_u8, float front_bias);
 void setFastTorqueWithPhantomDiff(
-    uint8_t throttlePos_u8,
+    float reqTorque,
     int32_t swAngle_millideg,
     float front_bias,
-    float phantom_diff_scaling_factor
+    float phantom_diff_scaling_factor,
+    float velocity_rpm
 );
 float getYawRateControlLeftRightBias(int32_t swAngle_millideg);
 float calculatePersistentYRCmreq(int32_t swAngle_millideg, float bias_margin, float yrc_pers); 
