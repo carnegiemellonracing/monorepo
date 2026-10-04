@@ -371,10 +371,10 @@ static bool throttleNeutral() {
 
 /** @brief Returns whether or not the brakes is considered to be active */
 static bool mechanicalBrakesEngaged() {
-    volatile cmr_canVSMSensors_t *vsmSensor = canVehicleGetPayload(CANRX_VEH_VSM_SENSORS);
+    volatile cmr_canHVSense_t *HVSensors = canVehicleGetPayload(CANRX_HVI_SENSE);
     // volatile cmr_canFSMData_t *dataFSM = canVehicleGetPayload(CANRX_VEH_DATA_FSM);
 
-    const float brakepsi = (float)(vsmSensor->brakePressureRear_PSI);
+    const float brakepsi = (float)(HVSensors->brakePressureRear_PSI);
     return brakepsi >= braking_threshold_psi + braking_threshold_offset_psi;
 }
 

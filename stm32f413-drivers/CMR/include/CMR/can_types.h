@@ -608,6 +608,7 @@ typedef struct {
     int16_t packCurrent_dA;
     uint16_t packVoltage_cV;
     int32_t packPower_W;
+    uint16_t brakePressureRear_PSI; 
 } cmr_canHVSense_t;
 
 //Power Sense Board CAN Types

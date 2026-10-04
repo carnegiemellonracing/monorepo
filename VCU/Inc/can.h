@@ -27,7 +27,6 @@ typedef enum {
     CANRX_VEH_CURRENT_HVC,          /**< @brief HVC pack current. */
     CANRX_VEH_DIM_ACTION_BUTTON,    /**< @brief DIM action button. */
     CANRX_VEH_PACK_CELL_VOLTAGE,    /**< @brief Min/Max Cell voltage*/
-    CANRX_VEH_VSM_SENSORS,          /**< @brief VSM Sensors */
 	CANRX_HVI_SENSE,
     CANRX_VEH_MOVELLA_STATUS,
     CANRX_VEH_MOVELLA_QUATERNION,

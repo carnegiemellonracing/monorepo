@@ -133,13 +133,6 @@ cmr_canRXMeta_t canVehicleRXMeta[CANRX_VEH_LEN] = {
         .errorFlag = CMR_CAN_ERROR_NONE,
         .warnFlag = CMR_CAN_WARN_NONE
     },
-    [CANRX_VEH_VSM_SENSORS] = {
-        .canID = CMR_CANID_VSM_SENSORS,
-        .timeoutError_ms = 100,
-        .timeoutWarn_ms = 50,
-        .errorFlag = CMR_CAN_ERROR_NONE,
-        .warnFlag = CMR_CAN_WARN_NONE
-    },
 	[CANRX_HVI_SENSE] = {
 	        .canID = CMR_CANID_HV_SENSORS,
 	        .timeoutError_ms = 100,
@@ -719,7 +712,6 @@ static void canTX10Hz(void *pvParameters) {
     const cmr_canDTI_TX_TempFault_t *dtiTempFaultRR = getDTITempFault(MOTOR_RR);
 
     cmr_canFSMData_t *dataFSM = canVehicleGetPayload(CANRX_VEH_DATA_FSM);
-    cmr_canVSMSensors_t *vsmSensors = canVehicleGetPayload(CANRX_VEH_VSM_SENSORS);
     cmr_canDVPressureReadings_t *dvPressure = canVehicleGetPayload(CANRX_VEH_AS_TANK_PRESSURE);
 
     cmr_canDTI_ErrorMessages_t dtiErrorMessages;
@@ -1326,8 +1318,7 @@ void canInit(void) {
         {
             .isMask = false,
             .rxFIFO = CAN_RX_FIFO0,
-            .ids = {CMR_CANID_DCM_RTC_DATA_IN,
-                    CMR_CANID_VSM_SENSORS}
+            .ids = {CMR_CANID_DCM_RTC_DATA_IN}
         },
 
         {
@@ -1869,20 +1860,6 @@ static void sendVSMHeartbeat(TickType_t lastWakeTime) {
 static void sendRESEnable() {
     uint16_t res_enable = 1;
     canTX(CMR_CAN_BUS_VEH, CMR_CANID_AS_RES_ENABLE, &res_enable, sizeof(res_enable), canTX100Hz_period_ms);
-}
-
-/**
- * @brief Reflect current state onto the LV bus.
- *
- */
-static void sendVSMStatus(void) {
-    const vsmStatus_t *vsmStatus = getCurrentStatus();
-
-    canTX(CMR_CAN_BUS_VEH, CMR_CANID_VSM_STATUS,
-          &(vsmStatus->canVSMStatus),
-          sizeof(vsmStatus->canVSMStatus),
-          canTX100Hz_period_ms
-    );
 }
 
 /**
