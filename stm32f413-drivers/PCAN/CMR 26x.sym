@@ -516,41 +516,6 @@ TimeOut=50
 Var=CELL_balanceRequest unsigned 0,8 /e:HVC_Balance_State
 Var=CELL_threshold unsigned 8,16
 
-[SBG_BODY_VEL]
-ID=729h
-DLC=6
-CycleTime=400
-TimeOut=2000
-Var=BODY_velocity_forward signed 0,16
-Var=BODY_velocity_right signed 16,16
-Var=BODY_velocity_down signed 32,16
-
-[SBG_EKF_ORIENT]
-ID=722h
-DLC=6
-CycleTime=400
-TimeOut=2000
-Var=EKF_roll signed 0,16
-Var=EKF_pitch signed 16,16
-Var=EKF_yaw signed 32,16
-
-[SBG_EKF_POS]
-ID=724h
-DLC=8
-CycleTime=400
-TimeOut=2000
-Var=EKF_latitude signed 0,32
-Var=EKF_longitude signed 32,32
-
-[SBG_EKF_VEL]
-ID=727h
-DLC=6
-CycleTime=400
-TimeOut=2000
-Var=EKF_velocity_n signed 0,16
-Var=EKF_velocity_e signed 16,16
-Var=EKF_velocity_d signed 32,16
-
 [SENSORIC_DIST]
 ID=601h
 DLC=8
@@ -569,6 +534,20 @@ Var=VEL_vel_X signed 0,16
 Var=VEL_vel_Y signed 16,16
 Var=VEL_vel_A signed 32,16
 Var=VEL_ang_S signed 48,16
+
+[TSSI_LIGHT]
+ID=528h
+DLC=1
+CycleTime=20
+TimeOut=100
+Var=LIGHT_tssi_red_error unsigned 0,8
+
+[VCU_COULOMB_COUNTING]
+ID=6E3h
+DLC=4
+CycleTime=100
+TimeOut=500
+Var=COULOMB_KCoulombs float 0,32
 
 [VSM_LATCHED_STATUS]
 ID=510h
@@ -1149,14 +1128,6 @@ Var=SBG_Auto_Curvature_Radius unsigned 32,16 /u:m /f:0.01 /p:2
 Var=SBG_Auto_Track_Valid bit 48,1
 Var=SBG_Auto_Slip_Valid bit 49,1
 Var=SBG_Auto_Curvature_Valid bit 50,1
-
-[BRUSA_Charger_Control]
-ID=528h
-DLC=7
-Var=Charger_Enable_Vector unsigned 0,8
-Var=Max_Mains_Current unsigned 8,16 -m /u:A /f:0.1
-Var=Requested_Voltage unsigned 24,16 -m /u:V /f:0.1
-Var=Requested_Current unsigned 40,16 -m /u:A /f:0.1
 
 [BRUSA_Charger_Status]
 ID=520h
