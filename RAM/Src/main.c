@@ -19,6 +19,7 @@
 
 // Project headers
 #include "can.h"        // Board-specific CAN interface
+#include "canError.h"   // CAN error logging
 #include "config.h"     // Previous flash configuration
 #include "gpio.h"       // Board-specific GPIO interface
 // #include "memorator.h"  // Board-specific GPIO interface
@@ -47,6 +48,7 @@ int main(void) {
     uartInit();
     gpioInit();
     canInit();
+    canErrorInit();
     statusLEDInit();
     // memoratorInit();
 

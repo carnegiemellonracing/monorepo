@@ -28,7 +28,9 @@ VAL_TABLE_ HV_BMSHeartbeatErr 0 "HVBMS_ERROR_NONE" 1 "HVBMS_ERROR_PACK_UNDERVOLT
 VAL_TABLE_ LRUDButtons 1 "DIM_LEFT" 2 "DIM_RIGHT" 4 "DIM_UP" 8 "DIM_DOWN";
 VAL_TABLE_ MemoWarnMode 0 "MEMO_WARN_NONE" 1 "MEMO_WARN_SD_FULL" 2 "MEMO_WARN_SD_NOT_IN";
 VAL_TABLE_ MovellaFilterMode 0 "Without_GNSS_filter_profile_is_in_VRU_mode" 1 "Coasting_mode_GNSS_has_been_lost_less_than_60_sec_ago" 3 "With_GNSS_default_mode";
+VAL_TABLE_ RAMBusErrorFlags 1 "RAM_BUS_WARNING" 2 "RAM_BUS_PASSIVE" 4 "RAM_BUS_OFF" 8 "RAM_BUS_WARNING_ENTER" 16 "RAM_BUS_PASSIVE_ENTER" 32 "RAM_BUS_OFF_ENTER" 64 "RAM_BUS_SATURATED";
 VAL_TABLE_ RAMError 0 "RAM_ERROR_NONE" 1 "RAM_ERROR_SD_MOUNT" 2 "RAM_ERROR_SD_UNMOUNT" 4 "RAM_ERROR_SD_WRITE" 8 "RAM_ERROR_FILE_OPEN" 16 "RAM_ERROR_FILE_CLOSE" 32 "RAM_ERROR_CAN_RX_OVERFLOW";
+VAL_TABLE_ RAMLEC 0 "RAM_LEC_NONE" 1 "RAM_LEC_STUFF" 2 "RAM_LEC_FORM" 3 "RAM_LEC_ACK" 4 "RAM_LEC_BIT_RECESSIVE" 5 "RAM_LEC_BIT_DOMINANT" 6 "RAM_LEC_CRC" 7 "RAM_LEC_SOFTWARE" 8 "RAM_LEC_LEN";
 VAL_TABLE_ RAMState 0 "RAM_STATE_OK" 1 "RAM_STATE_LEN";
 VAL_TABLE_ RES 1 "TRIG" 4 "GO";
 VAL_TABLE_ SBGAutomotiveStatus 1 "SBG_AUTO_TRACK_VALID" 2 "SBG_AUTO_SLIP_VALID" 4 "SBG_AUTO_CURVATURE_VALID";
@@ -481,6 +483,36 @@ BO_ 2002 LOADCELL_RR: 8 Vector__XXX
 BO_ 310 LV_CELL_BALANCE_ENABLE: 3 Vector__XXX
  SG_ CELL_balanceRequest : 0|8@1+ (1,0) [0|255] "" Vector__XXX
  SG_ CELL_threshold : 8|16@1+ (1,0) [0|65535] "" Vector__XXX
+
+BO_ 1986 MEMORATOR_BUS_ERRORS_DAQ: 8 Vector__XXX
+ SG_ BUS_flags : 0|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ BUS_tec : 8|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ BUS_rec : 16|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ BUS_txArbitrationLost : 24|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ BUS_txError : 32|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ BUS_rxOverrun : 40|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ BUS_protocolErrors : 48|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ BUS_lastLEC : 56|8@1+ (1,0) [0|255] "" Vector__XXX
+
+BO_ 1987 MEMORATOR_BUS_ERRORS_TRAC: 8 Vector__XXX
+ SG_ BUS_flags1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ BUS_tec1 : 8|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ BUS_rec1 : 16|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ BUS_txArbitrationLost1 : 24|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ BUS_txError1 : 32|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ BUS_rxOverrun1 : 40|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ BUS_protocolErrors1 : 48|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ BUS_lastLEC1 : 56|8@1+ (1,0) [0|255] "" Vector__XXX
+
+BO_ 1985 MEMORATOR_BUS_ERRORS_VEH: 8 Vector__XXX
+ SG_ BUS_flags2 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ BUS_tec2 : 8|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ BUS_rec2 : 16|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ BUS_txArbitrationLost2 : 24|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ BUS_txError2 : 32|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ BUS_rxOverrun2 : 40|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ BUS_protocolErrors2 : 48|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ BUS_lastLEC2 : 56|8@1+ (1,0) [0|255] "" Vector__XXX
 
 BO_ 1312 MEMORATOR_WARNINGS: 1 Vector__XXX
  SG_ WARNINGS_warnings : 0|8@1+ (1,0) [0|255] "" Vector__XXX
@@ -2195,6 +2227,15 @@ BA_ "Sendable" BO_ 2002 "True";
 BA_ "GenMsgCycleTime" BO_ 310 10;
 BA_ "Receivable" BO_ 310 "True";
 BA_ "Sendable" BO_ 310 "True";
+BA_ "GenMsgCycleTime" BO_ 1986 1000;
+BA_ "Receivable" BO_ 1986 "True";
+BA_ "Sendable" BO_ 1986 "True";
+BA_ "GenMsgCycleTime" BO_ 1987 1000;
+BA_ "Receivable" BO_ 1987 "True";
+BA_ "Sendable" BO_ 1987 "True";
+BA_ "GenMsgCycleTime" BO_ 1985 1000;
+BA_ "Receivable" BO_ 1985 "True";
+BA_ "Sendable" BO_ 1985 "True";
 BA_ "GenMsgCycleTime" BO_ 1312 800;
 BA_ "Receivable" BO_ 1312 "True";
 BA_ "Sendable" BO_ 1312 "True";

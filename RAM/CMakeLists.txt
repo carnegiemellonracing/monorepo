@@ -104,7 +104,10 @@ set(compiler_OPTS
 )
 
 # Linker options
-set(linker_OPTS)
+set(linker_OPTS
+    # Intercept CAN IRQs in canError.c to log errors (see __wrap_HAL_CAN_IRQHandler)
+    -Wl,--wrap=HAL_CAN_IRQHandler
+)
 
 # Now call generated cmake
 # This will add script generated
@@ -122,6 +125,7 @@ add_executable(${CMAKE_PROJECT_NAME}
     # Project sources
     # $<TARGET_OBJECTS:CMR>
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/can.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/Src/canError.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/config.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/gpio.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/main.c
