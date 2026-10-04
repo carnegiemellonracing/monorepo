@@ -1272,32 +1272,29 @@ void conditionalCallback(cmr_can_t *canb_rx, uint32_t canID, const void *data, s
  */
 void canInit(void) {
 
-    //Gotta check the schematic when it's
-
-    // Vehicle CAN initialization - CAN1
-    cmr_canInit(&can[CMR_CAN_BUS_VEH], FDCAN1, CMR_CAN_BITRATE_500K, NULL,
-                  0, &conditionalCallback, GPIOA,
-                  GPIO_PIN_11,        // CAN1 RX port/pin.
-                  GPIOA, GPIO_PIN_12  // CAN1 TX port/pin.
-    );
-
-    // Tractive CAN initialization. - CAN3
-    cmr_canInit(&(can[CMR_CAN_BUS_DAQ]), FDCAN2, CMR_CAN_BITRATE_500K, NULL,
-                  0, &conditionalCallback, GPIOB,
-                  GPIO_PIN_12,        // CAN3 RX port/pin.
-                  GPIOB, GPIO_PIN_13  // CAN3 TX port/pin.
-    );
-
-    // DAQ CAN init. - CAN2
-    cmr_canInit(&can[CMR_CAN_BUS_TRAC], FDCAN3, CMR_CAN_BITRATE_500K, NULL,
-                  0, &conditionalCallback, GPIOD,
-                  GPIO_PIN_12,        // CAN2 RX port/pin.
-                  GPIOD, GPIO_PIN_13  // CAN2 TX port/pin.
-    );
-
-    //VSM CAN2 Initialization
+    //Vehicle CAN Init
     cmr_canInit(
-        &can, CAN2,
+        &can[CMR_CAN_BUS_VEH], CAN1,
+        CMR_CAN_BITRATE_500K,
+        canRXMeta, sizeof(canRXMeta) / sizeof(canRXMeta[0]),
+        NULL,
+        GPIOB, GPIO_PIN_12,     // CAN2 RX port/pin.
+        GPIOB, GPIO_PIN_13      // CAN2 TX port/pin.
+    );
+
+    //DAQ CAN Init
+    cmr_canInit(
+        &can[CMR_CAN_BUS_DAQ], CAN2,
+        CMR_CAN_BITRATE_500K,
+        canRXMeta, sizeof(canRXMeta) / sizeof(canRXMeta[0]),
+        NULL,
+        GPIOB, GPIO_PIN_12,     // CAN2 RX port/pin.
+        GPIOB, GPIO_PIN_13      // CAN2 TX port/pin.
+    );
+
+    //TRAC CAN Init
+    cmr_canInit(
+        &can[CMR_CAN_BUS_TRAC], CAN2,
         CMR_CAN_BITRATE_500K,
         canRXMeta, sizeof(canRXMeta) / sizeof(canRXMeta[0]),
         NULL,
@@ -1337,35 +1334,35 @@ void canInit(void) {
         // FR CAN IDs
         {
             .isMask = true,
-            .rxFIFO = FDCAN_RX_FIFO0,
+            .rxFIFO = CAN_RX_FIFO0,
             .ids = {FR_NODE_ID, 0x1F}
         },
         // FL CAN IDs
         {
             .isMask = true,
-            .rxFIFO = FDCAN_RX_FIFO0,
+            .rxFIFO = CAN_RX_FIFO0,
             .ids = {FL_NODE_ID, 0x1F}
         },
         // RL CAN IDs
         {
             .isMask = true,
-            .rxFIFO = FDCAN_RX_FIFO0,
+            .rxFIFO = CAN_RX_FIFO0,
             .ids = {RL_NODE_ID, 0x1F}
         },
         // RR CAN IDs
         {
             .isMask = true,
-            .rxFIFO = FDCAN_RX_FIFO0,
+            .rxFIFO = CAN_RX_FIFO0,
             .ids = {RR_NODE_ID, 0x1F}
         },
         {
             .isMask = false,
-            .rxFIFO = FDCAN_RX_FIFO0,
+            .rxFIFO = CAN_RX_FIFO0,
             .ids = {CMR_CANID_IVT_CURRENT, CMR_CANID_IVT_VOLTAGE}
         },
         {
             .isMask = false,
-            .rxFIFO = FDCAN_RX_FIFO0,
+            .rxFIFO = CAN_RX_FIFO0,
             .ids = {CMR_CANID_EMD_MEASUREMENT, CMR_CANID_EMD_TEMPERATURE}
         },
     };
@@ -1376,20 +1373,20 @@ void canInit(void) {
     // DAQ CAN filters.
     const cmr_canFilter_t canDaqFilters[] = {
         {.isMask = true,
-         .rxFIFO = FDCAN_RX_FIFO0,
+         .rxFIFO = CAN_RX_FIFO0,
 
          // Match all even IDs (bottom bit 0, all others don't care).
          .ids = {0x000, 0x001}
         },
         {.isMask = true,
-         .rxFIFO = FDCAN_RX_FIFO1,
+         .rxFIFO = CAN_RX_FIFO1,
 
          // Match all odd IDs (bottom bit 1, all others don't care).
          .ids = {0x001, 0x001}
         },
         {.isMask = false,
          .isExtended = true,
-         .rxFIFO = FDCAN_RX_FIFO1,
+         .rxFIFO = CAN_RX_FIFO1,
 
          .ids = {CMR_CANID_EXTENDED_CUBEMARS_DATA}
         }
