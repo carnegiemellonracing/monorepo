@@ -613,48 +613,6 @@ cmr_canRXMeta_t canDaqRXMeta[CANRX_DAQ_LEN] = {
         .timeoutError_ms = 2000,
         .timeoutWarn_ms = 1000
     },
-    [CANRX_DAQ_SBG_STATUS_3] = {
-        .canID = CMR_CANID_SBG_STATUS_3,
-        .timeoutError_ms = 2000,
-        .timeoutWarn_ms = 1000
-    },
-    [CANRX_DAQ_SBG_POS] = {
-        .canID = CMR_CANID_SBG_EKF_POS,
-        .timeoutError_ms = 2000,
-        .timeoutWarn_ms = 1000
-    },
-    [CANRX_DAQ_SBG_VEL] = {
-        .canID = CMR_CANID_SBG_EKF_VEL,
-        .timeoutError_ms = 2000,
-        .timeoutWarn_ms = 1000
-    },
-    [CANRX_DAQ_SBG_BODY_VEL] = {
-        .canID = CMR_CANID_SBG_BODY_VEL,
-        .timeoutError_ms = 2000,
-        .timeoutWarn_ms = 1000
-    },
-    [CANRX_DAQ_SBG_ORIENT] = {
-        .canID = CMR_CANID_SBG_EKF_ORIENT,
-        .timeoutError_ms = 2000,
-        .timeoutWarn_ms = 1000
-    },
-    [CANRX_DAQ_SBG_IMU_ACCEL] = {
-        .canID = CMR_CANID_SBG_IMU_ACCEL,
-        .timeoutError_ms = 2000,
-        .timeoutWarn_ms = 1000
-    },
-    [CANRX_DAQ_SBG_IMU_GYRO] = {
-        .canID = CMR_CANID_SBG_IMU_GYRO,
-        .timeoutError_ms = 2000,
-        .timeoutWarn_ms = 1000
-    },
-    [CANRX_DAQ_SBG_SLIPANGLE] = {
-	    .canID  = CMR_CANID_SBG_AUTOMOTIVE,
-        .timeoutError_ms = 1000,
-        .timeoutWarn_ms = 750,
-        .errorFlag = CMR_CAN_ERROR_NONE,
-        .warnFlag = CMR_CAN_WARN_NONE
-	},
 	[CANRX_DAQ_LOAD_FL] = {
         .canID  = CMR_CANID_LOADCELL_FL,
         .timeoutError_ms = 500,
