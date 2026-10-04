@@ -148,22 +148,20 @@ add_executable(${CMAKE_PROJECT_NAME}
     # VCU source files
     # =========================
 
+    ${CMAKE_SOURCE_DIR}/Src/26x_sensors.c
     ${CMAKE_SOURCE_DIR}/Src/adc.c
     ${CMAKE_SOURCE_DIR}/Src/assi.c
     ${CMAKE_SOURCE_DIR}/Src/brakelight.c
     ${CMAKE_SOURCE_DIR}/Src/can.c
     ${CMAKE_SOURCE_DIR}/Src/cmr_error.c
-    ${CMAKE_SOURCE_DIR}/Src/control_sensors.c
     ${CMAKE_SOURCE_DIR}/Src/controls_helper.c
     ${CMAKE_SOURCE_DIR}/Src/controls.c
-    ${CMAKE_SOURCE_DIR}/Src/dac.c
     ${CMAKE_SOURCE_DIR}/Src/daq.c
     ${CMAKE_SOURCE_DIR}/Src/error.c
     ${CMAKE_SOURCE_DIR}/Src/gpio.c
     ${CMAKE_SOURCE_DIR}/Src/i2c.c
     ${CMAKE_SOURCE_DIR}/Src/lut.c
     ${CMAKE_SOURCE_DIR}/Src/main.c
-    ${CMAKE_SOURCE_DIR}/Src/mc_power.c
     ${CMAKE_SOURCE_DIR}/Src/motors_helper.c
     ${CMAKE_SOURCE_DIR}/Src/motors.c
     ${CMAKE_SOURCE_DIR}/Src/movella.c
