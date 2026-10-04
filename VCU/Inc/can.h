@@ -142,7 +142,6 @@ typedef enum {
     CANRX_DAQ_LOAD_FR,          /**< @brief front right load cell/newtons. */
     CANRX_DAQ_LOAD_RL,          /**< @brief rear left load cell/newtons. */
     CANRX_DAQ_LOAD_RR,          /**< @brief rear right load cell/newtons. */
-	CANRX_DAQ_SBG_SLIPANGLE,    /**< @brief Slip Angle Radians 10^4. */
     CANRX_DAQ_MEMORATOR_BROADCAST,
     CANRX_DAQ_HEARTBEAT_COMPUTE,
     CANRX_DAQ_AUTONOMOUS_ACTION,
@@ -191,6 +190,8 @@ int canExtendedTX(
     const void *data, size_t len,
     TickType_t timeout
 );
+
+const cmr_canVSMTimeoutErrorSource_t vsmErrorSourceFlags[CANRX_LEN];
 
 volatile void *canVehicleGetPayload(canVehicleRX_t msg);
 volatile void *canTractiveGetPayload(canTractiveRX_t msg);

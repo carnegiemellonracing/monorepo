@@ -42,7 +42,6 @@ float getHVISensePackPower();
 float getMaxCellVoltage();
 float getMinCellVoltage();
 float swAngleMillidegToSteeringAngleRad(int32_t swAngle_deg);
-bool canTrustSBGVelocity(bool ignore_valid_bit);
 bool setRegen(uint8_t *throttlePos_u8, uint16_t brakePressurePsi_u8, int32_t avgMotorSpeed_RPM);
 float getRegenTorqueReq(uint8_t *throttlePos_u8, uint16_t brakePressurePsi_u8);
 bool setPaddleRegen(uint8_t *throttlePos_u8, uint16_t brakePressurePsi_u8, int32_t avgMotorSpeed_RPM, uint8_t paddle_pressure, uint8_t paddle_regen_strength);
