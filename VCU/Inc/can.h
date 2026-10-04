@@ -41,7 +41,19 @@ typedef enum {
     CANRX_VEH_SENSORIC_RATE,
     CANRX_VEH_AS_RES,
     CANRX_VEH_AS_TANK_PRESSURE,
-    CANRX_VEH_VSM_FIRST_ERROR,
+
+    //VSM
+    CANRX_VEH_HEARTBEAT_HVC,
+    CANRX_VEH_HEARTBEAT_DIM,
+    CANRX_VEH_HEARTBEAT_HVBMS,
+    CANRX_VEH_HEARTBEAT_COMPUTE,
+    CANRX_VEH_FSM_DATA,
+    CANRX_VEH_CUBEMARS_DATA,
+    CANRX_VEH_DIM_REQUEST,
+    CANRX_VEH_RES,
+    CANRX_VEH_DTI_ERROR_CODE,
+    CANRX_VEH_AS_MISSION_FINISHED,
+    CANRX_VEH_TSSI_LIGHT,
     CANRX_VEH_LEN                   /**< @brief Number of periodic CAN messages. */
 } canVehicleRX_t;
 
@@ -186,14 +198,10 @@ volatile void *canDAQGetPayload(canDaqRX_t msg);
 cmr_canRXMeta_t *canVehicleGetMeta(canVehicleRX_t msg);
 cmr_canRXMeta_t *canTractiveGetMeta(canTractiveRX_t msg);
 cmr_canRXMeta_t *canDAQGetMeta(canDaqRX_t msg);
-void *canGetPayload(canRX_t rxMsg);
 int8_t getPacketID(cmr_canID_t id);
 int8_t getNodeID(cmr_canID_t id);
 int sendCubeMarsMessage(cmr_canBusID_t bus, cmr_canExtendedID_t id, const void *data, size_t len, TickType_t timeout);
 int sendDTIMessage(cmr_canBusID_t bus, cmr_canID_t id, const void *data, size_t len, TickType_t timeout);
-int16_t getDTICtrlTemp(canRX_t rxMsg);
-int16_t getDTIMotorTemp(canRX_t rxMsg);
-int16_t getDTITorque(canRX_t rxMsg);
 int32_t getDTIERPM(canTractiveRX_t rxMsg);
 int16_t getDTIInputVoltage(canTractiveRX_t rxMsg);
 int16_t getDTIACCurrent_dA(canTractiveRX_t rxMsg);

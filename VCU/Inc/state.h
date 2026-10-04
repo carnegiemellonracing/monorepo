@@ -32,7 +32,7 @@ typedef enum {
     BRAKE_TEST_FAILED
 } brakeTestState_t;
 
-cmr_canState_t getCurrentExternalState(TickType_t lastWakeTime);
+cmr_canState_t getCurrentExternalState(void);
 extern cmr_canState_t vsmToCANState[];
 extern volatile TickType_t lastStateChangeTime_ms;
 extern volatile cmr_canHVCMode_t hvcModeRequest;

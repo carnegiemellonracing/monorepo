@@ -25,11 +25,9 @@
 #include "state.h"       // stateInit()
 #include "tssi.h"        // TSSI control
 #include "assi.h"
-#include "dac.h"
 #include "error.h"
 #include "motors.h"      // Board-specific motors interface
 #include "i2c.h"
-#include "servo.h"
 #include "lut.h"
 #include "brakelight.h"
 #include "pumps.h"
@@ -81,12 +79,6 @@ static void statusLED(void *pvParameters) {
  * @return Does not return.
  */
 int main(void) {
-    // Enable cycle counter for timing/debugging.
-    CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
-    DWT->LAR = 0xC5ACCE55;
-    DWT->CYCCNT = 0;
-    DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
-
     // System initialization.
     HAL_Init();
     srand(HAL_GetTick());

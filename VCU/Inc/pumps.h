@@ -1,5 +1,5 @@
 /**
- * @file fans.h
+ * @file pumps.h
  * @brief Fan Control interface.
  *
  * @author Carnegie Mellon Racing

@@ -30,7 +30,7 @@ static cmr_pwmPin_t pwmPinConfigs[PWM_LEN] = {
         }
     },
 
-    //change the timer
+    //TODO: change the timer once peripheral is known
     [PWM_PUMP_RIGHT] = {
         .pwmPinConfig = {
             .port = GPIOG,
@@ -38,13 +38,11 @@ static cmr_pwmPin_t pwmPinConfigs[PWM_LEN] = {
             .channel = TIM_CHANNEL_2,
             .presc = 24,
             .period_ticks = 40000,
-            .timer = TIM23
+            .timer = TIM2
         }
     },
-};
-
+    
 //VSM Pins
-static cmr_pwmPin_t pwmPinConfigs[PWM_LEN] = {
     [PWM_GREEN] = {
         .pwmPinConfig = {
             .port = GPIOA,

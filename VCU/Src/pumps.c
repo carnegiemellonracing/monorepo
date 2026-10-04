@@ -7,7 +7,7 @@
 
 #include "can.h"        // Board-specific CAN interface
 #include "gpio.h"       // Board-specific GPIO interface
-#include "fans.h"        // Interface to implement
+#include "pumps.h"        // Interface to implement
 #include "pwm.h"
 #include <CMR/pwm.h>        // PWM interface
 #include <CMR/gpio.h>       // GPIO interface
@@ -27,13 +27,14 @@ cmr_pwmPinConfig_t pump_left = {
     .timer = TIM4
 };
 
+//TODO: Change timer once peripheral is known
 cmr_pwmPinConfig_t pump_right = {
     .port = GPIOG,
     .pin = GPIO_PIN_13,
     .channel = TIM_CHANNEL_2,
     .presc = 24,
     .period_ticks = 40000,
-    .timer = TIM23
+    .timer = TIM2
 };
 
 /** @brief Pump control task priority. */

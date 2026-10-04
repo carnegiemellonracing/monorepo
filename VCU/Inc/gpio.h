@@ -34,7 +34,7 @@ typedef enum {
 	GPIO_MTR_CTRL_ENABLE,   /**< @brief Motor Controller Power Enable */
 
 	//VSM
-	GPIO_OUT_LED_STATUS = 0,    /**< @brief Status LED. */
+	GPIO_OUT_LED_STATUS,    /**< @brief Status LED. */
     GPIO_OUT_SOFTWARE_ERR_N,    /**< @brief Software error Driver. */
     GPIO_OUT_RTD_SIGNAL,        /**< @brief Ready-to-drive signal. */
     GPIO_IN_SOFTWARE_ERR_N,     /**< @brief Software error latch input signal. */

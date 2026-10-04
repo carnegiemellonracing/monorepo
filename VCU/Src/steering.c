@@ -18,6 +18,7 @@
 #include "adc.h"
 #include "can.h"   // Board-specific CAN interface
 #include "math.h"   // Board-specific CAN interface
+#include "state.h"
 
 #define MAX_CURRENT_MA 15000
 

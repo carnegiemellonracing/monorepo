@@ -21,13 +21,11 @@
 #include <CMR/utils.h>
 
 // #include "controls_23e.h"
-#include "servo.h"
 #include "can.h"
 #include "daq.h"
 #include "safety_filter.h"
-#include "mc_power.h"
+#include "gpio.h"
 #include "pumps.h"
-#include "fans.h"
 #include "constants.h"
 #include "controls.h"
 #include "motors_helper.h"

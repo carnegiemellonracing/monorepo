@@ -14,6 +14,7 @@
 #include "sensors.h"        // sensorList, cmr_sensorListGetFlags()
 #include "can.h"            // Lots of things
 #include "motors.h"         // motorLocation_t
+#include "state.h"
 
 /** @brief Inverter error status tracking. Indexed by 'motorLocation_t'. */
 static bool dtiErrors[MOTOR_LEN] = {

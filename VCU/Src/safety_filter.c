@@ -20,7 +20,6 @@
 #include <CMR/config_screen_helper.h>
 #include <CMR/fir_filter.h>
 #include "controls.h"
-#include "servo.h"
 #include "can.h"
 #include "daq.h"
 #include "safety_filter.h"
@@ -555,7 +554,7 @@ void setTorqueLimsProtected (
     motorPower_state.motor_power_RR = falloff_factor_by_pack_power; //getMotorPower(MOTOR_RR, pack_voltage_V);
 }
 
-const cmr_canCDCSafetyFilterStates_t *getSafetyFilterInfo(){
+const cmr_canVCUSafetyFilterStates_t *getSafetyFilterInfo(){
     return (const cmr_canVCUSafetyFilterStates_t*) &sf_state;
 }
 

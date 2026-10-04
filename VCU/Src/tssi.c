@@ -5,6 +5,7 @@
  * @author Carnegie Mellon Racing
  */
 
+#include "can.h"
 #include "error.h"       // Board-specific error interfaces
 #include "gpio.h"       // Board-specific GPIO interface
 #include "pwm.h"
@@ -46,6 +47,12 @@ static void tssiControl(void *pvParameters) {
     static bool exitedErrorState = false;
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
+        //TODO: Wait for new HVC CAN Message
+        
+        cmr_canVCUtssiIndicator_t* tssiState = canVehicleGetPayload(CANRX_VEH_TSSI_LIGHT);
+
+        bool tssi_red_error = tssiState->tssi_red_error;
+
         if (tssi_red_error && exitedErrorState) {
             flash_error_state();
         }

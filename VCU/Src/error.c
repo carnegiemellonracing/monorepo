@@ -66,31 +66,31 @@ void updateCurrentErrors(volatile vsmStatus_t *vsmStatus, TickType_t lastWakeTim
     cmr_sensorListGetFlags(&sensorList, NULL, &heartbeatErrors);
 
     // Check for improper states
-    if (getBadModuleState(CANRX_HEARTBEAT_HVC, vsmStatus->canVSMStatus.internalState, lastWakeTime) < 0) {
+    if (getBadModuleState(CANRX_VEH_HEARTBEAT_HVC, vsmStatus->canVSMStatus.internalState, lastWakeTime) < 0) {
         heartbeatErrors |= CMR_CAN_ERROR_VSM_MODULE_STATE;
         badStateMatrix |= CMR_CAN_VSM_BADSTATE_SOURCE_HVC;
         //more specific HVC checks within getBadModuleState - sendFirstError called there
     }
 
-    if (getBadModuleState(CANRX_HEARTBEAT_DIM, vsmStatus->canVSMStatus.internalState, lastWakeTime) < 0) {
+    if (getBadModuleState(CANRX_VEH_HEARTBEAT_DIM, vsmStatus->canVSMStatus.internalState, lastWakeTime) < 0) {
         heartbeatErrors |= CMR_CAN_ERROR_VSM_MODULE_STATE;
         badStateMatrix |= CMR_CAN_VSM_BADSTATE_SOURCE_DIM;
         sendFirstError(BADSTATE_DIM);
     }
 
     // if(getASMSState()){
-    //     // if (getBadModuleState(CANRX_HEARTBEAT_COMPUTE, vsmStatus->canVSMStatus.internalState, lastWakeTime) < 0) {
+    //     // if (getBadModuleState(CANRX_VEH_HEARTBEAT_COMPUTE, vsmStatus->canVSMStatus.internalState, lastWakeTime) < 0) {
     //     //     heartbeatErrors |= CMR_CAN_ERROR_VSM_MODULE_STATE;
     //     //     badStateMatrix |= CMR_CAN_VSM_BADSTATE_SOURCE_COMPUTE;
     //     // }
 
-    //     if(cmr_canRXMetaTimeoutError(&canRXMeta[CANRX_CUBEMARS_DATA], lastWakeTime) < 0){
+    //     if(cmr_canRXMetaTimeoutError(&canRXMeta[CANRX_VEH_CUBEMARS_DATA], lastWakeTime) < 0){
     //         heartbeatErrors |= CMR_CAN_ERROR_VSM_MODULE_STATE;
     //     }
     // }
 
 
-    // if (getBadModuleState(CANRX_HEARTBEAT_HVBMS, vsmStatus->canVSMStatus.internalState, lastWakeTime) < 0) {
+    // if (getBadModuleState(CANRX_VEH_HEARTBEAT_HVBMS, vsmStatus->canVSMStatus.internalState, lastWakeTime) < 0) {
     //     heartbeatErrors |= CMR_CAN_ERROR_VSM_MODULE_STATE;
     //     badStateMatrix |= CMR_CAN_VSM_BADSTATE_SOURCE_HVBMS;
     //     sendFirstError(BADSTATE_HVBMS);
@@ -133,10 +133,10 @@ static bool dimRequestIsValid(
     volatile vsmStatus_t *vsmStatus,
     TickType_t lastWakeTime
 ) {
-    cmr_canDIMRequest_t *dimRequest = getPayload(CANRX_DIM_REQUEST);
+    cmr_canDIMRequest_t *dimRequest = getPayload(CANRX_VEH_DIM_REQUEST);
     cmr_canState_t dimRequestedState = (cmr_canState_t)(dimRequest->requestedState);
     bool dimRequestTimeout = cmr_canRXMetaTimeoutError(
-        &(canRXMeta[CANRX_DIM_REQUEST]), lastWakeTime
+        &(canRXMeta[CANRX_VEH_DIM_REQUEST]), lastWakeTime
     );
 
     if (
@@ -147,7 +147,7 @@ static bool dimRequestIsValid(
         return false;
     }
 
-    cmr_canFSMData_t *fsmData = getPayload(CANRX_FSM_DATA);
+    cmr_canFSMData_t *fsmData = getPayload(CANRX_VEH_FSM_DATA);
     uint16_t throttlePosition = fsmData->throttlePosition;
 
     uint32_t brakePressureRear_PSI = cmr_sensorListGetValue(
@@ -225,8 +225,8 @@ static int getBadModuleState(canRX_t module, cmr_canVSMState_t vsmState, TickTyp
     bool wrongState = false;
 
     // Check HVC mode
-    if (module == CANRX_HEARTBEAT_HVC) {
-        cmr_canHVCHeartbeat_t *hvcHeartbeat = getPayload(CANRX_HEARTBEAT_HVC);
+    if (module == CANRX_VEH_HEARTBEAT_HVC) {
+        cmr_canHVCHeartbeat_t *hvcHeartbeat = getPayload(CANRX_VEH_HEARTBEAT_HVC);
         cmr_canHVCMode_t hvcMode = hvcHeartbeat->hvcMode;
 
         switch (vsmState) {
@@ -376,8 +376,8 @@ __attribute__((unused)) static bool getASEmergency(){
  * @brief Check all inverters if endurance mode. Else, check RR inverter
 */
 bool invertersPass(TickType_t lastWakeTime_ms){
-    cmr_canDTI_ErrorMessages_t *dti_error_codes = getPayload(CANRX_DTI_ERROR_CODE);
-    bool inverter_message_valid = !cmr_canRXMetaTimeoutError(&canRXMeta[CANRX_DTI_ERROR_CODE], lastWakeTime_ms);
+    cmr_canDTI_ErrorMessages_t *dti_error_codes = getPayload(CANRX_VEH_DTI_ERROR_CODE);
+    bool inverter_message_valid = !cmr_canRXMetaTimeoutError(&canRXMeta[CANRX_VEH_DTI_ERROR_CODE], lastWakeTime_ms);
 
     if (!inverter_message_valid) {
         if(COMPETITION_MODE){
@@ -407,9 +407,9 @@ bool invertersPass(TickType_t lastWakeTime_ms){
 bool getAMSError(){
     return false;
     // TickType_t now = xTaskGetTickCount();
-    // cmr_canHVCHeartbeat_t *hvcHeartbeat = getPayload(CANRX_HEARTBEAT_HVC);
-    // return (cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_HEARTBEAT_HVC]), now) != 0)
-    //  || (cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_HEARTBEAT_HVBMS]), now) != 0)
+    // cmr_canHVCHeartbeat_t *hvcHeartbeat = getPayload(CANRX_VEH_HEARTBEAT_HVC);
+    // return (cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_VEH_HEARTBEAT_HVC]), now) != 0)
+    //  || (cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_VEH_HEARTBEAT_HVBMS]), now) != 0)
     //  || (hvcHeartbeat->errorStatus & CMR_CAN_HVBMS_ERROR_PACK_OVERVOLT)
     //  || (hvcHeartbeat->errorStatus & CMR_CAN_HVBMS_ERROR_CELL_OVERVOLT);
 }

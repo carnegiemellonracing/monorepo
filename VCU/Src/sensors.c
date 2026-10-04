@@ -14,7 +14,7 @@
 cmr_sensor_t sensors[SENSOR_CH_LEN];
 
 /** @brief Mapping of ADC channels to sensors. */
-static const adcChannel_t sensorsADCChannels[SENSOR_CH_LEN] =
+const adcChannel_t sensorsADCChannels[SENSOR_CH_LEN] =
 {
     //TODO: Remove potential ADC channels
     [SENSOR_CH_HALL_EFFECT_A] = ADC_HALL_EFFECT,

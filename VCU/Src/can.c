@@ -207,76 +207,71 @@ cmr_canRXMeta_t canVehicleRXMeta[CANRX_VEH_LEN] = {
     },
 
     //VSM IDs
-    [CANRX_HEARTBEAT_HVC] = {
+    [CANRX_VEH_HEARTBEAT_HVC] = {
         .canID = CMR_CANID_HEARTBEAT_HVC,
         .timeoutError_ms = 20000,
         .errorFlag = CMR_CAN_ERROR_NONE,
         .timeoutWarn_ms = 750,
         .warnFlag = CMR_CAN_WARN_NONE
     },
-    [CANRX_HEARTBEAT_DIM] = {
+    [CANRX_VEH_HEARTBEAT_DIM] = {
         .canID = CMR_CANID_HEARTBEAT_DIM,
         .timeoutError_ms = 2500,
         .errorFlag = CMR_CAN_ERROR_VSM_MODULE_TIMEOUT,
         .timeoutWarn_ms = 25,
         .warnFlag = CMR_CAN_WARN_VSM_DIM_TIMEOUT
     },
-    [CANRX_HEARTBEAT_HVBMS] = {
+    [CANRX_VEH_HEARTBEAT_HVBMS] = {
         .canID = CMR_CANID_HEARTBEAT_HV_BMS,
         .timeoutError_ms = 2500,
         .errorFlag = CMR_CAN_ERROR_NONE,
         .timeoutWarn_ms = 25,
         .warnFlag = CMR_CAN_WARN_NONE
     },
-    [CANRX_AMS_ERROR] = {
-        .canID = CMR_CANID_AMS_ERROR,
-        .timeoutError_ms = 100,
-        .errorFlag = CMR_CAN_ERROR_NONE,
-        .timeoutWarn_ms = 25,
-        .warnFlag = CMR_CAN_WARN_NONE
-    },
-    [CANRX_HEARTBEAT_COMPUTE] = {
+    [CANRX_VEH_HEARTBEAT_COMPUTE] = {
         .canID = CMR_CANID_HEARTBEAT_COMPUTE,
         .timeoutError_ms = 2000,
         .timeoutWarn_ms = 1000
     },
-    [CANRX_FSM_DATA] = {
+    [CANRX_VEH_FSM_DATA] = {
         .canID = CMR_CANID_FSM_DATA,
         .timeoutError_ms = 2500,
         .errorFlag = CMR_CAN_ERROR_NONE,
         .timeoutWarn_ms = 25,
         .warnFlag = CMR_CAN_WARN_NONE
     },
-    [CANRX_CUBEMARS_DATA] = {
+    [CANRX_VEH_CUBEMARS_DATA] = {
         .canID = CMR_CANID_CUBEMARS_DATA,
         .timeoutError_ms = 2000,
         .timeoutWarn_ms = 1000
     },
-    [CANRX_DIM_REQUEST] = {
+    [CANRX_VEH_DIM_REQUEST] = {
         .canID = CMR_CANID_DIM_REQUEST,
         .timeoutError_ms = 500,
         .timeoutWarn_ms = 250,
     },
-    [CANRX_RES] = {
+    [CANRX_VEH_RES] = {
         .canID = CMR_CANID_AS_RES,
         .timeoutError_ms = 100,
         .timeoutWarn_ms = 25,
         .errorFlag = CMR_CAN_ERROR_NONE
     },
-    [CANRX_VEH_AS_TANK_PRESSURE] = {
-        .canID = CMR_CANID_AS_PRESSURE_READINGS,
-        .timeoutError_ms = 100,
-        .timeoutWarn_ms = 25,
-    },
-    [CANRX_DTI_ERROR_CODE] = {
+    [CANRX_VEH_DTI_ERROR_CODE] = {
         .canID = CMR_CANID_DTI_ERROR_MESSAGES,
         .timeoutError_ms = 100,
         .timeoutWarn_ms = 75,
         .warnFlag = CMR_CAN_WARN_NONE
     },
-    [CANRX_AS_MISSION_FINISHED] = {
+    [CANRX_VEH_AS_MISSION_FINISHED] = {
         .canID = CMR_CANID_AS_MISSION_FINISHED,
     },
+    [CANRX_VEH_TSSI_LIGHT] = {
+        .canID = CMR_CANID_TSSI_LIGHT,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 75,
+        .warnFlag = CMR_CAN_WARN_NONE
+    },
+
 };
 
 #define dti_timeout 1000
@@ -287,7 +282,7 @@ cmr_canRXMeta_t canTractiveRXMeta[CANRX_TRAC_LEN] = {
         .canID = CMR_CANID_DTI_FL_CONTROL_STATUS,
         .timeoutError_ms = dti_timeout,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_DCM_DTI_FL | CMR_CAN_WARN_DCM_DTI_TIMEOUT,
+        .warnFlag = CMR_CAN_WARN_VCU_DTI_FL | CMR_CAN_WARN_VCU_DTI_TIMEOUT,
     },
     [CANRX_TRAC_FL_ERPM] = {
         .canID = CMR_CANID_DTI_FL_ERPM,
@@ -675,10 +670,10 @@ cmr_canRXMeta_t canDaqRXMeta[CANRX_DAQ_LEN] = {
  * @note Indexed by `canVehicleRX_t`.
  */
 const cmr_canVSMTimeoutErrorSource_t vsmErrorSourceFlags[CANRX_LEN] = {
-    [CANRX_HEARTBEAT_HVC]       = CMR_CAN_VSM_TIMEOUT_SOURCE_NONE,
-    [CANRX_HEARTBEAT_DIM]       = CMR_CAN_VSM_TIMEOUT_SOURCE_DIM,
-    [CANRX_HEARTBEAT_HVBMS]     = CMR_CAN_VSM_TIMEOUT_SOURCE_NONE,
-    [CANRX_FSM_DATA]            = CMR_CAN_VSM_TIMEOUT_SOURCE_DIM,
+    [CANRX_VEH_HEARTBEAT_HVC]       = CMR_CAN_VSM_TIMEOUT_SOURCE_NONE,
+    [CANRX_VEH_HEARTBEAT_DIM]       = CMR_CAN_VSM_TIMEOUT_SOURCE_DIM,
+    [CANRX_VEH_HEARTBEAT_HVBMS]     = CMR_CAN_VSM_TIMEOUT_SOURCE_NONE,
+    [CANRX_VEH_FSM_DATA]            = CMR_CAN_VSM_TIMEOUT_SOURCE_DIM,
 };
 
 /** @brief CAN interfaces - Vehicle, DAQ, and Tractive */
@@ -851,19 +846,6 @@ static void canTX200Hz(void *pvParameters) {
     dtiErrorMessages.fr_fault_code = dtiTempFaultFR->fault_code;
     dtiErrorMessages.rl_fault_code = dtiTempFaultRL->fault_code;
     dtiErrorMessages.rr_fault_code = dtiTempFaultRR->fault_code;
-
-    cmr_canDCMWheelVelocity_t speedFeedback;
-    cmr_canDCMWheelTorque_t torqueFeedback;
-    cmr_canDCMWheelVelocity_t speedSetpoint;
-    cmr_canDCMWheelTorque_t torqueSetpoint;
-
-    cmr_canDCMPosePosition_t posePos;
-    cmr_canDCMPoseOrientation_t poseOrient;
-    cmr_canVCUMotorPower_t poseVel;
-
-    cmr_canCOGVelocity_t cog_velocity;
-    cmr_canFrontWheelVelocity_t front_velocity;
-    cmr_canRearWheelVelocity_t rear_velocity;
 
     cmr_canHVBMSPackVoltage_t *packVoltage = canVehicleGetPayload(CANRX_VEH_VOLTAGE_HVC);
 
@@ -1078,14 +1060,6 @@ static void canTX1Hz(void *pvParameters) {
         // TODO: constantly send current parameters
         vTaskDelayUntil(&lastWakeTime, canTX1Hz_period_ms);
     }
-}
-
-void *canGetPayload(canVehicleRX_t rxMsg) {
-    configASSERT(rxMsg < CANRX_LEN);
-
-    cmr_canRXMeta_t *rxMeta = &(canRXMeta[rxMsg]);
-
-    return (void *)(&rxMeta->payload);
 }
 
 /**
@@ -1787,14 +1761,14 @@ void *getPayload(canVehicleRX_t rxMsg) {
  * @brief Gets the state from the heartbeat of a module.
  *
  * @param module The module to get the state of. Must be a value of `CANRX_HEARTBEAT_XXX`
- * from canVehicleRX_t in can.h, except for CANRX_HEARTBEAT_HVC.
+ * from canVehicleRX_t in can.h, except for CANRX_VEH_HEARTBEAT_HVC.
  *
  * @warning Using a non-heartbeat value of canVehicleRX_t will result in an undefined value.
  *
  * @return State of the module when valid, otherwise CMR_CAN_STATE_UNKNOWN.
  */
 cmr_canState_t getModuleState(canVehicleRX_t module) {
-    configASSERT((module < CANRX_LEN) && (module != CANRX_HEARTBEAT_HVC));
+    configASSERT((module < CANRX_LEN) && (module != CANRX_VEH_HEARTBEAT_HVC));
 
     cmr_canHeartbeat_t *heartbeat = getPayload(module);
     uint8_t state = heartbeat->state;
@@ -1809,7 +1783,7 @@ cmr_canState_t getModuleState(canVehicleRX_t module) {
  */
 uint8_t getASMSState() {
 
-	cmr_canFSMData_t *dataFSM = (cmr_canFSMData_t*)getPayload(CANRX_FSM_DATA);
+	cmr_canFSMData_t *dataFSM = (cmr_canFSMData_t*)getPayload(CANRX_VEH_FSM_DATA);
 	return (dataFSM->AS_Status);
 }
 
@@ -1929,7 +1903,7 @@ void resetError() {
  */
 
 void hvcTimeout() {
-    cmr_canHVCHeartbeat_t *hvcHeartbeat = getPayload(getCANRX_HEARTBEAT_HVC);
+    cmr_canHVCHeartbeat_t *hvcHeartbeat = getPayload(getCANRX_VEH_HEARTBEAT_HVC);
     
     (if hvcHeartbeat->hvcState)
 }

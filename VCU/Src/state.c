@@ -145,7 +145,7 @@ void stateInit(void) {
  *
  * @return Current state.
  */
-cmr_canState_t getCurrentExternalState(TickType_t lastWakeTime) {
+cmr_canState_t getCurrentExternalState(void) {
     cmr_canVSMState_t vsmState = getCurrentState();
     return vsmToCANState[vsmState];
 }
@@ -226,10 +226,10 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
     cmr_canVSMState_t nextState = CMR_CAN_VSM_STATE_ERROR;
 
     // DIM request timeout/reject handling.
-    cmr_canDIMRequest_t *dimRequest = getPayload(CANRX_DIM_REQUEST);
+    cmr_canDIMRequest_t *dimRequest = getPayload(CANRX_VEH_DIM_REQUEST);
     cmr_canState_t dimRequestedState = (cmr_canState_t)(dimRequest->requestedState);
     if (
-        cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_DIM_REQUEST]), lastWakeTime_ms) ||
+        cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_VEH_DIM_REQUEST]), lastWakeTime_ms) ||
         (vsmStatus.heartbeatWarnings & CMR_CAN_WARN_VSM_DIM_REQ_NAK)
     ) {
         // Stale/NAK'd DIM request; assume it is requesting the current state.
@@ -237,9 +237,9 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
     }
 
     // Get all info for state transitions
-    cmr_canHVCHeartbeat_t *hvcHeartbeat = getPayload(CANRX_HEARTBEAT_HVC);
+    cmr_canHVCHeartbeat_t *hvcHeartbeat = getPayload(CANRX_VEH_HEARTBEAT_HVC);
 
-    cmr_canFSMData_t *fsmData = getPayload(CANRX_FSM_DATA);
+    cmr_canFSMData_t *fsmData = getPayload(CANRX_VEH_FSM_DATA);
     uint16_t throttlePosition = fsmData->throttlePosition;
 
     uint32_t brakePressureRear_PSI = cmr_sensorListGetValue(
@@ -590,7 +590,7 @@ static bool getDVBrakeDeployable(void){
  */
 static bool getDVBrakeActive(void){
     uint32_t brakePressureRear_PSI = cmr_sensorListGetValue(&sensorList, SENSOR_CH_BPRES_PSI);
-    cmr_canFSMData_t *fsmData = getPayload(CANRX_FSM_DATA);
+    cmr_canFSMData_t *fsmData = getPayload(CANRX_VEH_FSM_DATA);
     uint16_t brakePressureFront_PSI = fsmData->brakePressureFront_PSI;
 
     bool brakes_active = brakePressureFront_PSI > FRONT_MINIMUM_BRAKING_PSI &&  
@@ -605,7 +605,7 @@ static bool getDVBrakeActive(void){
  * @brief Checks if an autonomous mission is selected
  */
 static inline bool getMissionSelected(void){
-    cmr_canDIMRequest_t *dimRequest = getPayload(CANRX_DIM_REQUEST);
+    cmr_canDIMRequest_t *dimRequest = getPayload(CANRX_VEH_DIM_REQUEST);
     bool mission_good = (dimRequest->requestedGear > CMR_CAN_GEAR_DV_MISSION_MIN && dimRequest->requestedGear < CMR_CAN_GEAR_DV_MISSION_MAX);
     if (!mission_good){
         sendFirstError(DIM_MISSION); 
@@ -618,7 +618,7 @@ static inline bool getMissionSelected(void){
  * @brief Checks if TS is active
  */
 static inline bool TSActive(void){
-    cmr_canHVCHeartbeat_t* HVCState = (cmr_canHVCHeartbeat_t*) (getPayload(CANRX_HEARTBEAT_HVC));
+    cmr_canHVCHeartbeat_t* HVCState = (cmr_canHVCHeartbeat_t*) (getPayload(CANRX_VEH_HEARTBEAT_HVC));
     bool ts_active = CMR_CAN_HVC_STATE_DRIVE == HVCState->hvcState;
     if (!ts_active) {
         sendFirstError(TS_ACTIVE);
@@ -638,7 +638,7 @@ static inline bool AutonomousClear(){
  * @brief Check if autonomous mission has finshed.  
  */
 static inline bool getMissionFinished(void){ //can from compute
-    uint8_t *missionFinished = getPayload(CANRX_AS_MISSION_FINISHED);
+    uint8_t *missionFinished = getPayload(CANRX_VEH_AS_MISSION_FINISHED);
     return *missionFinished;
 }
 
@@ -666,7 +666,7 @@ static bool getVehicleFinished(){
  * More: https://doc.fs-quiz.eu/FSG2017_DV_Technical_Specifications_v1.0.pdf
  */
 static inline bool getRESGo(void) {
-	uint8_t *data = (uint8_t*)(getPayload(CANRX_RES));
+	uint8_t *data = (uint8_t*)(getPayload(CANRX_VEH_RES));
     return (data[0] & CMR_CAN_RES_GO);
 }
 
@@ -674,7 +674,7 @@ static inline bool getRESGo(void) {
  * @brief Checks if RES is activated
  */
 static inline bool RESTriggered(void){
-	uint8_t *data = (uint8_t*)(getPayload(CANRX_RES));
+	uint8_t *data = (uint8_t*)(getPayload(CANRX_VEH_RES));
 	bool res_triggered = !(data[0] & CMR_CAN_RES_TRIG);
 	return res_triggered; 
 }
@@ -683,7 +683,7 @@ static inline bool RESTriggered(void){
  * @brief Checks if RES is activated
  */
 static inline bool RESCorrect(){
-	uint8_t *data = (uint8_t*)(getPayload(CANRX_RES));
+	uint8_t *data = (uint8_t*)(getPayload(CANRX_VEH_RES));
 	bool res_triggered = !(data[7] & CMR_CAN_RES_TRIG);
 	return res_triggered; 
 }
