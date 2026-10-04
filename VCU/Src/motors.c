@@ -23,6 +23,7 @@
 // #include "controls_23e.h"
 #include "can.h"
 #include "daq.h"
+#include "state.h"
 #include "safety_filter.h"
 #include "gpio.h"
 #include "pumps.h"
@@ -254,15 +255,17 @@ static void motorsCommand (
             }
         }
 
+        cmr_canState_t VSMstate = getCurrentExternalState(); 
+
         // Update gear in transition from HV_EN to RTD
-        if ((prevState == CMR_CAN_HV_EN && heartbeatVSM->state == CMR_CAN_RTD)
-            || (prevState == CMR_CAN_AS_READY && heartbeatVSM->state == CMR_CAN_AS_DRIVING)) {
+        if ((prevState == CMR_CAN_HV_EN && VSMstate == CMR_CAN_RTD)
+            || (prevState == CMR_CAN_AS_READY && VSMstate == CMR_CAN_AS_DRIVING)) {
             gear = reqDIM->requestedGear;
             resetRetroactiveLimitFilters();
             initControls();
         }
 
-        prevState = heartbeatVSM->state;
+        prevState = VSMstate;
         vTaskDelayUntil(&lastWakeTime, motorsCommand_period_ms);
     }
 }

@@ -732,7 +732,7 @@ static void canTX10Hz(void *pvParameters) {
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_DCM_COULOMB_COUNTING, &coulombCounting, sizeof(cmr_canDCMKiloCoulombs_t), canTX10Hz_period_ms);
         
         sendRESEnable();
-        sendVSMSensors();
+        sendVSMSensors(void);
 
         vTaskDelayUntil(&lastWakeTime, canTX10Hz_period_ms);
     }
@@ -770,7 +770,7 @@ static void sendVSMStatus(void);
 static void sendVSMSensors(void);
 static void sendVSMLatchedStatus(void);
 static void sendHVCCommand(void);
-static void sendRESEnable();
+static void sendRESEnable(void);
 void resetError();
 void sendFirstError(uint8_t error_code);
 
@@ -1896,6 +1896,6 @@ void hvcTimeout() {
     cmr_canHVCHeartbeat_t *hvcHeartbeat = canVehicleGetPayload(CANRX_VEH_HEARTBEAT_HVC);
     
     (if hvcHeartbeat->hvcState) {
-        
+
     }
 }

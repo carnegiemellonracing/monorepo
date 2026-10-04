@@ -208,3 +208,11 @@ int16_t getDTIACCurrent_dA(canTractiveRX_t rxMsg);
 int16_t getDTIDCCurrent_dA(canTractiveRX_t rxMsg);
 int16_t getDTICtlrTemp_dC(canTractiveRX_t rxMsg);
 int16_t getDTIMotorTemp_dC(canTractiveRX_t rxMsg);
+cmr_canState_t getModuleState(canVehicleRX_t module);
+
+static void sendVSMHeartbeat(TickType_t lastWakeTime);
+static void sendVSMStatus(void);
+static void sendVSMSensors(void);
+static void sendVSMLatchedStatus(void);
+static void sendHVCCommand(void);
+static void sendRESEnable(void);

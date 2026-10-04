@@ -744,12 +744,14 @@ void runControls (
             static bool inspectionStarted = false;
             static TickType_t inspectionStartTime = 0;
             TickType_t now = xTaskGetTickCount();
-            if(!inspectionStarted && heartbeatVSM->state == CMR_CAN_AS_DRIVING) {
+            
+            cmr_canState_t VSMstate = getCurrentExternalState(); 
+            if(!inspectionStarted && VSMstate == CMR_CAN_AS_DRIVING) {
                 inspectionStarted = true;
                 inspectionStartTime = now;
             }
             if(inspectionStarted 
-            && heartbeatVSM->state == CMR_CAN_AS_DRIVING
+            && VSMstate == CMR_CAN_AS_DRIVING
             && now - inspectionStartTime < INSPECTION_MISSION_TIME_MS){
                 setVelocityInt16All(maxSlowSpeed_rpm);
                 float torque = maxSlowTorque_Nm; 

@@ -133,7 +133,7 @@ static bool dimRequestIsValid(
     volatile vsmStatus_t *vsmStatus,
     TickType_t lastWakeTime
 ) {
-    cmr_canDIMRequest_t *dimRequest = getPayload(CANRX_VEH_DIM_REQUEST);
+    cmr_canDIMRequest_t *dimRequest = canVehicleGetPayload(CANRX_VEH_DIM_REQUEST);
     cmr_canState_t dimRequestedState = (cmr_canState_t)(dimRequest->requestedState);
     bool dimRequestTimeout = cmr_canRXMetaTimeoutError(
         &(canRXMeta[CANRX_VEH_DIM_REQUEST]), lastWakeTime
@@ -147,7 +147,7 @@ static bool dimRequestIsValid(
         return false;
     }
 
-    cmr_canFSMData_t *fsmData = getPayload(CANRX_VEH_FSM_DATA);
+    cmr_canFSMData_t *fsmData = canVehicleGetPayload(CANRX_VEH_FSM_DATA);
     uint16_t throttlePosition = fsmData->throttlePosition;
 
     uint32_t brakePressureRear_PSI = cmr_sensorListGetValue(
@@ -226,7 +226,7 @@ static int getBadModuleState(canVehicleRX_t module, cmr_canVSMState_t vsmState, 
 
     // Check HVC mode
     if (module == CANRX_VEH_HEARTBEAT_HVC) {
-        cmr_canHVCHeartbeat_t *hvcHeartbeat = getPayload(CANRX_VEH_HEARTBEAT_HVC);
+        cmr_canHVCHeartbeat_t *hvcHeartbeat = canVehicleGetPayload(CANRX_VEH_HEARTBEAT_HVC);
         cmr_canHVCMode_t hvcMode = hvcHeartbeat->hvcMode;
 
         switch (vsmState) {
@@ -376,7 +376,7 @@ __attribute__((unused)) static bool getASEmergency(){
  * @brief Check all inverters if endurance mode. Else, check RR inverter
 */
 bool invertersPass(TickType_t lastWakeTime_ms){
-    cmr_canDTI_ErrorMessages_t *dti_error_codes = getPayload(CANRX_VEH_DTI_ERROR_CODE);
+    cmr_canDTI_ErrorMessages_t *dti_error_codes = canVehicleGetPayload(CANRX_VEH_DTI_ERROR_CODE);
     bool inverter_message_valid = !cmr_canRXMetaTimeoutError(&canRXMeta[CANRX_VEH_DTI_ERROR_CODE], lastWakeTime_ms);
 
     if (!inverter_message_valid) {
@@ -407,7 +407,7 @@ bool invertersPass(TickType_t lastWakeTime_ms){
 bool getAMSError(){
     return false;
     // TickType_t now = xTaskGetTickCount();
-    // cmr_canHVCHeartbeat_t *hvcHeartbeat = getPayload(CANRX_VEH_HEARTBEAT_HVC);
+    // cmr_canHVCHeartbeat_t *hvcHeartbeat = canVehicleGetPayload(CANRX_VEH_HEARTBEAT_HVC);
     // return (cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_VEH_HEARTBEAT_HVC]), now) != 0)
     //  || (cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_VEH_HEARTBEAT_HVBMS]), now) != 0)
     //  || (hvcHeartbeat->errorStatus & CMR_CAN_HVBMS_ERROR_PACK_OVERVOLT)
