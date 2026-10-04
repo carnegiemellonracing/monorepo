@@ -122,7 +122,6 @@ static void motorsCommand (
         volatile cmr_canFSMSWAngle_t     *swangleFSM   = canVehicleGetPayload(CANRX_VEH_SWANGLE_FSM);
         volatile cmr_canHVCPackVoltage_t *voltageHVC   = canVehicleGetPayload(CANRX_VEH_VOLTAGE_HVC);
         volatile cmr_canHVCPackCurrent_t *currentHVC   = canVehicleGetPayload(CANRX_VEH_CURRENT_HVC);
-        volatile cmr_canVSMStatus_t      *vsm          = canVehicleGetPayload(CANRX_VSM_STATUS);
         volatile cmr_canDIMActions_t     *actions      = canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON);
 
         //transmit Coulombs using HVI sense

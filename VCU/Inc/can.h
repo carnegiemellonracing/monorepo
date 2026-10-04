@@ -20,15 +20,13 @@
  * @warning New messages MUST be added before `CANRX_VEH_LEN`.
  */
 typedef enum {
-    CANRX_VSM_STATUS = 0,
-    CANRX_VEH_DATA_FSM,             /**< @brief FSM data. */
+    CANRX_VEH_DATA_FSM = 0,             /**< @brief FSM data. */
     CANRX_VEH_SWANGLE_FSM,          /**< @brief VSM status */
     CANRX_VEH_REQUEST_DIM,          /**< @brief DIM state and gear request. */
     CANRX_VEH_VOLTAGE_HVC,          /**< @brief HVC pack voltage. */
     CANRX_VEH_CURRENT_HVC,          /**< @brief HVC pack current. */
     CANRX_VEH_DIM_ACTION_BUTTON,    /**< @brief DIM action button. */
     CANRX_VEH_PACK_CELL_VOLTAGE,    /**< @brief Min/Max Cell voltage*/
-    CANRX_VEH_PACK_CELL_TEMP,       /**< @brief Min/Max Cell temp*/
     CANRX_VEH_VSM_SENSORS,          /**< @brief VSM Sensors */
 	CANRX_HVI_SENSE,
     CANRX_VEH_MOVELLA_STATUS,

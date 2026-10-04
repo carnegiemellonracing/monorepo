@@ -545,13 +545,6 @@ void setTorqueLimsProtected (
             }
         }
 
-        volatile cmr_canBMSMinMaxCellTemperature_t *cellTemps = canVehicleGetPayload(CANRX_VEH_PACK_CELL_TEMP);
-//        const float maxCellTemp_C = ((float)(cellTemps->maxCellTemp_dC)) * 1e-1f;
-//        if (maxCellTemp_C > temperature_upper_limit_C) {
-//            sf_state.over_temp_count++;
-//            final_max_torque = 0.0f; // redundant with retroactive limiting, but keep for extra safety
-//        }
-
         setTorqueLimsUnprotected(motor, final_max_torque, final_min_torque); // apply torque limits
     }
 

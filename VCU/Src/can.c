@@ -83,13 +83,6 @@ cmr_canRXMeta_t canVehicleRXMeta[CANRX_VEH_LEN] = {
         .errorFlag = CMR_CAN_ERROR_VSM_TIMEOUT,
         .warnFlag = CMR_CAN_WARN_VSM_TIMEOUT
     }, 
-    [CANRX_VSM_STATUS] = {
-        .canID = CMR_CANID_VSM_STATUS,
-        .timeoutError_ms = 2500,
-        .timeoutWarn_ms = 25,
-        .errorFlag = CMR_CAN_ERROR_VSM_TIMEOUT,
-        .warnFlag = CMR_CAN_WARN_VSM_TIMEOUT,
-    },
     [CANRX_VEH_DATA_FSM] = {
         .canID = CMR_CANID_FSM_DATA,
         .timeoutError_ms = 50,
@@ -134,14 +127,6 @@ cmr_canRXMeta_t canVehicleRXMeta[CANRX_VEH_LEN] = {
     },
     [CANRX_VEH_PACK_CELL_VOLTAGE] = {
         .canID = CMR_CANID_HVBMS_MIN_MAX_CELL_VOLTAGE,
-        // TODO: Check timeout period
-        .timeoutError_ms = 100,
-        .timeoutWarn_ms = 50,
-        .errorFlag = CMR_CAN_ERROR_NONE,
-        .warnFlag = CMR_CAN_WARN_NONE
-    },
-    [CANRX_VEH_PACK_CELL_TEMP] = {
-        .canID = CMR_CANID_HVBMS_MIN_MAX_CELL_TEMPERATURE,
         // TODO: Check timeout period
         .timeoutError_ms = 100,
         .timeoutWarn_ms = 50,
@@ -1920,12 +1905,12 @@ static void sendVSMHeartbeat(TickType_t lastWakeTime) {
     memcpy(&heartbeat.error, &(vsmStatus->heartbeatErrors), sizeof(heartbeat.error));
     memcpy(&heartbeat.warning, &vsmWarnings, sizeof(heartbeat.warning));
 
-    canTX(CMR_CANID_HEARTBEAT_VSM, &heartbeat, sizeof(heartbeat), canTX100Hz_period_ms);
+    canTX(CMR_CAN_BUS_VEH, CMR_CANID_HEARTBEAT_VSM, &heartbeat, sizeof(heartbeat), canTX100Hz_period_ms);
 }
 
 static void sendRESEnable() {
     uint16_t res_enable = 1;
-    canTX(CMR_CANID_AS_RES_ENABLE, &res_enable, sizeof(res_enable), canTX100Hz_period_ms);
+    canTX(CMR_CAN_BUS_VEH, CMR_CANID_AS_RES_ENABLE, &res_enable, sizeof(res_enable), canTX100Hz_period_ms);
 }
 
 /**
@@ -1935,7 +1920,7 @@ static void sendRESEnable() {
 static void sendVSMStatus(void) {
     const vsmStatus_t *vsmStatus = getCurrentStatus();
 
-    canTX(CMR_CANID_VSM_STATUS,
+    canTX(CMR_CAN_BUS_VEH, CMR_CANID_VSM_STATUS,
           &(vsmStatus->canVSMStatus),
           sizeof(vsmStatus->canVSMStatus),
           canTX100Hz_period_ms
