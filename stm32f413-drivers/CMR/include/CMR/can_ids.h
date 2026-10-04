@@ -77,11 +77,11 @@ typedef enum {
 
     CMR_CANID_CDC_POWER_SENSE = 0x305,
     CMR_CANID_CDC_RTC_DATA_OUT = 0x6A2,             /**< @brief CDC RTC data. */
-    CMR_CANID_CDC_RTC_DATA_IN = 0x6B2,              /**< @brief CDC RTC data. */
+    CMR_CANID_VCU_RTC_DATA_IN = 0x6B2,              /**< @brief CDC RTC data. */
     CMR_CANID_CDC_ODOMETER = 0x6C2,                 /**< @brief CDC Odometer data. */
     CMR_CANID_CDC_CONTROLS_STATUS = 0x6D2,          /**< @brief CDC controls status data. */
-    CMR_CANID_CDC_POWER_UPDATE = 0x6E2,             /**< @brief DAQ Live to CDC - changing power limit. */
-    CMR_CANID_CDC_COULOMB_COUNTING = 0x6E3,
+    CMR_CANID_VCU_POWER_UPDATE = 0x6E2,             /**< @brief DAQ Live to CDC - changing power limit. */
+    CMR_CANID_VCU_COULOMB_COUNTING = 0x6E3,
     CMR_CANID_CDC_POWER_LOG = 0x6E4,             /**< @brief DAQ Live to CDC - changing power limit. */
 
     CMR_CANID_FSM_DATA = 0x133,                 /**< @brief FSM data. */
@@ -264,7 +264,7 @@ typedef enum {
     CMR_CANID_HVC_LOW_VOLTAGE = 0x303,                           /**< @brief HVC Low Voltage. */
     CMR_CANID_HVC_BMB_STATUS_ERRORS = 0x304,
     CMR_CANID_HV_SENSORS = 0x306, 
-    CMR_CANID_HVC_BRUSA_MSG = 0x528,                             /**< @brief HVC Brusa message. */
+    CMR_CANID_TSSI_LIGHT = 0x528,                             /**< @brief HVC Brusa message. */
 
     CMR_CANID_HVBMS_BMB_0_STATUS_VOLTAGE = 0x380,                    /**< @brief HVC BMB Voltage: Message ID is BMB number << 1*/
     CMR_CANID_HVC_BMB_1_STATUS_VOLTAGE = 0x382,

@@ -698,6 +698,10 @@ typedef struct {
 	float KCoulombs;
 } cmr_canVCUKiloCoulombs_t;
 
+typedef struct {
+    bool tssi_red_error;
+} cmr_canVCUtssiIndicator_t; 
+
 // ------------------------------------------------------------------------------------------------
 // Central Dynamics Controller (20e)
 
