@@ -159,25 +159,25 @@ static void updateWarnings(cmr_canWarn_t *warnings, TickType_t lastWakeTime) {
     }
 
     if (cmr_canRXMetaTimeoutWarn(&(canDaqRXMeta[CANRX_DAQ_MEMORATOR_BROADCAST]), lastWakeTime) < 0) {
-        *warnings |= CMR_CAN_WARN_DCM_MEMORATOR_DAQ_TIMEOUT;
+        *warnings |= CMR_CAN_WARN_VCU_MEMORATOR_DAQ_TIMEOUT;
     }
 
     // Individual inverter errors
     if (dtiErrors[MOTOR_FL]) {
-        *warnings |= CMR_CAN_WARN_DCM_DTI_ERROR;
-        *warnings |= CMR_CAN_WARN_DCM_DTI_FL;
+        *warnings |= CMR_CAN_WARN_VCU_DTI_ERROR;
+        *warnings |= CMR_CAN_WARN_VCU_DTI_FL;
     }
     if (dtiErrors[MOTOR_FR]) {
-        *warnings |= CMR_CAN_WARN_DCM_DTI_ERROR;
-        *warnings |= CMR_CAN_WARN_DCM_DTI_FR;
+        *warnings |= CMR_CAN_WARN_VCU_DTI_ERROR;
+        *warnings |= CMR_CAN_WARN_VCU_DTI_FR;
     }
     if (dtiErrors[MOTOR_RL]) {
-        *warnings |= CMR_CAN_WARN_DCM_DTI_ERROR;
-        *warnings |= CMR_CAN_WARN_DCM_DTI_RL;
+        *warnings |= CMR_CAN_WARN_VCU_DTI_ERROR;
+        *warnings |= CMR_CAN_WARN_VCU_DTI_RL;
     }
     if (dtiErrors[MOTOR_RR]) {
-        *warnings |= CMR_CAN_WARN_DCM_DTI_ERROR;
-        *warnings |= CMR_CAN_WARN_DCM_DTI_RR;
+        *warnings |= CMR_CAN_WARN_VCU_DTI_ERROR;
+        *warnings |= CMR_CAN_WARN_VCU_DTI_RR;
     }
 }
 

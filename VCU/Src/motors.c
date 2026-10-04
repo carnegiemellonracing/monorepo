@@ -114,7 +114,6 @@ static void motorsCommand (
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        volatile cmr_canHeartbeat_t      *heartbeatVSM = canVehicleGetPayload(CANRX_VEH_HEARTBEAT_VSM);
         volatile cmr_canDIMRequest_t     *reqDIM       = canVehicleGetPayload(CANRX_VEH_REQUEST_DIM);
         volatile cmr_canFSMData_t        *dataFSM      = canVehicleGetPayload(CANRX_VEH_DATA_FSM);
         volatile cmr_canFSMSWAngle_t     *swangleFSM   = canVehicleGetPayload(CANRX_VEH_SWANGLE_FSM);
@@ -146,8 +145,9 @@ static void motorsCommand (
         //                 dataFSM    -> brakePressureFront_PSI
         //                 );
         // mcCtrlOn();
+        cmr_canState_t VSMstate = getCurrentExternalState(); 
 
-        switch (heartbeatVSM->state) {
+        switch (VSMstate) {
             // Drive the vehicle in RTD
             case CMR_CAN_AS_DRIVING:
             case CMR_CAN_RTD: {
@@ -230,7 +230,7 @@ static void motorsCommand (
                 pumpsOff();
             	mcCtrlOff();
 
-                if (vsm->internalState == CMR_CAN_VSM_STATE_INVERTER_EN) {
+                if (VSMstate == CMR_CAN_VSM_STATE_INVERTER_EN) {
                     mcCtrlOn();
                 }
 

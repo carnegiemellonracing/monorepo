@@ -76,13 +76,6 @@ uint16_t pump_Right_State;
 /** @brief Metadata for vehicle CAN message reception. */
 cmr_canRXMeta_t canVehicleRXMeta[CANRX_VEH_LEN] = {
     //DCM IDs
-    [CANRX_VEH_HEARTBEAT_VSM] = {
-        .canID = CMR_CANID_HEARTBEAT_VSM,
-        .timeoutError_ms = 2500,
-        .timeoutWarn_ms = 25,
-        .errorFlag = CMR_CAN_ERROR_VSM_TIMEOUT,
-        .warnFlag = CMR_CAN_WARN_VSM_TIMEOUT
-    }, 
     [CANRX_VEH_DATA_FSM] = {
         .canID = CMR_CANID_FSM_DATA,
         .timeoutError_ms = 50,
@@ -288,43 +281,43 @@ cmr_canRXMeta_t canTractiveRXMeta[CANRX_TRAC_LEN] = {
         .canID = CMR_CANID_DTI_FL_ERPM,
         .timeoutError_ms = dti_timeout,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_DCM_DTI_FL | CMR_CAN_WARN_DCM_DTI_TIMEOUT,
+        .warnFlag = CMR_CAN_WARN_VCU_DTI_FL | CMR_CAN_WARN_VCU_DTI_TIMEOUT,
     },
     [CANRX_TRAC_FL_CURRENT] = {
         .canID = CMR_CANID_DTI_FL_CURRENT,
         .timeoutError_ms = dti_timeout,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_DCM_DTI_FL | CMR_CAN_WARN_DCM_DTI_TIMEOUT,
+        .warnFlag = CMR_CAN_WARN_VCU_DTI_FL | CMR_CAN_WARN_VCU_DTI_TIMEOUT,
     },
     [CANRX_TRAC_FL_TEMPFAULT] = {
         .canID = CMR_CANID_DTI_FL_TEMPFAULT,
         .timeoutError_ms = dti_timeout,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_DCM_DTI_FL | CMR_CAN_WARN_DCM_DTI_TIMEOUT,
+        .warnFlag = CMR_CAN_WARN_VCU_DTI_FL | CMR_CAN_WARN_VCU_DTI_TIMEOUT,
     },
     [CANRX_TRAC_FL_IDIQ] = {
         .canID = CMR_CANID_DTI_FL_IDIQ,
         .timeoutError_ms = dti_timeout,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_DCM_DTI_FL | CMR_CAN_WARN_DCM_DTI_TIMEOUT,
+        .warnFlag = CMR_CAN_WARN_VCU_DTI_FL | CMR_CAN_WARN_VCU_DTI_TIMEOUT,
     },
     [CANRX_TRAC_FL_IO_STATUS] = {
         .canID = CMR_CANID_DTI_FL_IO_STATUS,
         .timeoutError_ms = dti_timeout,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_DCM_DTI_FL | CMR_CAN_WARN_DCM_DTI_TIMEOUT,
+        .warnFlag = CMR_CAN_WARN_VCU_DTI_FL | CMR_CAN_WARN_VCU_DTI_TIMEOUT,
     },
     [CANRX_TRAC_FL_ACLIMS] = {
         .canID = CMR_CANID_DTI_FL_ACLIMS,
         .timeoutError_ms = dti_timeout,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_DCM_DTI_FL | CMR_CAN_WARN_DCM_DTI_TIMEOUT,
+        .warnFlag = CMR_CAN_WARN_VCU_DTI_FL | CMR_CAN_WARN_VCU_DTI_TIMEOUT,
     },
     [CANRX_TRAC_FL_DCLIMS] = {
         .canID = CMR_CANID_DTI_FL_DCLIMS,
         .timeoutError_ms = dti_timeout,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_DCM_DTI_FL | CMR_CAN_WARN_DCM_DTI_TIMEOUT,
+        .warnFlag = CMR_CAN_WARN_VCU_DTI_FL | CMR_CAN_WARN_VCU_DTI_TIMEOUT,
     },
 
     /* Front Right Inverter (Node ID 0x02) */
@@ -332,49 +325,49 @@ cmr_canRXMeta_t canTractiveRXMeta[CANRX_TRAC_LEN] = {
         .canID = CMR_CANID_DTI_FR_CONTROL_STATUS,
         .timeoutError_ms = dti_timeout,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_DCM_DTI_FR | CMR_CAN_WARN_DCM_DTI_TIMEOUT,
+        .warnFlag = CMR_CAN_WARN_VCU_DTI_FR | CMR_CAN_WARN_VCU_DTI_TIMEOUT,
     },
     [CANRX_TRAC_FR_ERPM] = {
         .canID = CMR_CANID_DTI_FR_ERPM,
         .timeoutError_ms = dti_timeout,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_DCM_DTI_FR | CMR_CAN_WARN_DCM_DTI_TIMEOUT,
+        .warnFlag = CMR_CAN_WARN_VCU_DTI_FR | CMR_CAN_WARN_VCU_DTI_TIMEOUT,
     },
     [CANRX_TRAC_FR_CURRENT] = {
         .canID = CMR_CANID_DTI_FR_CURRENT,
         .timeoutError_ms = dti_timeout,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_DCM_DTI_FR | CMR_CAN_WARN_DCM_DTI_TIMEOUT,
+        .warnFlag = CMR_CAN_WARN_VCU_DTI_FR | CMR_CAN_WARN_VCU_DTI_TIMEOUT,
     },
     [CANRX_TRAC_FR_TEMPFAULT] = {
         .canID = CMR_CANID_DTI_FR_TEMPFAULT,
         .timeoutError_ms = dti_timeout,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_DCM_DTI_FR | CMR_CAN_WARN_DCM_DTI_TIMEOUT,
+        .warnFlag = CMR_CAN_WARN_VCU_DTI_FR | CMR_CAN_WARN_VCU_DTI_TIMEOUT,
     },
     [CANRX_TRAC_FR_IDIQ] = {
         .canID = CMR_CANID_DTI_FR_IDIQ,
         .timeoutError_ms = dti_timeout,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_DCM_DTI_FR | CMR_CAN_WARN_DCM_DTI_TIMEOUT,
+        .warnFlag = CMR_CAN_WARN_VCU_DTI_FR | CMR_CAN_WARN_VCU_DTI_TIMEOUT,
     },
     [CANRX_TRAC_FR_IO_STATUS] = {
         .canID = CMR_CANID_DTI_FR_IO_STATUS,
         .timeoutError_ms = dti_timeout,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_DCM_DTI_FR | CMR_CAN_WARN_DCM_DTI_TIMEOUT,
+        .warnFlag = CMR_CAN_WARN_VCU_DTI_FR | CMR_CAN_WARN_VCU_DTI_TIMEOUT,
     },
     [CANRX_TRAC_FR_ACLIMS] = {
         .canID = CMR_CANID_DTI_FR_ACLIMS,
         .timeoutError_ms = dti_timeout,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_DCM_DTI_FR | CMR_CAN_WARN_DCM_DTI_TIMEOUT,
+        .warnFlag = CMR_CAN_WARN_VCU_DTI_FR | CMR_CAN_WARN_VCU_DTI_TIMEOUT,
     },
     [CANRX_TRAC_FR_DCLIMS] = {
         .canID = CMR_CANID_DTI_FR_DCLIMS,
         .timeoutError_ms = dti_timeout,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_DCM_DTI_FR | CMR_CAN_WARN_DCM_DTI_TIMEOUT,
+        .warnFlag = CMR_CAN_WARN_VCU_DTI_FR | CMR_CAN_WARN_VCU_DTI_TIMEOUT,
     },
 
 
@@ -383,49 +376,49 @@ cmr_canRXMeta_t canTractiveRXMeta[CANRX_TRAC_LEN] = {
         .canID = CMR_CANID_DTI_RL_CONTROL_STATUS,
         .timeoutError_ms = dti_timeout,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_DCM_DTI_RL | CMR_CAN_WARN_DCM_DTI_TIMEOUT,
+        .warnFlag = CMR_CAN_WARN_VCU_DTI_RL | CMR_CAN_WARN_VCU_DTI_TIMEOUT,
     },
     [CANRX_TRAC_RL_ERPM] = {
         .canID = CMR_CANID_DTI_RL_ERPM,
         .timeoutError_ms = dti_timeout,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_DCM_DTI_RL | CMR_CAN_WARN_DCM_DTI_TIMEOUT,
+        .warnFlag = CMR_CAN_WARN_VCU_DTI_RL | CMR_CAN_WARN_VCU_DTI_TIMEOUT,
     },
     [CANRX_TRAC_RL_CURRENT] = {
         .canID = CMR_CANID_DTI_RL_CURRENT,
         .timeoutError_ms = dti_timeout,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_DCM_DTI_RL | CMR_CAN_WARN_DCM_DTI_TIMEOUT,
+        .warnFlag = CMR_CAN_WARN_VCU_DTI_RL | CMR_CAN_WARN_VCU_DTI_TIMEOUT,
     },
     [CANRX_TRAC_RL_TEMPFAULT] = {
         .canID = CMR_CANID_DTI_RL_TEMPFAULT,
         .timeoutError_ms = dti_timeout,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_DCM_DTI_RL | CMR_CAN_WARN_DCM_DTI_TIMEOUT,
+        .warnFlag = CMR_CAN_WARN_VCU_DTI_RL | CMR_CAN_WARN_VCU_DTI_TIMEOUT,
     },
     [CANRX_TRAC_RL_IDIQ] = {
         .canID = CMR_CANID_DTI_RL_IDIQ,
         .timeoutError_ms = dti_timeout,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_DCM_DTI_RL | CMR_CAN_WARN_DCM_DTI_TIMEOUT,
+        .warnFlag = CMR_CAN_WARN_VCU_DTI_RL | CMR_CAN_WARN_VCU_DTI_TIMEOUT,
     },
     [CANRX_TRAC_RL_IO_STATUS] = {
         .canID = CMR_CANID_DTI_RL_IO_STATUS,
         .timeoutError_ms = dti_timeout,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_DCM_DTI_RL | CMR_CAN_WARN_DCM_DTI_TIMEOUT,
+        .warnFlag = CMR_CAN_WARN_VCU_DTI_RL | CMR_CAN_WARN_VCU_DTI_TIMEOUT,
     },
     [CANRX_TRAC_RL_ACLIMS] = {
         .canID = CMR_CANID_DTI_RL_ACLIMS,
         .timeoutError_ms = dti_timeout,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_DCM_DTI_RL | CMR_CAN_WARN_DCM_DTI_TIMEOUT,
+        .warnFlag = CMR_CAN_WARN_VCU_DTI_RL | CMR_CAN_WARN_VCU_DTI_TIMEOUT,
     },
     [CANRX_TRAC_RL_DCLIMS] = {
         .canID = CMR_CANID_DTI_RL_DCLIMS,
         .timeoutError_ms = dti_timeout,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_DCM_DTI_RL | CMR_CAN_WARN_DCM_DTI_TIMEOUT,
+        .warnFlag = CMR_CAN_WARN_VCU_DTI_RL | CMR_CAN_WARN_VCU_DTI_TIMEOUT,
     },
     [CANRX_TRAC_DTI_ERROR_MESSAGES] = {
         .canID = CMR_CANID_DTI_ERROR_MESSAGES,
@@ -438,49 +431,49 @@ cmr_canRXMeta_t canTractiveRXMeta[CANRX_TRAC_LEN] = {
         .canID = CMR_CANID_DTI_RR_CONTROL_STATUS,
         .timeoutError_ms = dti_timeout,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_DCM_DTI_RR | CMR_CAN_WARN_DCM_DTI_TIMEOUT,
+        .warnFlag = CMR_CAN_WARN_VCU_DTI_RR | CMR_CAN_WARN_VCU_DTI_TIMEOUT,
     },
     [CANRX_TRAC_RR_ERPM] = {
         .canID = CMR_CANID_DTI_RR_ERPM,
         .timeoutError_ms = dti_timeout,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_DCM_DTI_RR | CMR_CAN_WARN_DCM_DTI_TIMEOUT,
+        .warnFlag = CMR_CAN_WARN_VCU_DTI_RR | CMR_CAN_WARN_VCU_DTI_TIMEOUT,
     },
     [CANRX_TRAC_RR_CURRENT] = {
         .canID = CMR_CANID_DTI_RR_CURRENT,
         .timeoutError_ms = dti_timeout,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_DCM_DTI_RR | CMR_CAN_WARN_DCM_DTI_TIMEOUT,
+        .warnFlag = CMR_CAN_WARN_VCU_DTI_RR | CMR_CAN_WARN_VCU_DTI_TIMEOUT,
     },
     [CANRX_TRAC_RR_TEMPFAULT] = {
         .canID = CMR_CANID_DTI_RR_TEMPFAULT,
         .timeoutError_ms = dti_timeout,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_DCM_DTI_RR | CMR_CAN_WARN_DCM_DTI_TIMEOUT,
+        .warnFlag = CMR_CAN_WARN_VCU_DTI_RR | CMR_CAN_WARN_VCU_DTI_TIMEOUT,
     },
     [CANRX_TRAC_RR_IDIQ] = {
         .canID = CMR_CANID_DTI_RR_IDIQ,
         .timeoutError_ms = dti_timeout,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_DCM_DTI_RR | CMR_CAN_WARN_DCM_DTI_TIMEOUT,
+        .warnFlag = CMR_CAN_WARN_VCU_DTI_RR | CMR_CAN_WARN_VCU_DTI_TIMEOUT,
     },
     [CANRX_TRAC_RR_IO_STATUS] = {
         .canID = CMR_CANID_DTI_RR_IO_STATUS,
         .timeoutError_ms = dti_timeout,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_DCM_DTI_RR | CMR_CAN_WARN_DCM_DTI_TIMEOUT,
+        .warnFlag = CMR_CAN_WARN_VCU_DTI_RR | CMR_CAN_WARN_VCU_DTI_TIMEOUT,
     },
     [CANRX_TRAC_RR_ACLIMS] = {
         .canID = CMR_CANID_DTI_RR_ACLIMS,
         .timeoutError_ms = dti_timeout,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_DCM_DTI_RR | CMR_CAN_WARN_DCM_DTI_TIMEOUT,
+        .warnFlag = CMR_CAN_WARN_VCU_DTI_RR | CMR_CAN_WARN_VCU_DTI_TIMEOUT,
     },
     [CANRX_TRAC_RR_DCLIMS] = {
         .canID = CMR_CANID_DTI_RR_DCLIMS,
         .timeoutError_ms = dti_timeout,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_DCM_DTI_RR | CMR_CAN_WARN_DCM_DTI_TIMEOUT,
+        .warnFlag = CMR_CAN_WARN_VCU_DTI_RR | CMR_CAN_WARN_VCU_DTI_TIMEOUT,
     },
     [CANRX_TRAC_FL_TEST] = {
         .canID = CMR_CANID_DTI_FL_TEST
@@ -798,13 +791,9 @@ static cmr_task_t canTX100Hz_task;
 static void canTX100Hz(void *pvParameters) {
     (void) pvParameters;    // Placate compiler.
 
-    volatile cmr_canHeartbeat_t *heartbeatVSM = canVehicleGetPayload(CANRX_VEH_HEARTBEAT_VSM);
-
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-
-        cmr_canHeartbeat_t *heartbeatVSM = canVehicleGetPayload(CANRX_VEH_HEARTBEAT_VSM);
-		canTX(CMR_CAN_BUS_DAQ, CMR_CANID_DAQ_VSM_HEARTBEAT, heartbeatVSM, sizeof(cmr_canHeartbeat_t), canTX100Hz_period_ms); 
+    
         vTaskDelayUntil(&lastWakeTime, canTX100Hz_period_ms);
 
         sendVSMHeartbeat(lastWakeTime);
@@ -1099,15 +1088,15 @@ int getReceivedDriver(uint16_t canID, int *packet_number) {
  */
 void dim_params_callback (cmr_can_t *canb_rx, uint16_t canID, const void *data, size_t dataLen) {
     // basic filter for wrong canids
-    if(canID < CMR_CANID_DIM_CONFIG0_DRV0 || canID > CMR_CANID_DCM_CONFIG3_DRV3) return;
+    if(canID < CMR_CANID_DIM_CONFIG0_DRV0 || canID > CMR_CANID_DIM_CONFIG3_DRV3) return;
 
     static bool gotten_packet[NUM_CONFIG_PACKETS] = {0};
     static TickType_t lastDriverChangeTime = 0;
     TickType_t currentTime = xTaskGetTickCount();
 
     // exit if not glv or hv-enable
-    volatile cmr_canHeartbeat_t *vsm_heartbeat = (cmr_canHeartbeat_t *) canVehicleGetPayload(CANRX_VEH_HEARTBEAT_VSM);
-    cmr_canVSMState_t vsm_state = vsm_heartbeat->state;
+    cmr_canState_t VSMstate = getCurrentExternalState();
+
     // if (!(vsm_state == CMR_CAN_VSM_STATE_GLV_ON || vsm_state == CMR_CAN_VSM_STATE_HV_EN)) return;
 
     // calculate what config packet this message is
@@ -1192,12 +1181,12 @@ void conditionalCallback(cmr_can_t *canb_rx, uint32_t canID, const void *data, s
     }
 
     // If DIM config message, handle it
-    if(CMR_CANID_DCM_CONFIG3_DRV3 >= canID && canID >= CMR_CANID_DIM_CONFIG0_DRV0) {
+    if(CMR_CANID_DIM_CONFIG3_DRV3 >= canID && canID >= CMR_CANID_DIM_CONFIG0_DRV0) {
         dim_params_callback(canb_rx, canID, data, dataLen);
     }
 
     if(canID == CMR_CANID_DCM_POWER_UPDATE && getCurrentGear() == CMR_CAN_GEAR_ENDURANCE) {
-    	cmr_canDCMPowerLimit_t *limit = (cmr_canDCMPowerLimit_t*) data;
+    	cmr_canVCUPowerLimit_t *limit = (cmr_canVCUPowerLimit_t*) data;
         float front_powerLimit_kW = (limit->powerLimit_kW / 2.0f) * front_bias_endurance;
         float rear_powerLimit_kW = (limit->powerLimit_kW / 2.0f) * (1 - front_bias_endurance);
     	setPowerLimit(false, MOTOR_FL, front_powerLimit_kW);
@@ -1770,7 +1759,7 @@ void *getPayload(canVehicleRX_t rxMsg) {
 cmr_canState_t getModuleState(canVehicleRX_t module) {
     configASSERT((module < CANRX_LEN) && (module != CANRX_VEH_HEARTBEAT_HVC));
 
-    cmr_canHeartbeat_t *heartbeat = getPayload(module);
+    cmr_canHeartbeat_t *heartbeat = canVehicleGetPayload(module);
     uint8_t state = heartbeat->state;
 
     return (cmr_canState_t)(state);
@@ -1826,6 +1815,7 @@ static void sendVSMHeartbeat(TickType_t lastWakeTime) {
     memcpy(&heartbeat.warning, &vsmWarnings, sizeof(heartbeat.warning));
 
     canTX(CMR_CAN_BUS_VEH, CMR_CANID_HEARTBEAT_VSM, &heartbeat, sizeof(heartbeat), canTX100Hz_period_ms);
+    canTX(CMR_CAN_BUS_DAQ, CMR_CANID_DAQ_VSM_HEARTBEAT, &heartbeat, sizeof(heartbeat), canTX100Hz_period_ms);
 }
 
 static void sendRESEnable() {
@@ -1903,7 +1893,9 @@ void resetError() {
  */
 
 void hvcTimeout() {
-    cmr_canHVCHeartbeat_t *hvcHeartbeat = getPayload(getCANRX_VEH_HEARTBEAT_HVC);
+    cmr_canHVCHeartbeat_t *hvcHeartbeat = canVehicleGetPayload(CANRX_VEH_HEARTBEAT_HVC);
     
-    (if hvcHeartbeat->hvcState)
+    (if hvcHeartbeat->hvcState) {
+        
+    }
 }
