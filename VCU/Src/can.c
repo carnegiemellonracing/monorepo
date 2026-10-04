@@ -1346,7 +1346,7 @@ void canInit(void) {
 
          // Match all odd IDs (bottom bit 1, all others don't care).
          .ids = {0x001, 0x001}
-        },
+        }, s
         {.isMask = false,
          //TODO: Examine isExtended
          // .isExtended = true,
