@@ -8,7 +8,7 @@
 #ifndef ADC_H
 #define ADC_H
 
-#include <CMR/adc.h>    // ADC interface
+#include <CMR/adc.h> // ADC interface
 
 /**
  * @brief Represents an ADC channel.
@@ -16,12 +16,14 @@
  * @warning New channels MUST be added before `ADC_LEN`.
  */
 typedef enum {
-	ADC_HALL_EFFECT = 0,    /**< @brief Hall effect sense. */
-	ADC_REAR_BRAKE_PRES,    /**< @brief Rear brake pressure sense. */
+  //VSM Channels
+  ADC_HALL_EFFECT = 0,    /**< @brief Hall effect sense. */
+  ADC_REAR_BRAKE_PRES,    /**< @brief Rear brake pressure sense. */
   ADC_VSENSE,             /**< @brief Board voltage sense. */
-	ADC_SSIN,								/**< @brief SS In Voltage Sense */
-	ADC_SSOUT,							/**< @brief SS Out Voltage Sense */
-	ADC_LEN     						/**< @brief Total ADC channels. */
+  ADC_SSIN,								/**< @brief SS In Voltage Sense */
+  ADC_SSOUT,							/**< @brief SS Out Voltage Sense */
+  ADC_LEN     						/**< @brief Total ADC channels. */
+
 } adcChannel_t;
 
 void adcInit(void);

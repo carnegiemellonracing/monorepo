@@ -255,8 +255,6 @@ static void motorsCommand (
             }
         }
 
-        cmr_canState_t VSMstate = getCurrentExternalState(); 
-
         // Update gear in transition from HV_EN to RTD
         if ((prevState == CMR_CAN_HV_EN && VSMstate == CMR_CAN_RTD)
             || (prevState == CMR_CAN_AS_READY && VSMstate == CMR_CAN_AS_DRIVING)) {

@@ -57,7 +57,7 @@ static bool launchControlActive = false;
 volatile cmr_can_solver_inputs_t solver_inputs;
 volatile cmr_can_solver_aux_t solver_aux;
 volatile cmr_can_solver_settings_t solver_settings;
-volatile cmr_canCDCWheelTorque_t solver_torques;
+volatile cmr_canVCUWheelTorque_t solver_torques;
 
 /* @brief For testing only; false = use calculated downforce */
 volatile bool use_true_downforce = false;
@@ -66,12 +66,12 @@ volatile bool use_true_downforce = false;
 extern volatile float odometer_km;
 
 /** @brief whether or not TC and YRC are enabled */
-static volatile cmr_canCDCControlsStatus_t controlsStatus = {
+static volatile cmr_canVCUControlsStatus_t controlsStatus = {
     .tcOn = (uint8_t)false,
     .yrcOn = (uint8_t)false
 };
 
-volatile cmr_canCDCKiloCoulombs_t coulombCounting;
+volatile cmr_canVCUKiloCoulombs_t coulombCounting;
 static float manual_cruise_control_speed;
 
 float getYawRateControlLeftRightBias(int32_t swAngle_millideg);
@@ -191,8 +191,8 @@ void setControlsStatus(cmr_canGear_t gear) {
 }
 
 /** @brief get the a read-only pointer to controlsStatus */
-const volatile cmr_canCDCControlsStatus_t *getControlsStatus() {
-    return (const cmr_canCDCControlsStatus_t*) &controlsStatus;
+const volatile cmr_canVCUControlsStatus_t *getControlsStatus() {
+    return (const cmr_canVCUControlsStatus_t*) &controlsStatus;
 }
 
 
@@ -1218,10 +1218,10 @@ float calculatePersistentYRCmreq(int32_t swAngle_millideg, float bias_margin, fl
 void setPowerLimit(bool all, motorLocation_t motor, float powerLimit_kw) { 
     float clamp_powerLimit_kw = CLAMP(0.0f, powerLimit_kw, 35.0f);
     if(all) {
-        powerLimitFL_kW = clamp_powerLimit_kw;
-        powerLimitFR_kW = clamp_powerLimit_kw;
-        powerLimitRL_kW = clamp_powerLimit_kw;
-        powerLimitRR_kW = clamp_powerLimit_kw;
+        volatile float powerLimitFL_kW = clamp_powerLimit_kw;
+        volatile float powerLimitFR_kW = clamp_powerLimit_kw;
+        volatile float powerLimitRL_kW = clamp_powerLimit_kw;
+        volatile float powerLimitRR_kW = clamp_powerLimit_kw;
     } else {
         switch(motor){
             case MOTOR_FL:

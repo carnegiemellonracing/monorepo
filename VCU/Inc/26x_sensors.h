@@ -1,33 +1,73 @@
 /**
- * @file adc.h
- * @brief Board-specific ADC interface.
+ * @file 26x_sensors.h
+ * @brief Sensor abstraction layer: routes CAN parsing + state access to Movella or Sensoric.
  *
- * @author Carnegie Mellon Racing
+ * Usage:
+ *  - Call sensors_init(...) once at boot OR rely on compile-time default.
+ *  - In CAN RX callback: call sensors_parse(canID, payload).
+ *  - otherwise, call sensors_get_*() to read whichever backend is active.
  */
 
-#ifndef ADC_H
-#define ADC_H
+#ifndef CMR_26X_SENSORS_H
+#define CMR_26X_SENSORS_H
 
-#include <CMR/adc.h> // ADC interface
+#include <stdint.h>
+#include <stdbool.h>
+
+#include "movella.h"
+#include "sensoric.h"
+
+// TODO: check units
+
+
+typedef enum {
+    SENSORS_SRC_NONE = 0,
+    SENSORS_SRC_MOVELLA,
+    SENSORS_SRC_SENSORIC,
+} sensors_source_t;
 
 /**
- * @brief Represents an ADC channel.
+ * Compile-time default selection:
+ *   - Define CMR_SENSORS_SOURCE to one of SENSORS_SRC_MOVELLA / SENSORS_SRC_SENSORIC
+ *   - If not defined, defaults to MOVELLA.
  *
- * @warning New channels MUST be added before `ADC_LEN`.
+ * use it like
+ *   -DCMR_SENSORS_SOURCE=SENSORS_SRC_SENSORIC
  */
-typedef enum {
-  //VSM Channels
-  ADC_HALL_EFFECT = 0,    /**< @brief Hall effect sense. */
-	ADC_REAR_BRAKE_PRES,    /**< @brief Rear brake pressure sense. */
-  ADC_VSENSE,             /**< @brief Board voltage sense. */
-	ADC_SSIN,								/**< @brief SS In Voltage Sense */
-	ADC_SSOUT,							/**< @brief SS Out Voltage Sense */
-	ADC_LEN     						/**< @brief Total ADC channels. */
+#ifndef CMR_SENSORS_SOURCE
+#define CMR_SENSORS_SOURCE SENSORS_SRC_MOVELLA
+#endif
 
-} adcChannel_t;
+/**
+ * init, if we're none then do nothing
+ */
+void sensors_init(sensors_source_t src);
 
-void adcInit(void);
-uint32_t adcRead(adcChannel_t channel);
+/** Runtime override of active sensor source. */
+void sensors_set_source(sensors_source_t src);
 
-#endif /* ADC_H */
+/** Returns current active sensor source. */
+sensors_source_t sensors_get_source(void);
 
+/** call in place of movella_parse / sensoric_parse */
+void sensors_parse(uint16_t canID, volatile void *payload);
+
+/**
+ * "unified" get functions. These return NULL if that backend isn't active.
+ */
+const volatile movella_state_t *sensors_get_movella_state(void);
+const volatile car_state_t     *sensors_get_car_state(void);
+const volatile sensoric_state_t *sensors_get_sensoric_state(void);
+
+/**
+ * These return false if unavailable for the active backend.
+ *
+ * Sensoric scaling/units are not applied here TODO: FIX THIS SHIT
+ *       This exposes raw-int values cast to float for Sensoric, and true float values for Movella.
+ */
+bool sensors_get_gyro_xyz(float *gx, float *gy, float *gz);
+bool sensors_get_accel_xyz(float *ax, float *ay, float *az);
+bool sensors_get_vel_xy(float *vx, float *vy);
+
+
+#endif // CMR_26X_SENSORS_H
