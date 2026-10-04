@@ -729,10 +729,10 @@ static void canTX10Hz(void *pvParameters) {
         }
         
         //TODO: add correct diagnostic messages here 
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_DCM_COULOMB_COUNTING, &coulombCounting, sizeof(cmr_canDCMKiloCoulombs_t), canTX10Hz_period_ms);
+        canTX(CMR_CAN_BUS_VEH, CMR_CANID_VCU_COULOMB_COUNTING, &coulombCounting, sizeof(cmr_canVCUKiloCoulombs_t), canTX10Hz_period_ms);
         
         sendRESEnable();
-        sendVSMSensors(void);
+        sendVSMSensors();
 
         vTaskDelayUntil(&lastWakeTime, canTX10Hz_period_ms);
     }
@@ -743,7 +743,7 @@ static const uint32_t canTXLatchedStatus_priority = 1;
 /** @brief CAN latched status TX period (milliseconds). */
 static const TickType_t canTXLatchedStatus_period_ms = 10000;
 
-sk_t canTXLatchedStatus_task;
+static cmr_task_t canTXLatchedStatus_task;
 
 /**
  * @brief Task for sending latched status.
@@ -1348,12 +1348,14 @@ void canInit(void) {
          .ids = {0x001, 0x001}
         },
         {.isMask = false,
-         .isExtended = true,
+         //TODO: Examine isExtended
+         // .isExtended = true,
          .rxFIFO = CAN_RX_FIFO1,
 
          .ids = {CMR_CANID_EXTENDED_CUBEMARS_DATA}
         }
     };
+
     cmr_canFilter(&(can[CMR_CAN_BUS_DAQ]), canDaqFilters,
                   sizeof(canDaqFilters) / sizeof(canDaqFilters[0]));
 
@@ -1447,7 +1449,8 @@ void canInit(void) {
                     CMR_CANID_AMS_ERROR
             }
 		},
-    }
+    };
+
     cmr_canFilter(
         &can, canFilters, sizeof(canFilters) / sizeof(canFilters[0])
     );

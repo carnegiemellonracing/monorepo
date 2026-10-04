@@ -1225,16 +1225,16 @@ void setPowerLimit(bool all, motorLocation_t motor, float powerLimit_kw) {
     } else {
         switch(motor){
             case MOTOR_FL:
-                powerLimitFL_kW = clamp_powerLimit_kw;
+                volatile float powerLimitFL_kW = clamp_powerLimit_kw;
                 break;
             case MOTOR_FR:
-                powerLimitFR_kW = clamp_powerLimit_kw;
+                volatile float powerLimitFR_kW = clamp_powerLimit_kw;
                 break;
             case MOTOR_RL:
-                powerLimitRL_kW = clamp_powerLimit_kw;
+                volatile float powerLimitRL_kW = clamp_powerLimit_kw;
                 break;
             case MOTOR_RR:
-                powerLimitRR_kW = clamp_powerLimit_kw;
+                volatile float powerLimitRR_kW = clamp_powerLimit_kw;
                 break;
         }
     }
