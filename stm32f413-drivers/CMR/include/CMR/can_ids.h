@@ -54,6 +54,11 @@ typedef enum {
     CMR_CANID_HVC_MINMAX_CELL_TEMPS = 0x311,    /**< @brief HVC pack min and max cell temps. */
     CMR_CANID_HVC_PACK_CURRENT = 0x302,         /**< @brief HVC pack current. */
 
+    CMR_CANID_IVT_CURRENT = 0x521,              /**< @brief IVT current. */
+    CMR_CANID_IVT_VOLTAGE = 0x522,              /**< @brief IVT voltage. */
+
+    CMR_CANID_AMS_ERROR  = 0x523,
+    
     CMR_CANID_CDC_WHEEL_SPEEDS = 0x132,         /**< @brief CDC (19e) wheel speeds. */
     CMR_CANID_CDC_SOLENOID_PTC = 0x142,         /**< @brief CDC (19e) brake solenoid command. */
     CMR_CANID_CDC_MOTOR_DATA = 0x152,           /**< @brief CDC (19e) motor data. */
@@ -83,6 +88,9 @@ typedef enum {
     CMR_CANID_VCU_POWER_UPDATE = 0x6E2,             /**< @brief DAQ Live to CDC - changing power limit. */
     CMR_CANID_VCU_COULOMB_COUNTING = 0x6E3,
     CMR_CANID_CDC_POWER_LOG = 0x6E4,             /**< @brief DAQ Live to CDC - changing power limit. */
+
+    CMR_CANID_CUBEMARS_DATA = 0x6E6,
+    CMR_CANID_CONTROL_LIMITS = 0x6E7,       /**< @brief VCU's most recently commanded torque/velocity limits for each motor. */
 
     CMR_CANID_FSM_DATA = 0x133,                 /**< @brief FSM data. */
     CMR_CANID_CELL_BALANCE_ENABLE = 0x134,
@@ -330,7 +338,9 @@ typedef enum {
 
     CMR_CANID_EMD_STATUS = 0x400,               /**< @brief EMD status. */
     CMR_CANID_EMD_MEASUREMENT_RETX = 0x401,     /**< @brief EMD measurement for HV voltage/current. */
-    CMR_CANID_EMD_MEASUREMENT = 0x402,          /**< @brief EMD measurement for HV voltage/current. */
+    CMR_CANID_EMD_MEASUREMENT = 0x10D,          /**< @brief EMD measurement for HV voltage/current. */
+    CMR_CANID_EMD_TEMPERATURE = 0x60D,          /**< @brief EMD measurement for HV voltage/current. */
+    CMR_CANID_EMD_EBS_PRESSURE = 0x500,         /**< @brief Pneumatic & hydraulic brake pressures transmitted to EMD. */       
 
     CMR_IZZIE_LOADCELL = 0x7F0,                 /**< @brief IZZIE Amp load data. */
     CMR_CANID_CONTROLS_DEBUG_GLOBAl = 0x7E0,    /**< @brief control algo testing data. */
@@ -387,6 +397,7 @@ typedef enum {
     CMR_CANID_AS_RACK_DISPLACMENT = 0x192,      /**< @brief Rack Displacement Mesurment*/
     CMR_CANID_ASMS_STATE = 0x193,
     CMR_CANID_AS_MISSION_FINISHED = 0x777,
+    CMR_CANID_DAQ_VSM_HEARTBEAT = 0x778, 
     CMR_CANID_AS_HEARTBEAT_COMPUTE = 0x109,
 
     //MAXON

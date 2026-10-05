@@ -330,6 +330,7 @@ void cmr_canInit(
  *
  * @param can The CAN interface to send on.
  * @param id The message's CAN ID.
+ * @param isExtended Whether the CAN ID is an extended CAN ID
  * @param data The data to send.
  * @param len The data's length, in bytes.
  * @param timeout The timeout.
@@ -338,13 +339,13 @@ void cmr_canInit(
  */
 int cmr_canTX(
     cmr_can_t *can,
-    uint16_t id, const void *data, uint8_t len,
+    uint32_t id, bool isExtended, const void *data, size_t len,
     TickType_t timeout
 ) {
     CAN_TxHeaderTypeDef txHeader = {
-        .StdId = id,
-        .ExtId = 0,
-        .IDE = CAN_ID_STD,
+        .StdId = (isExtended) ? 0 : id,
+        .ExtId = (isExtended) ? id : 0,
+        .IDE = (isExtended) ? CAN_ID_EXT : CAN_ID_STD,
         .RTR = CAN_RTR_DATA,
         .DLC = len,
         .TransmitGlobalTime = DISABLE

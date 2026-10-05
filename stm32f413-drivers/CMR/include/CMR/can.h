@@ -136,7 +136,7 @@ void cmr_canFilter(
 
 int cmr_canTX(
     cmr_can_t *can,
-    uint16_t id, const void *data, uint8_t len,
+    uint32_t id, bool isExtended, const void *data, size_t len,
     TickType_t timeout
 );
 

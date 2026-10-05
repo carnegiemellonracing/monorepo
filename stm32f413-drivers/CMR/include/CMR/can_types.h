@@ -1454,6 +1454,17 @@ typedef struct {
     int32_t voltage;    //u: V /**< @brief Voltage (volts * 2^16). */
 } cmr_canEMDMeasurements_t;
 
+typedef struct {
+    uint8_t mux : 2;
+    uint8_t num_sensors : 6;
+    uint8_t min_temp_2C; // 2 * Celsius units
+    uint8_t max_temp_2C;
+    uint8_t temp1_2C;
+    uint8_t temp2_2C;
+    uint8_t temp3_2C;
+    uint8_t temp4_2C;
+    uint8_t temp5_2C;
+} cmr_canEMDTemperatures_t;
 // ------------------------------------------------------------------------------------------------
 // DAQ Modules
 
