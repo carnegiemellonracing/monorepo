@@ -1,4 +1,6 @@
 {
+    "content": [
+    ],
     "coprocessor": [
         "CLEAR_COLOR_RGB(0, 0, 0)",
         "CLEAR(1, 1, 1)",
@@ -19,6 +21,9 @@
         "CMD_TEXT(720, 25, 2, OPT_CENTERY | OPT_RIGHTX, \"GLV\")",
         "CMD_TEXT(780, 25, 2, OPT_CENTERY | OPT_RIGHTX, \"23V\") @variable ERR_GLV_STR",
         "",
+        "COLOR_RGB(255, 10, 10) @variable CDC_COLOR",
+        "CMD_TEXT(480, 130, 2, OPT_CENTERY, \"CDC TIMEOUT\")",
+        "",
         "COLOR_RGB(255, 10, 10) @variable VSM_COLOR",
         "CMD_TEXT(100, 130, 2, OPT_CENTERY, \"VSM TIMEOUT\")",
         "",
@@ -26,7 +31,7 @@
         "CMD_TEXT(100, 160, 2,  OPT_CENTERY, \"TIMEOUT\")",
         "",
         "COLOR_RGB(255, 10, 10) @variable HVC_COLOR",
-        "CMD_TEXT(480, 130, 2, OPT_CENTERY, \"HVC TIMEOUT\")",
+        "CMD_TEXT(480, 160, 2, OPT_CENTERY, \"HVC TIMEOUT\")",
         "",
         "",
         "COLOR_RGB(255, 255, 255)",
@@ -91,18 +96,17 @@
         "CMD_TEXT(720, 440, 1, OPT_CENTERY | OPT_RIGHTX, \"IMD\")",
         ""
     ],
+    "displayList": [
+        ""
+    ],
     "project": {
         "device": 2067
     },
     "registers": {
-        "": 0,
-        "REG_FREQUENCY": 60000000,
-        "REG_HSIZE": 800,
-        "REG_ROTATE": 0,
-        "REG_VSIZE": 480,
+        "hSize": 800,
         "macro": [
-            "",
             ""
-        ]
+        ],
+        "vSize": 480
     }
 }

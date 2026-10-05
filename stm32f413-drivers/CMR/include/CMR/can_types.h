@@ -405,18 +405,28 @@ typedef struct {
 } cmr_canVSMStatus_t; 
 
 /** @brief Vehicle Safety Module sensor data. */
-/** @brief Vehicle Safety Module sensor data. */
 typedef struct {
-    uint16_t brakePressureRear_PSI;     /**< @brief Rear brake pressure (pounds-per-square-inch). */
-    int16_t hallEffect_cA;     /**< @brief Hall effect current (centi-Amps). */
-    uint8_t safetyIn_V;        /**< @brief Safety circuit input voltage (volts). */
-    uint8_t safetyOut_V;       /**< @brief Safety circuit output voltage (volts). */
+    uint16_t brakePressureRear_PSI; /**< @brief Rear brake pressure (pounds-per-square-inch). */
+    uint16_t batt_mV;               /**< @brief Hall effect current (centi-Amps). */
+    uint8_t safetyIn_eight_V;       /**< @brief Safety circuit input voltage (eight volts). */
+    uint8_t safetyOut_eight_V;      /**< @brief Safety circuit output voltage (eight volts). */
+    bool    EAB_pressed;            /**< @brief EAB Pressed. */
+    int8_t  hv_current_A;           /**< @brief Hall effect sensor reading (Amps). (
+                                                Note this maxes out at 127 A at the high end 
+                                                but the sensor itself maxes at 125A)*/
 } cmr_canVSMSensors_t;
 
 typedef struct {
-    uint16_t ebsPressure_1;
-    uint16_t ebsPressure_2;
+    uint16_t ebsPressure_1_deci_bar;
+    uint16_t ebsPressure_2_deci_bar;
 } cmr_canDVPressureReadings_t;
+
+typedef struct {
+    uint16_t ebsPressure1_psi;
+    uint16_t ebsPressure2_psi;
+    uint16_t hydraulicPressure1_psi;
+    uint16_t hydraulicPressure2_psi;
+} cmr_canEMDBrakePressure_t;
 
 /** @brief Vehicle Safety Module latched error status. */
 typedef struct {
@@ -856,8 +866,9 @@ typedef struct {
     uint8_t buttonStates;      /**< @brief Button states packed into an uint8_t. {drs,0,1,2,up,down,left,right}*/
     uint8_t regenPercent;            
     uint8_t paddle;            
-    uint8_t controlsStatus;
+    uint8_t cntrlOff;
     uint8_t dvControlMode;
+    uint16_t paddleADC;
 } cmr_canDIMActions_t;
 
 /** @brief DIM sends message to acknowledge radio message
@@ -912,8 +923,9 @@ typedef struct {
     uint8_t torqueRequested;            /**< @brief Torque requested (0-255). */
     uint8_t throttlePosition;           /**< @brief Throttle position (0-255). */
     uint16_t brakePressureFront_PSI;    //u: PSI /**< @brief Front brake pressure. */
-    uint8_t brakePedalPosition_percent; //u: % /**< @brief Brake pedal position (0-255). */
-    
+    uint8_t AS_Status;
+    uint8_t solonoid_1_current_mA;          /**< @brief Solenoid 1 current (mA). */
+    uint8_t solonoid_2_current_mA;          /**< @brief Solenoid 2 current (mA). */
 } cmr_canFSMData_t; 
 
 typedef struct {
