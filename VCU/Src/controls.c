@@ -142,7 +142,7 @@ void setFastTorqueWithPhantomDiff(
     int32_t swAngle_millideg,
     float front_bias,
     float phantom_diff_scaling_factor
-)
+);
 
 /** @brief initialize controls */
 void initControls() {

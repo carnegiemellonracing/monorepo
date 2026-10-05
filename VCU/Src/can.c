@@ -1267,6 +1267,90 @@ void canInit(void) {
 
     // Vehicle CAN filters.
     const cmr_canFilter_t canVehicleFilters[] = {
+        //VSM FIFO0
+        { // 4 messages at 100 Hz
+            .isMask = true,
+            .rxFIFO = CAN_RX_FIFO0,
+            .ids = {
+                0x100, // (msg_id & 0x7FC) == (0x100 & 0x7FC) matches 0x100, 0x101, 0x102, 0x103
+                0x100,
+                0x7F0, // upper 9 bits must match
+                0x7F0
+            }
+        },
+
+        { // 1 message at 100 Hz, 2 messages at 10 Hz
+            .isMask = false,
+            .rxFIFO = CAN_RX_FIFO0,
+            .ids = {
+                CMR_CANID_FSM_DATA,
+                CMR_CANID_FSM_SWANGLE, //commented out?
+                CMR_CANID_DIM_REQUEST,
+                CMR_CANID_CUBEMARS_DATA
+            }
+        },
+
+        {
+            .isMask = false,
+            .rxFIFO = CAN_RX_FIFO0,
+            .ids = {
+                CMR_CANID_AS_RES,
+                CMR_CANID_HEARTBEAT_COMPUTE,
+                CMR_CANID_AUTONOMOUS_ACTION,
+                CMR_CANID_AS_MISSION_FINISHED
+            }
+		},
+        
+        //VSM FIFO1
+        { // 4 messages at 100 Hz
+            .isMask = true,
+            .rxFIFO = CAN_RX_FIFO1,
+            .ids = {
+                0x104, // (msg_id & 0x7FC) == (0x104 & 0x7FC) matches 0x104, 0x105, 0x106, 0x107
+                0x104,
+                0x7FC, // upper 9 bits must match
+                0x7FC
+            }
+        },
+        {
+            .isMask = false,
+            .rxFIFO = CAN_RX_FIFO1,
+            .ids = {
+                CMR_CANID_DTI_FL_IO_STATUS,
+                CMR_CANID_DTI_FR_IO_STATUS,
+                CMR_CANID_DTI_RL_IO_STATUS,
+                CMR_CANID_DTI_RR_IO_STATUS
+            }
+        },
+        {
+            .isMask = false,
+            .rxFIFO = CAN_RX_FIFO1,
+            .ids = {
+                CMR_CANID_DTI_FL_TEMPFAULT,
+                CMR_CANID_DTI_FR_TEMPFAULT,
+                CMR_CANID_DTI_RL_TEMPFAULT,
+                CMR_CANID_DTI_RR_TEMPFAULT
+            }
+        },
+        {
+            .isMask = false,
+            .rxFIFO = CAN_RX_FIFO1,
+            .ids = {
+                CMR_CANID_DTI_FL_ERPM,
+                CMR_CANID_DTI_FR_ERPM,
+                CMR_CANID_DTI_RL_ERPM,
+                CMR_CANID_DTI_RR_ERPM
+            }
+        },
+        {
+            .isMask = false,
+            .rxFIFO = CAN_RX_FIFO1,
+            .ids = {
+                    CMR_CANID_AS_PRESSURE_READINGS,
+                    CMR_CANID_DTI_ERROR_MESSAGES,
+                    CMR_CANID_AMS_ERROR
+            }
+		},
         {
             .isMask = true,
             .rxFIFO = CAN_RX_FIFO1,
@@ -1360,102 +1444,6 @@ void canInit(void) {
     cmr_canFilter(&(can[CMR_CAN_BUS_DAQ]), canDaqFilters,
                   sizeof(canDaqFilters) / sizeof(canDaqFilters[0]));
 
-    //VSM CAN Filters
-    const cmr_canFilter_t canFilters[] = {
-        // ----------------------------------------------------------------------------------------
-        // RX FIFO 0
-
-        { // 4 messages at 100 Hz
-            .isMask = true,
-            .rxFIFO = CAN_RX_FIFO0,
-            .ids = {
-                0x100, // (msg_id & 0x7FC) == (0x100 & 0x7FC) matches 0x100, 0x101, 0x102, 0x103
-                0x100,
-                0x7F0, // upper 9 bits must match
-                0x7F0
-            }
-        },
-
-        { // 1 message at 100 Hz, 2 messages at 10 Hz
-            .isMask = false,
-            .rxFIFO = CAN_RX_FIFO0,
-            .ids = {
-                CMR_CANID_FSM_DATA,
-                CMR_CANID_FSM_SWANGLE, //commented out?
-                CMR_CANID_DIM_REQUEST,
-                CMR_CANID_CUBEMARS_DATA
-            }
-        },
-
-        {
-            .isMask = false,
-            .rxFIFO = CAN_RX_FIFO0,
-            .ids = {
-                CMR_CANID_AS_RES,
-                CMR_CANID_HEARTBEAT_COMPUTE,
-                CMR_CANID_AUTONOMOUS_ACTION,
-                CMR_CANID_AS_MISSION_FINISHED
-            }
-		},
-
-        // ----------------------------------------------------------------------------------------
-        // RX FIFO 1
-
-        { // 4 messages at 100 Hz
-            .isMask = true,
-            .rxFIFO = CAN_RX_FIFO1,
-            .ids = {
-                0x104, // (msg_id & 0x7FC) == (0x104 & 0x7FC) matches 0x104, 0x105, 0x106, 0x107
-                0x104,
-                0x7FC, // upper 9 bits must match
-                0x7FC
-            }
-        },
-        {
-            .isMask = false,
-            .rxFIFO = CAN_RX_FIFO1,
-            .ids = {
-                CMR_CANID_DTI_FL_IO_STATUS,
-                CMR_CANID_DTI_FR_IO_STATUS,
-                CMR_CANID_DTI_RL_IO_STATUS,
-                CMR_CANID_DTI_RR_IO_STATUS
-            }
-        },
-        {
-            .isMask = false,
-            .rxFIFO = CAN_RX_FIFO1,
-            .ids = {
-                CMR_CANID_DTI_FL_TEMPFAULT,
-                CMR_CANID_DTI_FR_TEMPFAULT,
-                CMR_CANID_DTI_RL_TEMPFAULT,
-                CMR_CANID_DTI_RR_TEMPFAULT
-            }
-        },
-        {
-            .isMask = false,
-            .rxFIFO = CAN_RX_FIFO1,
-            .ids = {
-                CMR_CANID_DTI_FL_ERPM,
-                CMR_CANID_DTI_FR_ERPM,
-                CMR_CANID_DTI_RL_ERPM,
-                CMR_CANID_DTI_RR_ERPM
-            }
-        },
-        {
-            .isMask = false,
-            .rxFIFO = CAN_RX_FIFO1,
-            .ids = {
-                    CMR_CANID_AS_PRESSURE_READINGS,
-                    CMR_CANID_DTI_ERROR_MESSAGES,
-                    CMR_CANID_AMS_ERROR
-            }
-		},
-    };
-
-    cmr_canFilter(
-        &can, canFilters, sizeof(canFilters) / sizeof(canFilters[0])
-    );
-    
     // Task initialization.
 
     cmr_taskInit(
