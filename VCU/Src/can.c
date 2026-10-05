@@ -1821,6 +1821,20 @@ static void sendVSMSensors(void) {
 }
 
 /**
+ * @brief Reflect current state onto the LV bus.
+ *
+ */
+static void sendVSMStatus(void) {
+    const vsmStatus_t *vsmStatus = getCurrentStatus();
+
+    canTX(CMR_CAN_BUS_VEH, CMR_CANID_VSM_STATUS,
+          &(vsmStatus->canVSMStatus),
+          sizeof(vsmStatus->canVSMStatus),
+          canTX100Hz_period_ms
+    );
+}
+
+/**
  * @brief Reflect list of any and all errors seen during uptime
  * onto LV bus.
  *
@@ -1878,7 +1892,3 @@ void resetError() {
 //         return; 
 //     }
 // }
-
-static void sendVSMStatus(void){
-    return; 
-}

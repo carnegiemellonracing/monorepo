@@ -9,9 +9,12 @@
 
 #include "sensors.h"    // Interface to implement
 #include "adc.h"        // Board-specific ADC interface
+#include "can.h"
 
 /** @brief forward declare sensors vector. */
 cmr_sensor_t sensors[SENSOR_CH_LEN];
+
+bool use_emd = false;
 
 /** @brief Mapping of ADC channels to sensors. */
 const adcChannel_t sensorsADCChannels[SENSOR_CH_LEN] =
@@ -138,10 +141,6 @@ static int32_t adcToBrakePres_PSI(const cmr_sensor_t *sensor, uint32_t value) {
     return (int32_t) brakePres_PSI;
 }
 
-int32_t getCurrent_mA(void){
-    return 0; 
-}
-
 // TODO calibrate all of these min/max values
 cmr_sensor_t sensors[SENSOR_CH_LEN] = {
     [SENSOR_CH_HALL_EFFECT_A] = {
@@ -193,6 +192,38 @@ cmr_sensor_t sensors[SENSOR_CH_LEN] = {
         .warnFlag = CMR_CAN_WARN_BUS_CURRENT
     },
 };
+
+/**
+ * @brief Gets the voltage from your preferred source
+ *
+ * @return voltage in mV
+ */
+int32_t getVoltage_mV(void) {
+    if(use_emd) {
+        cmr_canEMDMeasurements_t *EMD_Measurement = canTractiveGetPayload(CANRX_TRAC_EMD_MEASUREMENT);
+        float EMD_voltage_V = (EMD_Measurement->voltage);  
+        return ((int32_t) EMD_voltage_V * 1000.0f); 
+    }
+    cmr_canIVTreadings_t *IVT_Measurement = canTractiveGetPayload(CANRX_TRAC_IVT_VOLTAGE); 
+    int32_t IVT_voltage_mV = big_endian_to_int32(&(IVT_Measurement->message));
+    return IVT_voltage_mV;
+}
+
+/**
+ * @brief Gets the current from your preferred source
+ *
+ * @return current in mA
+ */
+int32_t getCurrent_mA(void) {
+    if(use_emd) {
+        cmr_canEMDMeasurements_t *EMD_Measurement = canTractiveGetPayload(CANRX_TRAC_EMD_MEASUREMENT);
+        float EMD_current_A = (EMD_Measurement->current);  
+        return ((int32_t) EMD_current_A * 1000.0f); 
+    }
+	cmr_canIVTreadings_t *IVT_Measurement = canTractiveGetPayload(CANRX_TRAC_IVT_CURRENT); 
+    int32_t IVT_current_mA = big_endian_to_int32(&(IVT_Measurement->message));
+    return IVT_current_mA ;
+}
 
 /** @brief All sensors. */
 cmr_sensorList_t sensorList;
