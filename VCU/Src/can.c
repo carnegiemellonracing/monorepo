@@ -662,7 +662,7 @@ cmr_canRXMeta_t canDaqRXMeta[CANRX_DAQ_LEN] = {
  *
  * @note Indexed by `canVehicleRX_t`.
  */
-const cmr_canVSMTimeoutErrorSource_t vsmErrorSourceFlags[CANRX_LEN] = {
+const cmr_canVSMTimeoutErrorSource_t vsmErrorSourceFlags[CANRX_VEH_LEN] = {
     [CANRX_VEH_HEARTBEAT_HVC]       = CMR_CAN_VSM_TIMEOUT_SOURCE_NONE,
     [CANRX_VEH_HEARTBEAT_DIM]       = CMR_CAN_VSM_TIMEOUT_SOURCE_DIM,
     [CANRX_VEH_HEARTBEAT_HVBMS]     = CMR_CAN_VSM_TIMEOUT_SOURCE_NONE,
@@ -1185,7 +1185,7 @@ void conditionalCallback(cmr_can_t *canb_rx, uint32_t canID, const void *data, s
         dim_params_callback(canb_rx, canID, data, dataLen);
     }
 
-    if(canID == CMR_CANID_DCM_POWER_UPDATE && getCurrentGear() == CMR_CAN_GEAR_ENDURANCE) {
+    if(canID == CMR_CANID_VCU_POWER_UPDATE && getCurrentGear() == CMR_CAN_GEAR_ENDURANCE) {
     	cmr_canVCUPowerLimit_t *limit = (cmr_canVCUPowerLimit_t*) data;
         float front_powerLimit_kW = (limit->powerLimit_kW / 2.0f) * front_bias_endurance;
         float rear_powerLimit_kW = (limit->powerLimit_kW / 2.0f) * (1 - front_bias_endurance);
@@ -1278,7 +1278,7 @@ void canInit(void) {
         {
             .isMask = false,
             .rxFIFO = CAN_RX_FIFO0,
-            .ids = {CMR_CANID_DCM_RTC_DATA_IN}
+            .ids = {CMR_CANID_VCU_RTC_DATA_IN}
         },
 
         {
@@ -1346,8 +1346,9 @@ void canInit(void) {
 
          // Match all odd IDs (bottom bit 1, all others don't care).
          .ids = {0x001, 0x001}
-        }, s
-        {.isMask = false,
+        }, 
+        {
+         .isMask = false,
          //TODO: Examine isExtended
          // .isExtended = true,
          .rxFIFO = CAN_RX_FIFO1,
@@ -1522,7 +1523,7 @@ int canTX(cmr_canBusID_t bus, cmr_canID_t id, const void *data, size_t len, Tick
 
 int canExtendedTX(cmr_canBusID_t bus, cmr_canExtendedID_t id, const void *data, size_t len, TickType_t timeout) {
     configASSERT(bus < CMR_CAN_BUS_NUM);
-    return cmr_canExtendedTX(&(can[bus]), id, data, len, timeout);
+    return canExtendedTX(&(can[bus]), id, data, len, timeout);
 }
 
 /**
@@ -1715,7 +1716,7 @@ static void transmitDCM_DIMconfigMessages(){
     // calculate the correct CAN ID based on the current driver
     uint32_t can_ids_config_driver[NUM_CONFIG_PACKETS];
     // uint8_t requested_driver = config_menu_main_array[DRIVER_PROFILE_INDEX].value.value;
-    uint32_t base_driver_canid = CMR_CANID_DCM_CONFIG0_DRV0 + (2 * currentDriver * NUM_CONFIG_PACKETS);
+    uint32_t base_driver_canid = CMR_CANID_DIM_CONFIG0_DRV0 + (2 * currentDriver * NUM_CONFIG_PACKETS);
     for(int i = 0; i < NUM_CONFIG_PACKETS; i++){
         can_ids_config_driver[i] = base_driver_canid + i;
     }
@@ -1742,7 +1743,7 @@ static void transmitDCM_DIMconfigMessages(){
  * @return Pointer to payload, or NULL if rxMsg is invalid.
  */
 void *getPayload(canVehicleRX_t rxMsg) {
-    configASSERT((uint16_t) rxMsg < (uint16_t) CANRX_LEN);
+    configASSERT((uint16_t) rxMsg < (uint16_t) CANRX_VEH_LEN);
 
     cmr_canRXMeta_t *rxMeta = &(canRXMeta[rxMsg]);
 
@@ -1760,7 +1761,7 @@ void *getPayload(canVehicleRX_t rxMsg) {
  * @return State of the module when valid, otherwise CMR_CAN_STATE_UNKNOWN.
  */
 cmr_canState_t getModuleState(canVehicleRX_t module) {
-    configASSERT((module < CANRX_LEN) && (module != CANRX_VEH_HEARTBEAT_HVC));
+    configASSERT((module < CANRX_VEH_LEN) && (module != CANRX_VEH_HEARTBEAT_HVC));
 
     cmr_canHeartbeat_t *heartbeat = canVehicleGetPayload(module);
     uint8_t state = heartbeat->state;

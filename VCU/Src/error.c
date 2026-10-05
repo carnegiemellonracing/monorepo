@@ -50,7 +50,7 @@ void updateCurrentErrors(volatile vsmStatus_t *vsmStatus, TickType_t lastWakeTim
     uint8_t latchMatrix = CMR_CAN_VSM_LATCH_NONE;
 
     // Check for timeout errors
-    for (canVehicleRX_t i = 0; i < CANRX_LEN; i++) {
+    for (canVehicleRX_t i = 0; i < CANRX_VEH_LEN; i++) {
         cmr_canRXMeta_t *rxMeta = &(canRXMeta[i]);
 
         if (cmr_canRXMetaTimeoutError(rxMeta, lastWakeTime) < 0 &&
@@ -187,7 +187,7 @@ void updateCurrentWarnings(volatile vsmStatus_t *vsmStatus, TickType_t lastWakeT
     cmr_canWarn_t heartbeatWarnings = CMR_CAN_WARN_NONE;
 
     // Check for timeout warnings
-    for (canVehicleRX_t i = 0; i < CANRX_LEN; i++) {
+    for (canVehicleRX_t i = 0; i < CANRX_VEH_LEN; i++) {
         cmr_canRXMeta_t *rxMeta = &(canRXMeta[i]);
 
         if (cmr_canRXMetaTimeoutWarn(rxMeta, lastWakeTime) < 0) {

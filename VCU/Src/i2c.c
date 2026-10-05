@@ -69,8 +69,9 @@ void i2cInit() {
         GPIOC, GPIO_PIN_9          /* Data Port/Pin */
     );
 
+    //NOTE: Check the actual channel fo I2C once board is done
     cmr_i2cInit(
-        &i2c_ext, I2C5,                // TODO: Increase Clock Speed if can't hit deadlines
+        &i2c_ext, I2C1,                // TODO: Increase Clock Speed if can't hit deadlines
         I2C_CLOCK_LOW, 0, /* Clock Speed and own address */
         GPIOC, GPIO_PIN_11,         /* Clock Port/Pin */
         GPIOC, GPIO_PIN_10          /* Data Port/Pin */

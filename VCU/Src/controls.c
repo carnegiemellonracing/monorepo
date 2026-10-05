@@ -22,6 +22,7 @@
 #include "26x_sensors.h"
 #include "sensors.h"
 #include "lut.h"
+#include "state.h"
 
 #define PI 3.1415926535897932384626f
 
@@ -135,6 +136,13 @@ static void load_solver_settings() {
         solver_set_k_tie(k_tie * 0.01f); // [0, 0.255].
     }
 }
+
+void setFastTorqueWithPhantomDiff(
+    uint8_t throttlePos_u8,
+    int32_t swAngle_millideg,
+    float front_bias,
+    float phantom_diff_scaling_factor
+)
 
 /** @brief initialize controls */
 void initControls() {
