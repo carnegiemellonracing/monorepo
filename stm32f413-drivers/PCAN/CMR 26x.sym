@@ -156,8 +156,8 @@ ID=191h
 DLC=4
 CycleTime=10
 TimeOut=50
-Var=PRESSURE_ebsPressure_1 unsigned 0,16
-Var=PRESSURE_ebsPressure_2 unsigned 16,16
+Var=ebsPressure_1_deci_bar unsigned 0,16
+Var=ebsPressure_2_deci_bar unsigned 16,16
 
 [AUTONOMOUS_ACTION]
 ID=190h
@@ -194,14 +194,15 @@ Var=ACKNOWLEDGE_acknowledge unsigned 0,8
 
 [DIM_ACTIONS]
 ID=515h
-DLC=5
+DLC=7
 CycleTime=10
 TimeOut=50
 Var=ACTIONS_buttonStates unsigned 0,8
 Var=ACTIONS_regenPercent unsigned 8,8
 Var=ACTIONS_paddle unsigned 16,8
-Var=ACTIONS_controlsStatus unsigned 24,8
+Var=ACTIONS_cntrlOff unsigned 24,8
 Var=ACTIONS_dvControlMode unsigned 32,8
+Var=ACTIONS_paddleADC unsigned 40,16
 
 [DIM_POWER_DIAGNOSTICS]
 ID=535h
@@ -257,13 +258,15 @@ Var=CUBEMARS_errorCode unsigned 8,8
 
 [FSM_DATA]
 ID=133h
-DLC=5
+DLC=7
 CycleTime=10
 TimeOut=50
 Var=DATA_torqueRequested unsigned 0,8
 Var=DATA_throttlePosition unsigned 8,8
 Var=DATA_brakePressureFront_PSI unsigned 16,16 /u:PSI
-Var=brakePedalPosition_percent unsigned 32,8 /u:%
+Var=DATA_AS_Status unsigned 32,8
+Var=DATA_solonoid_1_current_mA unsigned 40,8
+Var=DATA_solonoid_2_current_mA unsigned 48,8
 
 [FSM_PEDALS_ADC]
 ID=533h
@@ -571,13 +574,15 @@ Var=LATCHED_VSM_LATCH_BSPD bit 16,1
 
 [VSM_SENSORS]
 ID=200h
-DLC=6
+DLC=8
 CycleTime=100
 TimeOut=500
 Var=SENSORS_brakePressureRear_PSI1 unsigned 0,16
-Var=SENSORS_hallEffect_cA signed 16,16
-Var=SENSORS_safetyIn_V unsigned 32,8
-Var=SENSORS_safetyOut_V unsigned 40,8
+Var=SENSORS_batt_mV unsigned 16,16
+Var=SENSORS_safetyIn_eight_V unsigned 32,8
+Var=SENSORS_safetyOut_eight_V unsigned 40,8
+Var=SENSORS_EAB_pressed unsigned 48,8
+Var=SENSORS_hv_current_A signed 56,8
 
 [VSM_STATUS]
 ID=110h
