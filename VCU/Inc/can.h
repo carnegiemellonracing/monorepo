@@ -169,7 +169,6 @@ typedef struct {
     uint8_t payload[8];     /**< @brief Payload data. */
 } canMsg_t;
 
-extern cmr_canRXMeta_t canRXMeta[];
 extern cmr_canRXMeta_t canVehicleRXMeta[CANRX_VEH_LEN];
 extern cmr_canRXMeta_t canTractiveRXMeta[CANRX_TRAC_LEN];
 extern cmr_canRXMeta_t canDaqRXMeta[CANRX_DAQ_LEN];
@@ -210,6 +209,10 @@ int16_t getDTIDCCurrent_dA(canTractiveRX_t rxMsg);
 int16_t getDTICtlrTemp_dC(canTractiveRX_t rxMsg);
 int16_t getDTIMotorTemp_dC(canTractiveRX_t rxMsg);
 cmr_canState_t getModuleState(canVehicleRX_t module);
+
+uint8_t getASMSState(void);
+void resetError(void);
+void sendFirstError(uint8_t error_code);
 
 static void sendVSMHeartbeat(TickType_t lastWakeTime);
 static void sendVSMStatus(void);

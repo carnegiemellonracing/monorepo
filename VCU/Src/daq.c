@@ -34,64 +34,6 @@ float motorSetpointPercentToTorque10(int16_t sp) {
     return ((float) sp) * PCT10_TO_NM10 * gear_ratio; 
 }
 
-void daqWheelSpeedFeedback(cmr_canVCUWheelVelocity_t *speedFeedback) {
-
-    int32_t dtiERPM_FL = getDTIERPM(CANRX_TRAC_FL_ERPM);
-    int32_t dtiERPM_FR = getDTIERPM(CANRX_TRAC_FR_ERPM);
-    int32_t dtiERPM_RL = getDTIERPM(CANRX_TRAC_RL_ERPM);
-    int32_t dtiERPM_RR = getDTIERPM(CANRX_TRAC_RR_ERPM);
-
-    speedFeedback->frontLeft_rpm =  dtiERPM_FL / pole_pairs;
-    speedFeedback->frontRight_rpm = dtiERPM_FR / pole_pairs;
-    speedFeedback->rearLeft_rpm =   dtiERPM_RL / pole_pairs;
-    speedFeedback->rearRight_rpm =  dtiERPM_RR / pole_pairs;
-}
-
-void daqWheelTorqueFeedback(cmr_canVCUWheelTorque_t *torqueFeedback) {
-    int16_t dtiCurrentFL = getDTIACCurrent_dA(CANRX_TRAC_FL_CURRENT);
-    int16_t dtiCurrentFR = getDTIACCurrent_dA(CANRX_TRAC_FR_CURRENT);
-    int16_t dtiCurrentRL = getDTIACCurrent_dA(CANRX_TRAC_RL_CURRENT);
-    int16_t dtiCurrentRR = getDTIACCurrent_dA(CANRX_TRAC_RR_CURRENT);
-
-    torqueFeedback->frontLeft_Nm =  dtiCurrentFL;
-    torqueFeedback->frontRight_Nm = dtiCurrentFR;
-    torqueFeedback->rearLeft_Nm =   dtiCurrentRL;
-    torqueFeedback->rearRight_Nm =  dtiCurrentRR;
-}
-
-void daqWheelSpeedSetpoints(cmr_canVCUWheelVelocity_t *speedSetpoint) {
-    const cmr_DTI_RX_Message_t *dtiSetpoint1FL = getDTISetpoints(MOTOR_FL);
-    const cmr_DTI_RX_Message_t *dtiSetpoint1FR = getDTISetpoints(MOTOR_FR);
-    const cmr_DTI_RX_Message_t *dtiSetpoint1RL = getDTISetpoints(MOTOR_RL);
-    const cmr_DTI_RX_Message_t *dtiSetpoint1RR = getDTISetpoints(MOTOR_RR);
-
-    speedSetpoint->frontLeft_rpm =  dtiSetpoint1FL->velocity_erpm;
-    speedSetpoint->frontRight_rpm = dtiSetpoint1FR->velocity_erpm;
-    speedSetpoint->rearLeft_rpm =   dtiSetpoint1RL->velocity_erpm;
-    speedSetpoint->rearRight_rpm =  dtiSetpoint1RR->velocity_erpm;
-}
-
-void daqWheelTorqueSetpoints(cmr_canVCUWheelTorque_t *torqueSetpoint) {
-    torqueSetpoint->frontLeft_Nm =  getMotorTorqueRequest(MOTOR_FL);
-    torqueSetpoint->frontRight_Nm = getMotorTorqueRequest(MOTOR_FR);
-    torqueSetpoint->rearLeft_Nm =   getMotorTorqueRequest(MOTOR_RL);
-    torqueSetpoint->rearRight_Nm =  getMotorTorqueRequest(MOTOR_RR);
-}
-
-float daqPoseOrientationRadToDeg(int16_t rad) {
-    // 360 / (2*pi) / 10^4
-    static const float RAD104_TO_DEG = 0.005729577;
-
-    return ((float) rad) * RAD104_TO_DEG;
-}
-
-float daqPoseOrientationRad(int16_t rad) {
-    // 360 / (2*pi) / 10^4
-    static const float RAD_TO_DEG = 57.29577;
-
-    return ((float) rad) * RAD_TO_DEG;
-}
-
 float carVelocityToWheelRPM(float vel) {
     return (vel / (effective_wheel_dia_m * M_PI)) * 60.0f;
 }
@@ -119,17 +61,10 @@ float estimateCarVelocityFromMotors() {
     return wheelRPMToCarVelocity(speed);
 }
 
-// converts big endian to little endian
-cmr_canIzzie_loadcell_calibrated_t getLoads(cmr_canIzzie_loadcell_raw_t raw_data){
-    cmr_canIzzie_loadcell_calibrated_t to_return = { 0 };
-    uint16_t to_return_calibrated = (raw_data.calibrated_output_f); 
-    
-    to_return_calibrated = (to_return_calibrated >> 8) | (8 << to_return_calibrated);
-    to_return.calibrated_output_f = to_return_calibrated; 
 
-    return to_return;
-}
 
+//TODO: broadcast more important constants 
+// calculated wheel torques and speeds + front/rear bias 
 volatile cmr_can_controls_debug_global_t controls_debug_struct_global;
 volatile cmr_can_controls_debug_FR_t controls_debug_struct_fr;
 volatile cmr_can_controls_debug_FL_t controls_debug_struct_fl;

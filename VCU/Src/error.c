@@ -51,7 +51,7 @@ void updateCurrentErrors(volatile vsmStatus_t *vsmStatus, TickType_t lastWakeTim
 
     // Check for timeout errors
     for (canVehicleRX_t i = 0; i < CANRX_VEH_LEN; i++) {
-        cmr_canRXMeta_t *rxMeta = &(canRXMeta[i]);
+        cmr_canRXMeta_t *rxMeta = &(canVehicleRXMeta[i]);
 
         if (cmr_canRXMetaTimeoutError(rxMeta, lastWakeTime) < 0 &&
         !(rxMeta->errorFlag == 0 && vsmErrorSourceFlags[i] == CMR_CAN_VSM_TIMEOUT_SOURCE_NONE)) {
@@ -136,7 +136,7 @@ static bool dimRequestIsValid(
     cmr_canDIMRequest_t *dimRequest = canVehicleGetPayload(CANRX_VEH_DIM_REQUEST);
     cmr_canState_t dimRequestedState = (cmr_canState_t)(dimRequest->requestedState);
     bool dimRequestTimeout = cmr_canRXMetaTimeoutError(
-        &(canRXMeta[CANRX_VEH_DIM_REQUEST]), lastWakeTime
+        &(canVehicleRXMeta[CANRX_VEH_DIM_REQUEST]), lastWakeTime
     );
 
     if (
@@ -188,7 +188,7 @@ void updateCurrentWarnings(volatile vsmStatus_t *vsmStatus, TickType_t lastWakeT
 
     // Check for timeout warnings
     for (canVehicleRX_t i = 0; i < CANRX_VEH_LEN; i++) {
-        cmr_canRXMeta_t *rxMeta = &(canRXMeta[i]);
+        cmr_canRXMeta_t *rxMeta = &(canVehicleRXMeta[i]);
 
         if (cmr_canRXMetaTimeoutWarn(rxMeta, lastWakeTime) < 0) {
             heartbeatWarnings |= rxMeta->warnFlag;
@@ -377,7 +377,7 @@ __attribute__((unused)) static bool getASEmergency(){
 */
 bool invertersPass(TickType_t lastWakeTime_ms){
     cmr_canDTI_ErrorMessages_t *dti_error_codes = canVehicleGetPayload(CANRX_VEH_DTI_ERROR_CODE);
-    bool inverter_message_valid = !cmr_canRXMetaTimeoutError(&canRXMeta[CANRX_VEH_DTI_ERROR_CODE], lastWakeTime_ms);
+    bool inverter_message_valid = !cmr_canRXMetaTimeoutError(&canVehicleRXMeta[CANRX_VEH_DTI_ERROR_CODE], lastWakeTime_ms);
 
     if (!inverter_message_valid) {
         if(COMPETITION_MODE){

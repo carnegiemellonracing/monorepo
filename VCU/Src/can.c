@@ -222,7 +222,7 @@ cmr_canRXMeta_t canVehicleRXMeta[CANRX_VEH_LEN] = {
         .warnFlag = CMR_CAN_WARN_NONE
     },
     [CANRX_VEH_HEARTBEAT_COMPUTE] = {
-        .canID = CMR_CANID_HEARTBEAT_COMPUTE,
+        .canID = CMR_CANID_AS_HEARTBEAT_COMPUTE,
         .timeoutError_ms = 2000,
         .timeoutWarn_ms = 1000
     },
@@ -628,7 +628,7 @@ cmr_canRXMeta_t canDaqRXMeta[CANRX_DAQ_LEN] = {
         .timeoutWarn_ms = 3000
     },
     [CANRX_DAQ_HEARTBEAT_COMPUTE] = {
-        .canID = CMR_CANID_HEARTBEAT_COMPUTE,
+        .canID = CMR_CANID_AS_HEARTBEAT_COMPUTE,
         .timeoutError_ms = 2000,
         .timeoutWarn_ms = 1000
     },
@@ -706,13 +706,15 @@ static void canTX10Hz(void *pvParameters) {
 
     cmr_canEMDMeasurements_t *emdMeasurements = canTractiveGetPayload(CANRX_TRAC_EMD_MEASUREMENT);
     cmr_canEMDTemperatures_t *emdTemperature  = canTractiveGetPayload(CANRX_TRAC_EMD_TEMPERATURE);
-
+    
+    volatile cmr_canHVSense_t *HVSensors = canVehicleGetPayload(CANRX_HVI_SENSE);
+    
     while (1) {
         cmr_canEMDBrakePressure_t emdPressures = {
             .ebsPressure1_psi = (uint16_t)((float)(dvPressure->ebsPressure_1_deci_bar) * 1.45038),
             .ebsPressure2_psi = (uint16_t)((float)(dvPressure->ebsPressure_2_deci_bar) * 1.45038),
             .hydraulicPressure1_psi = dataFSM->brakePressureFront_PSI,
-            .hydraulicPressure2_psi = vsmSensors->brakePressureRear_PSI
+            .hydraulicPressure2_psi = HVSensors->brakePressureRear_PSI
         };
 
         canTX(CMR_CAN_BUS_TRAC, CMR_CANID_EMD_EBS_PRESSURE, &emdPressures, sizeof(emdPressures), canTX10Hz_period_ms);
@@ -771,7 +773,7 @@ static void sendVSMSensors(void);
 static void sendVSMLatchedStatus(void);
 static void sendHVCCommand(void);
 static void sendRESEnable(void);
-void resetError();
+void resetError(void);
 void sendFirstError(uint8_t error_code);
 
 /** @brief CAN 100 Hz TX priority. */
@@ -919,7 +921,7 @@ static void canTX200Hz(void *pvParameters) {
 
         if(new_compute_heartbeat) {
             cmr_canHeartbeat_t *heartbeatCompute = canDAQGetPayload(CANRX_DAQ_HEARTBEAT_COMPUTE);
-            canTX(CMR_CAN_BUS_VEH, CMR_CANID_HEARTBEAT_COMPUTE, heartbeatCompute, sizeof(cmr_canHeartbeat_t), canTX200Hz_period_ms);
+            canTX(CMR_CAN_BUS_VEH, CMR_CANID_AS_HEARTBEAT_COMPUTE, heartbeatCompute, sizeof(cmr_canHeartbeat_t), canTX200Hz_period_ms);
             new_compute_heartbeat = false;
         }
 
@@ -1164,7 +1166,7 @@ void conditionalCallback(cmr_can_t *canb_rx, uint32_t canID, const void *data, s
         new_dim_request = true;
     }
 
-    if(canID == CMR_CANID_HEARTBEAT_COMPUTE) {
+    if(canID == CMR_CANID_AS_HEARTBEAT_COMPUTE) {
         new_compute_heartbeat = true;
     }
 
@@ -1239,7 +1241,7 @@ void canInit(void) {
     cmr_canInit(
         &can[CMR_CAN_BUS_VEH], CAN1,
         CMR_CAN_BITRATE_500K,
-        canRXMeta, sizeof(canRXMeta) / sizeof(canRXMeta[0]),
+        canVehicleRXMeta, sizeof(canVehicleRXMeta) / sizeof(canVehicleRXMeta[0]),
         NULL,
         GPIOB, GPIO_PIN_12,     // CAN2 RX port/pin.
         GPIOB, GPIO_PIN_13      // CAN2 TX port/pin.
@@ -1249,7 +1251,7 @@ void canInit(void) {
     cmr_canInit(
         &can[CMR_CAN_BUS_DAQ], CAN2,
         CMR_CAN_BITRATE_500K,
-        canRXMeta, sizeof(canRXMeta) / sizeof(canRXMeta[0]),
+        canVehicleRXMeta, sizeof(canVehicleRXMeta) / sizeof(canVehicleRXMeta[0]),
         NULL,
         GPIOB, GPIO_PIN_12,     // CAN2 RX port/pin.
         GPIOB, GPIO_PIN_13      // CAN2 TX port/pin.
@@ -1259,7 +1261,7 @@ void canInit(void) {
     cmr_canInit(
         &can[CMR_CAN_BUS_TRAC], CAN2,
         CMR_CAN_BITRATE_500K,
-        canRXMeta, sizeof(canRXMeta) / sizeof(canRXMeta[0]),
+        canVehicleRXMeta, sizeof(canVehicleRXMeta) / sizeof(canVehicleRXMeta[0]),
         NULL,
         GPIOB, GPIO_PIN_12,     // CAN2 RX port/pin.
         GPIOB, GPIO_PIN_13      // CAN2 TX port/pin.
@@ -1295,12 +1297,12 @@ void canInit(void) {
             .rxFIFO = CAN_RX_FIFO0,
             .ids = {
                 CMR_CANID_AS_RES,
-                CMR_CANID_HEARTBEAT_COMPUTE,
+                CMR_CANID_AS_HEARTBEAT_COMPUTE,
                 CMR_CANID_AUTONOMOUS_ACTION,
                 CMR_CANID_AS_MISSION_FINISHED
             }
 		},
-        
+
         //VSM FIFO1
         { // 4 messages at 100 Hz
             .isMask = true,
@@ -1733,7 +1735,7 @@ static void transmitDCM_DIMconfigMessages(){
 void *getPayload(canVehicleRX_t rxMsg) {
     configASSERT((uint16_t) rxMsg < (uint16_t) CANRX_VEH_LEN);
 
-    cmr_canRXMeta_t *rxMeta = &(canRXMeta[rxMsg]);
+    cmr_canRXMeta_t *rxMeta = &(canVehicleRXMeta[rxMsg]);
 
     return (void *)(&rxMeta->payload);
 }
@@ -1766,20 +1768,6 @@ uint8_t getASMSState() {
 
 	cmr_canFSMData_t *dataFSM = (cmr_canFSMData_t*)getPayload(CANRX_VEH_FSM_DATA);
 	return (dataFSM->AS_Status);
-}
-
-/**
- * @brief Sends a CAN message with the given ID.
- *
- * @param id The ID for the message.
- * @param data The data to send.
- * @param len The data's length, in bytes.
- * @param timeout The timeout, in ticks.
- *
- * @return 0 on success, or a negative error code on timeout.
- */
-int canTX(cmr_canID_t id, const void *data, size_t len, TickType_t timeout) {
-    return cmr_canTX(&can, id, data, len, timeout);
 }
 
 //TODO: Once merge, sendheartbeat called in both 100 and 200Hz,and then 
@@ -1823,14 +1811,13 @@ static void sendRESEnable() {
 static void sendVSMSensors(void) {
 
     cmr_canVSMSensors_t msg = {
-        .brakePressureRear_PSI =    cmr_sensorListGetValue(&sensorList, SENSOR_CH_BPRES_PSI),
         .batt_mV =                  cmr_sensorListGetValue(&sensorList, SENSOR_CH_VOLTAGE_MV),
         .safetyIn_eight_V =         cmr_sensorListGetValue(&sensorList, SENSOR_CH_SS_IN),
         .EAB_pressed =              cmr_gpioRead(GPIO_IN_EAB),
         .hv_current_A =             cmr_sensorListGetValue(&sensorList, SENSOR_CH_HALL_EFFECT_A),   
     };
 
-    canTX(CMR_CANID_VSM_SENSORS, &msg, sizeof(msg), canTX10Hz_period_ms);
+    canTX(CMR_CAN_BUS_VEH, CMR_CANID_VSM_SENSORS, &msg, sizeof(msg), canTX10Hz_period_ms);
 }
 
 /**
@@ -1841,7 +1828,7 @@ static void sendVSMSensors(void) {
 static void sendVSMLatchedStatus(void) {
     const vsmStatus_t *vsmStatus = getCurrentStatus();
 
-    canTX(CMR_CANID_VSM_LATCHED_STATUS,
+    canTX(CMR_CAN_BUS_VEH, CMR_CANID_VSM_LATCHED_STATUS,
           &(vsmStatus->canVSMLatchedStatus),
           sizeof(vsmStatus->canVSMLatchedStatus),
           canTXLatchedStatus_period_ms
@@ -1857,7 +1844,7 @@ static void sendHVCCommand(void) {
         .modeRequest = hvcModeRequest
     };
 
-    canTX(CMR_CANID_HVC_COMMAND, &hvcCommand, sizeof(hvcCommand), canTX100Hz_period_ms);
+    canTX(CMR_CAN_BUS_VEH, CMR_CANID_HVC_COMMAND, &hvcCommand, sizeof(hvcCommand), canTX100Hz_period_ms);
 }
 
 /**
@@ -1868,7 +1855,7 @@ void sendFirstError(uint8_t error_code) {
     if (!detectedFirstError) {
         detectedFirstError = true;
 
-        canTX(CMR_CANID_VSM_FIRST_ERROR, &error_code, sizeof(error_code), canTX100Hz_period_ms);
+        canTX(CMR_CAN_BUS_VEH, CMR_CANID_VSM_FIRST_ERROR, &error_code, sizeof(error_code), canTX100Hz_period_ms);
         return;
     }
 
@@ -1879,15 +1866,15 @@ void resetError() {
     detectedFirstError = false;
 }
 
-/**
- * @brief Bring software error GPIO Low 
-    when HVC Heartbeat timeout
- */
+// /**
+//  * @brief Bring software error GPIO Low 
+//     when HVC Heartbeat timeout
+//  */
 
-void hvcTimeout() {
-    cmr_canHVCHeartbeat_t *hvcHeartbeat = canVehicleGetPayload(CANRX_VEH_HEARTBEAT_HVC);
+// void hvcTimeout() {
+//     cmr_canHVCHeartbeat_t *hvcHeartbeat = canVehicleGetPayload(CANRX_VEH_HEARTBEAT_HVC);
     
-    (if hvcHeartbeat->hvcState) {
-
-    }
-}
+//     (if hvcHeartbeat->hvcState) {
+//         return; 
+//     }
+// }

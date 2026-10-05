@@ -9,13 +9,26 @@
 static const float maxTorque_Nm = 31.6f;
 static const float max_regen_torque_Nm = -20.0f;
 
+/// Integer percentage of allowed paddle travel before regen force starts being applied.
+static const uint8_t regenPaddlePercentThreshold = 10;
+
+/// Front/rear bias ratio for regen braking. The bias ratio is applied as `regenForce` for the
+/// front motors and `(1.0 - frontRegenBrakeBias) / frontRegenBrakeBias * regenForce` for the rear motors.
+static const float frontRegenBiasRatio = 0.667f;
+
 static const float minTorqueLUTVal_Nm = 2.6f;
 static const float current_torque_slope = 85.0f / 31.6f;
 
 static const float front_bias = 0.25f;
 static const float front_bias_endurance = 0.25f;
 
-
+/// GVC v1 constants.
+/// The steering wheel angle threshold for which phantom differential starts being applied.
+static const int32_t swAngleTurningThreshold_millideg = 4000;
+/// The maximum steering wheel angle.
+static const int32_t swAngleMax_millideg = 27000;
+/// Power limit setpoint per DTI motor. Two motors per inverter provide a combined limit of 70 KW.
+static const float maxPowerPerMotor_kW = 35.0f;
 
 static const uint16_t DTI_MAX_DC_CURRENT_PER_MOTOR_DA = 850;
 

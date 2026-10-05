@@ -229,7 +229,7 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
     cmr_canDIMRequest_t *dimRequest = canVehicleGetPayload(CANRX_VEH_DIM_REQUEST);
     cmr_canState_t dimRequestedState = (cmr_canState_t)(dimRequest->requestedState);
     if (
-        cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_VEH_DIM_REQUEST]), lastWakeTime_ms) ||
+        cmr_canRXMetaTimeoutError(&(canVehicleRXMeta[CANRX_VEH_DIM_REQUEST]), lastWakeTime_ms) ||
         (vsmStatus.heartbeatWarnings & CMR_CAN_WARN_VSM_DIM_REQ_NAK)
     ) {
         // Stale/NAK'd DIM request; assume it is requesting the current state.
@@ -618,7 +618,7 @@ static inline bool getMissionSelected(void){
  * @brief Checks if TS is active
  */
 static inline bool TSActive(void){
-    cmr_canHVCHeartbeat_t* HVCState = (cmr_canHVCHeartbeat_t*) (getPayload(CANRX_VEH_HEARTBEAT_HVC));
+    cmr_canHVCHeartbeat_t* HVCState = (cmr_canHVCHeartbeat_t*) (canVehicleGetPayload(CANRX_VEH_HEARTBEAT_HVC));
     bool ts_active = CMR_CAN_HVC_STATE_DRIVE == HVCState->hvcState;
     if (!ts_active) {
         sendFirstError(TS_ACTIVE);
@@ -649,9 +649,9 @@ static inline bool getMissionFinished(void){ //can from compute
  *       per hot loop and is somewhat expensive to compute  
  */
 static bool getVehicleFinished(){
-    int32_t dti_fl_erpm = getDTIERPM(CANRX_FL_ERPM);
-    int32_t dti_fr_erpm = getDTIERPM(CANRX_FR_ERPM);
-    int32_t dti_rl_erpm = getDTIERPM(CANRX_RL_ERPM);
+    int32_t dti_fl_erpm = getDTIERPM(CANRX_TRAC_FL_ERPM);
+    int32_t dti_fr_erpm = getDTIERPM(CANRX_TRAC_FR_ERPM);
+    int32_t dti_rl_erpm = getDTIERPM(CANRX_TRAC_RL_ERPM);
     // int32_t dti_rr_erpm = getDTIERPM(CANRX_RR_ERPM);
 
     bool vehicleStill = (dti_fl_erpm < 50) && (dti_fr_erpm < 50) &&
@@ -666,7 +666,7 @@ static bool getVehicleFinished(){
  * More: https://doc.fs-quiz.eu/FSG2017_DV_Technical_Specifications_v1.0.pdf
  */
 static inline bool getRESGo(void) {
-	uint8_t *data = (uint8_t*)(getPayload(CANRX_VEH_RES));
+	uint8_t *data = (uint8_t*)(canVehicleGetPayload(CANRX_VEH_RES));
     return (data[0] & CMR_CAN_RES_GO);
 }
 
@@ -674,7 +674,7 @@ static inline bool getRESGo(void) {
  * @brief Checks if RES is activated
  */
 static inline bool RESTriggered(void){
-	uint8_t *data = (uint8_t*)(getPayload(CANRX_VEH_RES));
+	uint8_t *data = (uint8_t*)(canVehicleGetPayload(CANRX_VEH_RES));
 	bool res_triggered = !(data[0] & CMR_CAN_RES_TRIG);
 	return res_triggered; 
 }
@@ -683,7 +683,7 @@ static inline bool RESTriggered(void){
  * @brief Checks if RES is activated
  */
 static inline bool RESCorrect(){
-	uint8_t *data = (uint8_t*)(getPayload(CANRX_VEH_RES));
+	uint8_t *data = (uint8_t*)(canVehicleGetPayload(CANRX_VEH_RES));
 	bool res_triggered = !(data[7] & CMR_CAN_RES_TRIG);
 	return res_triggered; 
 }
