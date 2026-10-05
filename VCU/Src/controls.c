@@ -63,9 +63,6 @@ volatile cmr_canVCUWheelTorque_t solver_torques;
 /* @brief For testing only; false = use calculated downforce */
 volatile bool use_true_downforce = false;
 
-/** @brief total distance traveled */
-extern volatile float odometer_km;
-
 /** @brief whether or not TC and YRC are enabled */
 static volatile cmr_canVCUControlsStatus_t controlsStatus = {
     .tcOn = (uint8_t)false,
@@ -622,12 +619,6 @@ void runControls (
         + (int32_t)(dtiERPM_RR / pole_pairs)
     ) / MOTOR_LEN;
 
-    // Update odometer
-    /* Wheel Speed to Vehicle Speed Conversion
-    *      (x rotations / 1min) * (16" * PI) *  (2.54*10^-5km/inch)
-    *      (1min / 60sec) * (1sec/1000ms) * (5ms period) * (1/13.93 gear ratio)
-    *      = x * 7.6378514861 × 10^-9 */
-    odometer_km += ((float)avgMotorSpeed_RPM) * 7.6378514861e-9;
     /** @todo check floating point granularity for potential issues with adding small numbers repeatedly to large numbers */
     
     bool sensoric_timeout = cmr_canRXMetaTimeoutError(&canDaqRXMeta[CANRX_DAQ_SENSORIC_VEL_ANG], xTaskGetTickCount()) != 0;
@@ -1018,15 +1009,6 @@ void setAccelLaunchControl(
 
     // read button
     bool button_held = (((volatile cmr_canDIMActions_t *)canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON))->buttonStates) & BUTTON_ACT;
-
-    float odometer_vel_mps = motorSpeedToWheelLinearSpeed_mps(
-        getTotalMotorSpeed_radps() * 0.25f);
-
-    // state transitions
-    // armed state
-    if (odometer_vel_mps < LAUNCH_SPEED_THRESH_MPS && button_held) {
-        launch_armed = true;
-    }
 
     // active state
     if (launch_armed && button_was_held && !button_held) {
