@@ -1557,4 +1557,26 @@ typedef struct{
 }
 cmr_canAutonomousPIDConstants_t;
 
+typedef struct{
+    uint8_t muxID;
+    uint8_t count_state; 
+    big_endian_32_t message; 
+}
+cmr_canIVTreadings_t; 
+
+typedef struct {
+    uint8_t  hour;
+    uint8_t  minute;
+    uint8_t  second;
+    uint8_t  AM_PM;
+    uint32_t subsecond;
+} cmr_canRTCTime;
+
+typedef struct {
+    uint8_t  day;
+    uint8_t  month;
+    uint8_t  date;
+    uint8_t  year;
+} cmr_canRTCDate;
+
 #endif /* CMR_CAN_TYPES_H */
