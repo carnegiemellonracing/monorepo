@@ -190,7 +190,7 @@ int canExtendedTX(
     TickType_t timeout
 );
 
-const cmr_canVSMTimeoutErrorSource_t vsmErrorSourceFlags[CANRX_VEH_LEN];
+extern const cmr_canVSMTimeoutErrorSource_t vsmErrorSourceFlags[CANRX_VEH_LEN];
 
 volatile void *canVehicleGetPayload(canVehicleRX_t msg);
 volatile void *canTractiveGetPayload(canTractiveRX_t msg);

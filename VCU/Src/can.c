@@ -1878,3 +1878,7 @@ void resetError() {
 //         return; 
 //     }
 // }
+
+static void sendVSMStatus(void){
+    return; 
+}

@@ -138,6 +138,10 @@ static int32_t adcToBrakePres_PSI(const cmr_sensor_t *sensor, uint32_t value) {
     return (int32_t) brakePres_PSI;
 }
 
+int32_t getCurrent_mA(void){
+    return 0; 
+}
+
 // TODO calibrate all of these min/max values
 cmr_sensor_t sensors[SENSOR_CH_LEN] = {
     [SENSOR_CH_HALL_EFFECT_A] = {
