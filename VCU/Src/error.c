@@ -404,6 +404,7 @@ bool invertersPass(TickType_t lastWakeTime_ms){
     }
 }
 
+//TODO: Only check for HVC and HVBMS timeouts
 bool getAMSError(){
     return false;
     // TickType_t now = xTaskGetTickCount();

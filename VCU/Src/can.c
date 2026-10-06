@@ -267,6 +267,7 @@ cmr_canRXMeta_t canVehicleRXMeta[CANRX_VEH_LEN] = {
 
 };
 
+//TODO: Move EMD CAN IDs into VEH
 #define dti_timeout 1000
 /** @brief Metadata for tractive CAN message reception. */
 cmr_canRXMeta_t canTractiveRXMeta[CANRX_TRAC_LEN] = {
@@ -706,31 +707,15 @@ static void canTX10Hz(void *pvParameters) {
 
     cmr_canEMDMeasurements_t *emdMeasurements = canTractiveGetPayload(CANRX_TRAC_EMD_MEASUREMENT);
     cmr_canEMDTemperatures_t *emdTemperature  = canTractiveGetPayload(CANRX_TRAC_EMD_TEMPERATURE);
-    
-    volatile cmr_canHVSense_t *HVSensors = canVehicleGetPayload(CANRX_HVI_SENSE);
-    
+    //TODO: Rename CANRX_HVI_SENSE to HVC_SENSE
+
     while (1) {
-        cmr_canEMDBrakePressure_t emdPressures = {
-            .ebsPressure1_psi = (uint16_t)((float)(dvPressure->ebsPressure_1_deci_bar) * 1.45038),
-            .ebsPressure2_psi = (uint16_t)((float)(dvPressure->ebsPressure_2_deci_bar) * 1.45038),
-            .hydraulicPressure1_psi = dataFSM->brakePressureFront_PSI,
-            .hydraulicPressure2_psi = HVSensors->brakePressureRear_PSI
-        };
-
-        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_EMD_EBS_PRESSURE, &emdPressures, sizeof(emdPressures), canTX10Hz_period_ms);
-
+        
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_EMD_MEASUREMENT, emdMeasurements, sizeof(cmr_canEMDMeasurements_t), canTX10Hz_period_ms);
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_EMD_TEMPERATURE, emdTemperature, sizeof(cmr_canEMDTemperatures_t), canTX10Hz_period_ms);
-
-        if(inverterMessagesValid()) {
-            dtiErrorMessages.fl_fault_code = dtiTempFaultFL->fault_code;
-            dtiErrorMessages.fr_fault_code = dtiTempFaultFR->fault_code;
-            dtiErrorMessages.rl_fault_code = dtiTempFaultRL->fault_code;
-            dtiErrorMessages.rr_fault_code = dtiTempFaultRR->fault_code;
-            canTX(CMR_CAN_BUS_VEH, CMR_CANID_DTI_ERROR_MESSAGES, &dtiErrorMessages, sizeof(dtiErrorMessages), canTX10Hz_period_ms);
-        }
         
         //TODO: add correct diagnostic messages here 
+        //TODO: Consolidate CAN TX into functions and call the functions here
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_VCU_COULOMB_COUNTING, &coulombCounting, sizeof(cmr_canVCUKiloCoulombs_t), canTX10Hz_period_ms);
         
         sendRESEnable();
@@ -754,6 +739,12 @@ static cmr_task_t canTXLatchedStatus_task;
  *
  * @return Does not return.
  */
+
+ //TODO: CanTXLatchedStatus doesn't need to be own task
+ //Call sendVSMLatchedStatus in 10Hz
+ //TODO: Software ERR sent in VSM Status as a CAN Message
+ //Latch Matrix can just be software error, and no error (cantypes struct can_vsmLatch)
+ //CMR_CANID_VSM_STATUS
 static void canTXLatchedStatus(void *pvParameters) {
     (void) pvParameters;    // Placate compiler.
 
@@ -847,7 +838,7 @@ static void canTX200Hz(void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        
+        //TODO: CAll DTI Setpoints on all 4 Motors 
         cmr_canState_t VSMstate = getCurrentExternalState(); 
 
         //instance here
@@ -929,12 +920,6 @@ static void canTX200Hz(void *pvParameters) {
             cmr_canCubeMarsData_t *cubeMarsData = canDAQGetPayload(CANRX_DAQ_CUBEMARS_DATA);
             canTX(CMR_CAN_BUS_VEH, CMR_CANID_CUBEMARS_DATA, cubeMarsData, sizeof(cmr_canCubeMarsData_t), canTX200Hz_period_ms);
             new_cubemars_data = false;
-        }
-
-        if(new_res_message) {
-            void *resData = canVehicleGetPayload(CANRX_VEH_AS_RES);
-            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_AS_RES, resData, 8, canTX200Hz_period_ms);
-            new_res_message = false;
         }
 
         if(new_AS_finished_message) {
@@ -1223,12 +1208,6 @@ void conditionalCallback(cmr_can_t *canb_rx, uint32_t canID, const void *data, s
         }
     }
 
-    uint16_t temp = canID & 0x770;
-    (void) temp;
-    if(temp == 0x770) {
-        movella_parse(canID, payload);
-    }
-
     uint32_t total_ticks = DWT->CYCCNT - au32_initial_ticks;
 }
 
@@ -1247,6 +1226,7 @@ void canInit(void) {
         GPIOB, GPIO_PIN_13      // CAN2 TX port/pin.
     );
 
+    //TODO: Change to canDAQRXMeta same w/ Trac
     //DAQ CAN Init
     cmr_canInit(
         &can[CMR_CAN_BUS_DAQ], CAN2,
@@ -1267,6 +1247,7 @@ void canInit(void) {
         GPIOB, GPIO_PIN_13      // CAN2 TX port/pin.
     );
 
+    //TODO: Fit everything into 14 * 4 CAN Filters
     // Vehicle CAN filters.
     const cmr_canFilter_t canVehicleFilters[] = {
         //VSM FIFO0
@@ -1418,7 +1399,7 @@ void canInit(void) {
 
     cmr_canFilter(&(can[CMR_CAN_BUS_TRAC]), canTractiveFilters,
                   sizeof(canTractiveFilters) / sizeof(canTractiveFilters[0]));
-
+//TODO: Try to fit in CAN IDs in filters
     // DAQ CAN filters.
     const cmr_canFilter_t canDaqFilters[] = {
         {.isMask = true,
@@ -1640,11 +1621,6 @@ int16_t getDTIACCurrent_dA(canTractiveRX_t rxMsg) {
     return parse_int16(&(dtiCurrent->ac_current_dA));
 }
 
-int16_t getDTIDCCurrent_dA(canTractiveRX_t rxMsg) {
-    cmr_canDTI_TX_Current_t *dtiCurrent = canTractiveGetPayload(rxMsg);
-    return parse_int16(&(dtiCurrent->dc_current_dA));
-}
-
 int16_t getDTICtlrTemp_dC(canTractiveRX_t rxMsg) {
     cmr_canDTI_TX_TempFault_t *dtiTempFault = canTractiveGetPayload(rxMsg);
     return parse_int16(&(dtiTempFault->ctlr_temp));
@@ -1726,21 +1702,6 @@ static void transmitDCM_DIMconfigMessages(){
 }
 
 /**
- * @brief Gets a pointer to the payload of a received CAN message.
- *
- * @param rxMsg The message to get the payload of.
- *
- * @return Pointer to payload, or NULL if rxMsg is invalid.
- */
-void *getPayload(canVehicleRX_t rxMsg) {
-    configASSERT((uint16_t) rxMsg < (uint16_t) CANRX_VEH_LEN);
-
-    cmr_canRXMeta_t *rxMeta = &(canVehicleRXMeta[rxMsg]);
-
-    return (void *)(&rxMeta->payload);
-}
-
-/**
  * @brief Gets the state from the heartbeat of a module.
  *
  * @param module The module to get the state of. Must be a value of `CANRX_HEARTBEAT_XXX`
@@ -1766,9 +1727,11 @@ cmr_canState_t getModuleState(canVehicleRX_t module) {
  */
 uint8_t getASMSState() {
 
-	cmr_canFSMData_t *dataFSM = (cmr_canFSMData_t*)getPayload(CANRX_VEH_FSM_DATA);
+	cmr_canFSMData_t *dataFSM = (cmr_canFSMData_t*)canVehicleGetPayload(CANRX_VEH_FSM_DATA);
 	return (dataFSM->AS_Status);
 }
+//TODO: Nuke all getPayload instances 
+//Search )getPayload
 
 //TODO: Once merge, sendheartbeat called in both 100 and 200Hz,and then 
 /**
@@ -1879,16 +1842,3 @@ void sendFirstError(uint8_t error_code) {
 void resetError() {
     detectedFirstError = false;
 }
-
-// /**
-//  * @brief Bring software error GPIO Low 
-//     when HVC Heartbeat timeout
-//  */
-
-// void hvcTimeout() {
-//     cmr_canHVCHeartbeat_t *hvcHeartbeat = canVehicleGetPayload(CANRX_VEH_HEARTBEAT_HVC);
-    
-//     (if hvcHeartbeat->hvcState) {
-//         return; 
-//     }
-// }

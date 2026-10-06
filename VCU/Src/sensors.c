@@ -26,7 +26,7 @@ const adcChannel_t sensorsADCChannels[SENSOR_CH_LEN] =
     [SENSOR_CH_SS_IN]          = ADC_SSIN,
     [SENSOR_CH_SS_OUT]         = ADC_SSOUT
 };
-
+//TODO: Delete SENSOR_CH_BPRES_PSI and consolidate SENSOR_CH_SS_IN + SENSOR_CH_SS_OUT = SENSOR_CH_SS
 /**
  * @brief Gets a new value from an ADC sensor.
  *
@@ -92,30 +92,6 @@ static int32_t adcToBusCurrent_mA(const cmr_sensor_t *sensor, uint32_t value) {
 }
 
 /**
- * @brief Converts a raw sensor value into accumulator current draw.
- *
- * @param sensor The sensor.
- * @param value The raw value.
- *
- * @return Current in amps
- */
-static int32_t adc_to_hv_current(const cmr_sensor_t *sensor, uint32_t value) {
-    (void) sensor;  // Placate compiler.
-
-    // https://www.lem.com/sites/default/files/products_datasheets/ho_50_250-s-0100_series.pdf
-    float mcu_volts_per_adc = 3.3f / 4096.0f; 
-    float offset_mcu_volts = 1.568f; // Reading at 0 amps off car
-    float amps_per_sensor_volt = 125.0f / 2.0f;
-    float sensor_volts_per_mcu_volt = 5.51f / 3.3f; // Based on voltage divider
-
-    float mcu_volts_no_offset = value * mcu_volts_per_adc;
-    float mcu_volts = mcu_volts_no_offset - offset_mcu_volts;
-    float sensor_volts = mcu_volts * sensor_volts_per_mcu_volt;
-    return (amps_per_sensor_volt * sensor_volts);
-}
-
-
-/**
  * @brief Converts a raw sensor value to a brake pressure in PSI.
  *
  * @param sensor The sensor.
@@ -143,6 +119,9 @@ static int32_t adcToBrakePres_PSI(const cmr_sensor_t *sensor, uint32_t value) {
 
 // TODO calibrate all of these min/max values
 cmr_sensor_t sensors[SENSOR_CH_LEN] = {
+    //TODO: Delete HALL_EFFECT
+    //TODO: Edit VSM Sensors struct
+    //TODO: Include IVT On VEHRXMeta
     [SENSOR_CH_HALL_EFFECT_A] = {
         .sample = sampleADCSensor,
         .conv = adc_to_hv_current,
@@ -153,6 +132,7 @@ cmr_sensor_t sensors[SENSOR_CH_LEN] = {
     },
     [SENSOR_CH_BPRES_PSI] = {
         .sample = sampleADCSensor,
+        //TODO: Delete conversion function
         .conv = adcToBrakePres_PSI,
         .readingMin = 0,            // TODO
         .readingMax = CMR_ADC_MAX,  // TODO
@@ -204,6 +184,7 @@ int32_t getVoltage_mV(void) {
         float EMD_voltage_V = (EMD_Measurement->voltage);  
         return ((int32_t) EMD_voltage_V * 1000.0f); 
     }
+    //TODO: Get IVT from VEH, update VEH RX
     cmr_canIVTreadings_t *IVT_Measurement = canTractiveGetPayload(CANRX_TRAC_IVT_VOLTAGE); 
     int32_t IVT_voltage_mV = big_endian_to_int32(&(IVT_Measurement->message));
     return IVT_voltage_mV;

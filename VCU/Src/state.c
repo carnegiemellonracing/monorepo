@@ -7,7 +7,7 @@
  *
  * @author Carnegie Mellon Racing
  */
-
+//TODO: Copy paste again from VSM main
 // ------------------------------------------------------------------------------------------------
 // Includes
 
@@ -336,7 +336,7 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
 
             break;
         }
-        
+         
         case CMR_CAN_VSM_STATE_INVERTER_EN: {
             if (invertersPass(lastWakeTime_ms)){
                 if (AutonomousClear()) {
@@ -584,6 +584,7 @@ static bool getDVBrakeDeployable(void){
     return brakes_deployable;
 }
 
+//TODO: Use HVC BPRES Sensor
 /**
  * @brief Checks if the DV brakes are currently deployed
  * @note  This should be active before attempting to state up

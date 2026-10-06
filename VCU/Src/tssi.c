@@ -47,7 +47,7 @@ static void tssiControl(void *pvParameters) {
     static bool exitedErrorState = false;
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        //TODO: Wait for new HVC CAN Message
+        //TODO: Wait for new HVC CAN Message and or AMS and IMD error
         
         cmr_canVCUtssiIndicator_t* tssiState = canVehicleGetPayload(CANRX_VEH_TSSI_LIGHT);
 

@@ -16,7 +16,7 @@
  * @see `CMR/pwm.h` for various initialization values.
  */
 
-
+//TODO: Talk to Saketh about PWM Left and Right fans 
  //DCM Pins
 static cmr_pwmPin_t pwmPinConfigs[PWM_LEN] = {
     [PWM_PUMP_LEFT] = {
