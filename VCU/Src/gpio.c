@@ -25,9 +25,6 @@
  * @see `stm32f4xx_hal_gpio.h` for various initialization values.
  */
 static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
-
-    //DCM GPIOs
-
     [GPIO_LED_STATUS] = {
         .port = GPIOA,
         .init = {
@@ -127,9 +124,6 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
             .Speed = GPIO_SPEED_FREQ_LOW
         }
     },
-
-
-    //VSM GPIOS
 
     [GPIO_OUT_LED_STATUS] = {
         .port = GPIOB,

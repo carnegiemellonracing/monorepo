@@ -371,7 +371,7 @@ static int getBadModuleState(canVehicleRX_t module, cmr_canVSMState_t vsmState, 
 __attribute__((unused)) static bool getASEmergency(){
     return false;
 }
-
+//TODO: Get 4 motors error off CAN 
 /**
  * @brief Check all inverters if endurance mode. Else, check RR inverter
 */
