@@ -224,7 +224,6 @@ void cmr_pwmSetDutyCycle(cmr_pwm_t *pwmChannel, uint32_t dutyCycle_pcnt) {
     }
 }
 
-//TODO: Complete this abstraction function
 /**
   * @brief  Allows input capture on a PWM pin
   * @param  pwmChannel The PWM channel to set capture the signal on
@@ -234,7 +233,7 @@ void cmr_pwmInputInit (cmr_pwm_t *pwmChannel) {
     configASSERT(pwmChannel != NULL);
 
     TIM_IC_InitTypeDef icConfig = {
-        .ICPolarity = TIM_ICPOLARITY_RISING,  /*!< Specifies the active edge of the input signal.
+        .ICPolarity = TIM_ICPOLARITY_BOTHEDGE,  /*!< Specifies the active edge of the input signal.
         .ICSelection = TIM_ICSELECTION_DIRECTTI,  /*!< Specifies the input.
         .ICPrescaler = TIM_ICPSC_DIV1,  /*!< Specifies the Input Capture Prescaler.
         .ICFilter = 0
