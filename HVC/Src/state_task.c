@@ -148,11 +148,11 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
             if (HVCCommand->modeRequest != CMR_CAN_HVC_MODE_CHARGE) {
                 // T17: Mode requested is not CHARGE
                 nextState = CMR_CAN_HVC_STATE_DISCHARGE; 
-            } else if (true || abs(HVBMSPackVoltage->battVoltage_mV - getHVmillivolts()) < 5000) {
+            } else if (true || abs(HVBMSPackVoltage->battVoltage_mV - getHVmillivolts()) < 5000) { //TODO: Check this condition
                 // T11: Contactors are closed
                 nextState = CMR_CAN_HVC_STATE_CHARGE_TRICKLE;
             } else {
-                nextState = CMR_CAN_HVC_STATE_CHARGE_PRECHARGE_COMPLETE;
+                nextState = CMR_CAN_HVC_STATE_CHARGE_PRECHARGE_COMPLETE; //TODO: probably delete 
             }
             break;
         }
@@ -177,6 +177,9 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
             if (HVCCommand->modeRequest != CMR_CAN_HVC_MODE_CHARGE) {
                 // T15: Mode requested is not CHARGE
                 nextState = CMR_CAN_HVC_STATE_DISCHARGE;
+            } else if (HVBMSPackVoltage->battVoltage_mV > 3320) { //TODO: CHECK CHECK CHECK, this is 0.8*4.15V (Max voltage)
+                //T20: Cell Voltage above ___, switch to constant voltage charging
+                nextState = CMR_CAN_HVC_STATE_CHARGE_CONSTANT_VOLTAGE;
             } else if (packMaxCellVoltage >= 4280) {
                 // T13: Maximum cell voltage > 4.15V, reached max cell voltage cannot continue charging 
                 nextState = CMR_CAN_HVC_STATE_DISCHARGE; //discharge 

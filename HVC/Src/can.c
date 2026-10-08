@@ -140,7 +140,25 @@ static void canTX100Hz(void *pvParameters) {
 /** @brief CAN 100 Hz TX period (milliseconds). */
 static const TickType_t canTX200Hz_period_ms = 5;
 
+/** @brief CAN 100 Hz TX task. */
+static cmr_task_t canTX200Hz_task; 
 
+/**
+ * @brief Task for sending CAN messages at 200 Hz.
+ *
+ * @param pvParameters Ignored.
+ *
+ * @return Does not return.
+ */
+static void canTX200Hz(void *pvParameters) {
+    (void) pvParameters;
+
+    TickType_t lastWakeTime = xTaskGetTickCount();
+    while (1) {
+        sendHVCPower(); 
+        vTaskDelayUntil(&lastWakeTime, canTX200Hz_period_ms);
+    }
+}
 /**
  * @brief Initializes the CAN interface.
  */
