@@ -21,6 +21,8 @@
 #include "sensors.h" // Board-specific sensors interface
 #include "state.h"   // Board-specific state machine interface
 
+#include "fans.h"
+
 /** @brief Status LED priority. */
 static const uint32_t statusLED_priority = 2;
 
@@ -90,6 +92,8 @@ int main(void) {
         statusLED,
         NULL
     );
+
+    fanInit();
 
     vTaskStartScheduler();
     cmr_panic("vTaskStartScheduler returned!");

@@ -16,7 +16,8 @@
  */
 typedef enum {
     GPIO_LED_STATUS = 0,    /**< @brief Status LED. */
-    GPIO_PROCESSED_PWM,     /**< @brief Processed PWM. */
+    GPIO_CHARGE_ENABLE,
+    // GPIO_FAN_ON,
     GPIO_LEN    /**< @brief Total GPIO pins. */
 } gpio_t;
 

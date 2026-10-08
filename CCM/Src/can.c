@@ -28,6 +28,7 @@
  * @note Indexed by `canRX_t`.
  */
 cmr_canRXMeta_t canVehicleRXMeta[] = {
+    // XXX Edit this to include the appropriate periodic messages.
     [CANRX_HVC_HEARTBEAT] = {
         .canID = CMR_CANID_HEARTBEAT_HVC,
         .timeoutError_ms = 50,
@@ -61,8 +62,9 @@ cmr_canRXMeta_t canVehicleRXMeta[] = {
  * @note Indexed by `canRX_t`.
  */
 cmr_canRXMeta_t canChargerOneRXMeta[] = {
+    // XXX Edit this to include the appropriate periodic messages.
     [CANRX_CHARGER_ONE_STATE] = {
-        .canID = CMR_CANID_DILONG_ONE_STATE,
+        .canID = CMR_CANID_DILONG_STATE,
         .timeoutError_ms = 2000,
         .timeoutWarn_ms = 1500
     }
@@ -74,8 +76,9 @@ cmr_canRXMeta_t canChargerOneRXMeta[] = {
  * @note Indexed by `canRX_t`.
  */
 cmr_canRXMeta_t canChargerTwoRXMeta[] = {
+    // XXX Edit this to include the appropriate periodic messages.
     [CANRX_CHARGER_TWO_STATE] = {
-        .canID = CMR_CANID_DILONG_TWO_STATE,
+        .canID = CMR_CANID_DILONG_STATE,
         .timeoutError_ms = 2000,
         .timeoutWarn_ms = 1500
     }
@@ -202,8 +205,8 @@ void canInit(void) {
             .rxFIFO = CAN_RX_FIFO1,
             .ids = {
                 .extended = {
-                    CMR_CANID_DILONG_ONE_STATE,
-                    CMR_CANID_DILONG_TWO_STATE
+                    CMR_CANID_DILONG_STATE,
+                    CMR_CANID_DILONG_STATE
                 }
             }
         }
@@ -223,8 +226,8 @@ void canInit(void) {
             .rxFIFO = CAN_RX_FIFO1,
             .ids = {
                 .extended = {
-                    CMR_CANID_DILONG_ONE_STATE,
-                    CMR_CANID_DILONG_TWO_STATE
+                    CMR_CANID_DILONG_STATE,
+                    CMR_CANID_DILONG_STATE
                 }
             }
         }
@@ -245,11 +248,12 @@ void canInit(void) {
                 .standard = {
                     CMR_CANID_HEARTBEAT_HVC,
                     CMR_CANID_HVC_PACK_VOLTAGE, // TODO: Should these be in the same one, etc.
-                    CMR_CANID_HVC_MINMAX_CELL_TEMPS, 
-                    CMR_CANID_HEARTBEAT_HVC, 
+                    CMR_CANID_HVC_MINMAX_CELL_TEMPS,
+                    CMR_CANID_HEARTBEAT_HVC,
                 }
             }
         },
+        {
             .isMask = false,
             .isExtended = false,
             .rxFIFO = CAN_RX_FIFO0,

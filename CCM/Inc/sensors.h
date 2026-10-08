@@ -14,7 +14,9 @@
 typedef enum {
     SENSOR_CH_PILOT_DUTY,           /**< @brief Pilot signal duty cycle */
     SENSOR_CH_PILOT_VOLTAGE,        /**< @brief Pilot signal voltage */
-    SENSOR_CH_PROCESSED_PWM,        /**< @brief Processed PWM signal */
+    SENSOR_CH_THERM_1,
+    SENSOR_CH_THERM_2,
+    SENSOR_CH_SAFETY,
     SENSOR_CH_LEN                   /**< @brief Total number of sensors. */
 } sensorChannel_t;
 

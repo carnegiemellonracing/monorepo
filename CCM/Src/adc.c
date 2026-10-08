@@ -31,11 +31,24 @@ static cmr_adcChannel_t adcChannels[ADC_LEN] = {
         .samplingTime = ADC_SAMPLETIME_15CYCLES,
         .value = 0
     },
-    //TODO: update values depending on board config!
-    [ADC_PROCESSED_PWM] = {
-        .channel = ADC_CHANNEL_9,
-        .port = GPIOB,
+    [ADC_THERM_1] = {
+        .channel = ADC_CHANNEL_10,
+        .port = GPIOC,
+        .pin = GPIO_PIN_0,
+        .samplingTime = ADC_SAMPLETIME_15CYCLES,
+        .value = 0
+    },
+    [ADC_THERM_2] = {
+        .channel = ADC_CHANNEL_10,
+        .port = GPIOC,
         .pin = GPIO_PIN_1,
+        .samplingTime = ADC_SAMPLETIME_15CYCLES,
+        .value = 0
+    },
+    [ADC_SAFETY] = {
+        .channel = ADC_CHANNEL_13,
+        .port = GPIOC,
+        .pin = GPIO_PIN_3,
         .samplingTime = ADC_SAMPLETIME_15CYCLES,
         .value = 0
     }

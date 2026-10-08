@@ -18,7 +18,9 @@
 typedef enum {
     ADC_AVG_OUT = 0,        /**< @brief Pilot circuit duty cycle */
     ADC_PEAK_OUT,       /**< @brief Pilot circuit amplitude detection */
-    ADC_PROCESSED_PWM, /**< @brief Processed PWM to determine duty cycle */
+    ADC_THERM_1,
+    ADC_THERM_2,
+    ADC_SAFETY,
     ADC_LEN     /**< @brief Total ADC channels. */
 } adcChannel_t;
 

@@ -19,6 +19,7 @@ typedef enum {
     EVSE_LEN
 } evseState_t;
 
+evseState_t getEvseState(int32_t voltage);
 uint32_t getEvseCurrentLimit(int32_t dutyCycle);
 
 #endif

@@ -24,22 +24,25 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
     [GPIO_LED_STATUS] = {
         .port = GPIOA,
         .init = {
-            .Pin = GPIO_PIN_21,
+            .Pin = GPIO_PIN_5,
             .Mode = GPIO_MODE_OUTPUT_PP,
             .Pull = GPIO_NOPULL,
             .Speed = GPIO_SPEED_FREQ_LOW
         }
     },
-    //TODO: Get specific pins here
-    [GPIO_PROCESSED_PWM] = {
-        .port = GPIOA,
+    [GPIO_CHARGE_ENABLE] = {
+        .port = GPIOC,
         .init = {
-            .Pin = GPIO_PIN_58,
-            .Mode = GPIO_MODE_OUTPUT_PP,
-            .Pull = GPIO_NOPULL,
-            .Speed = GPIO_SPEED_FREQ_LOW
+             .Pin = GPIO_PIN_4,
+             .Pull = GPIO_NOPULL,
+#ifdef MCU_ONE
+             .Mode = GPIO_MODE_OUTPUT_PP,
+             .Speed = GPIO_SPEED_FREQ_LOW
+#elif MCU_TWO
+             .Mode = GPIO_MODE_INPUT,
+#endif
         }
-    },
+    }
 };
 
 /**

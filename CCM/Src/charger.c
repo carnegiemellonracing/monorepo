@@ -75,14 +75,14 @@ static uint16_t getChargerVoltage(charger_t charger, bool slowCharge) {
     uint16_t packVoltage = canHVCPackVoltage->hvVoltage_mV; //voltage is in mV
     uint16_t voltage = min(CHARGER_VOLTAGE_BASE,
                           (packVoltage / MV_TO_DV) + CHARGER_VOLTAGE_OFFSET);
-
+#ifdef MCU_ONE
     volatile cmr_canHVCPackMinMaxCellVolages_t *canCellVoltage = (void *) canVehicleRXMeta[CANRX_HVC_CELL_VOLTAGE].payload;
     uint16_t maxCellVoltage_mV = canCellVoltage->maxCellVoltage_mV;
 
     volatile cmr_canHVCPackVoltage_t* canPackVoltage = (void *) canVehicleRXMeta[CANRX_HVC_PACK_VOLTAGE].payload;
     int32_t packVoltage_mV = canPackVoltage->hvVoltage_mV;
 
- 
+
     if (maxCellVoltage_mV >= 4250 || slowCharge) {
         voltage = (uint16_t) ((packVoltage_mV) / 100);
         voltage = min(voltage, 6000);
@@ -91,7 +91,20 @@ static uint16_t getChargerVoltage(charger_t charger, bool slowCharge) {
         voltage = CHARGER_VOLTAGE_BASE;
     }
 
-    return voltage;
+    if (charger == CHARGER_ONE) {
+        /*
+        * MCU_ONE's first charger is always on during charging.
+        *
+        * This voltage is lower than the other chargers in order to keep
+        * charger one in constant voltage mode.
+        */
+        return voltage;
+    } else {
+#endif
+        return voltage;
+#ifdef MCU_ONE
+    }
+#endif
 }
 /**
  * @brief Return what current level the charger should be
@@ -148,6 +161,8 @@ static void setChargerCommand(charger_t charger, uint16_t maxVoltage_dV, uint16_
         command->chargerDisable = true;
         command->enableHeating = 0; // Never enable heating
 
+        cmr_gpioWrite(GPIO_CHARGE_ENABLE, 0);
+
         return;
     }
 
@@ -159,6 +174,7 @@ static void setChargerCommand(charger_t charger, uint16_t maxVoltage_dV, uint16_
     command->chargerDisable = chargerDisable;
     command->enableHeating = 0; // Never enable heating
 
+    cmr_gpioWrite(GPIO_CHARGE_ENABLE, 1);
 }
 
 void updateChargerCommands(cmr_CCMState_t state) {
@@ -187,7 +203,6 @@ void updateChargerCommands(cmr_CCMState_t state) {
             setChargerCommand(CHARGER_TWO, 0, 0, true);
         }
         break;
-
     case CMR_CCM_STATE_ERROR:
     case CMR_CCM_STATE_CLEAR_ERROR:
     case CMR_CCM_STATE_STANDBY:
