@@ -84,7 +84,7 @@ static cmr_can_t can;
 
 // Forward declarations
 static void sendHeartbeat(TickType_t lastWakeTime);
-static void sendHVCPower(); 
+static void sendHVCSensors(); 
 static void sendBMSLowVoltage(void);
 
 /** @brief CAN 10 Hz TX priority. */
@@ -96,24 +96,6 @@ static const TickType_t canTX10Hz_period_ms = 100;
 /** @brief CAN 10 Hz TX task. */
 static cmr_task_t canTX10Hz_task;
 
-/**
- * @brief Task for sending CAN messages at 10 Hz.
- *
- * @param pvParameters Ignored.
- *
- * @return Does not return.
- */
-static void canTX10Hz(void *pvParameters) {
-    (void) pvParameters;    // Placate compiler.
-
-    TickType_t lastWakeTime = xTaskGetTickCount();
-    while (1) {
-        // BRUSA Charger decided by state machine 
-        // sendBRUSAChargerControl();
-
-        vTaskDelayUntil(&lastWakeTime, canTX10Hz_period_ms);
-    }
-}
 
 /** @brief CAN 100 Hz TX priority. */
 static const uint32_t canTX100Hz_priority = 5;
@@ -224,14 +206,6 @@ void canInit(void) {
         canTX100Hz,
         NULL
     );
-    // cmr_taskInit(
-    //     &canTX200Hz_task,
-    //     "CAN TX 200Hz",
-    //     canTX200Hz_priority,
-    //     canTX200Hz,
-    //     NULL
-    // );
-}
 
 /**
  * @brief Sends a CAN message with the given ID.
@@ -327,7 +301,7 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
 }
 
 /** @brief calc that power bitch */
-static void sendHVCPower() {
+static void sendHVCSensors() {
 	int32_t power;
     int16_t voltage;
     int16_t current;
@@ -339,8 +313,11 @@ static void sendHVCPower() {
     power = (voltage * 100) * (current * 10);
 
     cmr_canHVSense_t hv_sensors = {
-        .packVoltage_cV = getHVmillivolts() / 1000
-    }; 
+        .packCurrent_dA = adcRead(ADC_ISENSE),
+        .packVoltage_cV = getHVmillivolts() / 1000,
+        .brakePressureRear_PSI =    cmr_sensorListGetValue(&sensorList, SENSOR_CH_BPRES_PSI),,
+        .hv_current_A =             cmr_sensorListGetValue(&sensorList, SENSOR_CH_HALL_EFFECT_A),   
+    };
 
 
     canTX(CMR_CANID_HV_SENSORS, &hv_sensors, sizeof(hv_sensors), canTX200Hz_period_ms);

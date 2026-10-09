@@ -27,6 +27,9 @@ typedef enum {
     GPIO_TO_WATCHDOG,
 	SAFETY_BINARY, 
 	RX_TURNON,
+    GPIO_IN_BSPD_ERR_N,         /**< @brief BSPD latch input signal. */
+    GPIO_IN_IMD_ERR_N,          /**< @brief IMD latch input signal. */
+    GPIO_IN_IMD_ERR_COND_N,     /**< @brief IMD un-latch input signal. */
     GPIO_LEN    /**< @brief Total GPIO pins. */
 } gpio_t;
 

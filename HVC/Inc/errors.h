@@ -11,6 +11,7 @@
 
 static const int32_t maxPackCurrentInstantMA = 400000;
 static const int32_t maxPackCurrentAverageMA = 110000;
+bool getAMSError();
 
 // Receive mailbox metadata struct
 typedef struct ReceiveMeta_t {

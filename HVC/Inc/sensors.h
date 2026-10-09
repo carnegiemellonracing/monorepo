@@ -19,7 +19,9 @@ typedef enum {
 	SENSOR_CH_SAFETY         = 1, /** @brief Safety Circuit Input Voltage */
 	SENSOR_CH_VSENSE         = 2, /** @brief TS Voltage */
 	SENSOR_CH_ISENSE         = 3, /** @brief TS Current */ 
-    SENSOR_CH_VREF,        /**< @brief Hall Effect Reference Voltage */ 
+    SENSOR_CH_VREF,           /**< @brief Hall Effect Reference Voltage */ 
+	SENSOR_CH_HALL_EFFECT_A,  /**< @brief Hall effect sensor for accumulator current. */
+    SENSOR_CH_BPRES_PSI,      /**< @brief Rear brake pressure sensor. */
 	SENSOR_CH_LEN     /**< @brief Total ADC channels. */
 } sensorChannel_t;
 
