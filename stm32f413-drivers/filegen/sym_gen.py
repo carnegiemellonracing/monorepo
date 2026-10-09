@@ -65,6 +65,9 @@ def add_mapper_data(canid, cycletime, timeout, structlines):
             structlines.append("["+name[0]+"]")
         else:
             board = re.search(r'CMR_CANID_HEARTBEAT_(\w+)', canid); 
+            if board is None:  # Add this check
+                print(f"ERROR: HEARTBEAT CAN ID '{canid}' doesn't match expected pattern 'CMR_CANID_HEARTBEAT_<BOARD>'")
+                sys.exit(1)
             boardname = board.group(1) 
             structlines.append("["+boardname+"_HEARTBEAT]") 
         if id2hex(name[0]):
@@ -93,6 +96,9 @@ def create_prefix(name, canid):
     append_can_name = can_name[0].split("_")[1]+"_"+name 
     if "HEARTBEAT" in canid: 
         board = re.search(r'CMR_CANID_HEARTBEAT_(\w+)', canid); 
+        if board is None:  # Add this check
+            print(f"ERROR: HEARTBEAT CAN ID '{canid}' doesn't match expected pattern")
+            sys.exit(1)
         boardname = board.group(1) 
         append_can_name = boardname+"_HEARTBEAT_"+name 
     if len(append_can_name) >= 30:
