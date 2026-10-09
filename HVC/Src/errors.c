@@ -4,13 +4,12 @@
 static bool checkHVCCommandTimeout();
 
 static cmr_canHVCError_t errorRegister = CMR_CAN_HVC_ERROR_NONE;
+bool getAMSError(); //forward declaration
 
 
 cmr_canHVCError_t checkHVCErrors(cmr_canHVCState_t currentState){
     clearHVCErrorReg();
     cmr_canHVCError_t errorFlags = errorRegister;
-    cmr_canError_t heartbeatErrors = CMR_CAN_ERROR_NONE;
-    uint8_t latchMatrix = CMR_CAN_VSM_LATCH_NONE;
     if(checkHVCCommandTimeout()) { 
         // TODO E1 check the timeout field of the command mes sage meta data
         errorFlags |= CMR_CAN_HVC_ERROR_CAN_TIMEOUT;
@@ -43,30 +42,21 @@ cmr_canHVCError_t checkHVCErrors(cmr_canHVCState_t currentState){
     // cmr_canHeartbeat_t* hvbms_heartbeat = (cmr_canHeartbeat_t*) getPayload(CANRX_HEARTBEAT_HVBMS); 
     // cmr_canHVCError_t hvbms_errors;
     // memcpy(&hvbms_errors, hvbms_heartbeat->error, sizeof(hvbms_heartbeat->error));
-    // errorFlags |= hvbms_errors;
     
     if (!cmr_gpioRead(GPIO_IN_IMD_ERR_N)) {
-        heartbeatErrors |= CMR_CAN_ERROR_VSM_LATCHED_ERROR;
-        latchMatrix |= CMR_CAN_VSM_LATCH_IMD;
-        sendFirstError(LATCH_IMD_ERR);
+        errorFlags |= CMR_CAN_HVC_LATCH_IMD;
     }
     if (!cmr_gpioRead(GPIO_IN_BSPD_ERR_N)) {
-        heartbeatErrors |= CMR_CAN_ERROR_VSM_LATCHED_ERROR;
-        latchMatrix |= CMR_CAN_VSM_LATCH_BSPD;
-        sendFirstError(LATCH_BSPD_ERR);
+        errorFlags |= CMR_CAN_HVC_LATCH_BSPD;
     }
 
      if (getAMSError()) {
         cmr_gpioWrite(GPIO_OUT_AMS_ERR_N, 0);
+        errorFlags |= CMR_CAN_HVC_LATCH_AMS;
     }
     else {
         cmr_gpioWrite(GPIO_OUT_AMS_ERR_N, 1);
     }
-
-      errorFlags |= heartbeatErrors;
-      errorFlags |= latchMatrix; //TODO: check how to structure these errors
-      
- 
     
     errorRegister = errorFlags;
     
@@ -90,3 +80,13 @@ static bool checkHVCCommandTimeout() {
 
 	return hvc_commmand_error;
 }
+
+bool getAMSError(){
+    return false;
+    // TickType_t now = xTaskGetTickCount();
+    // cmr_canHVCHeartbeat_t *hvcHeartbeat = getPayload(CANRX_HEARTBEAT_HVC);
+    // return (cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_HEARTBEAT_HVC]), now) != 0)
+    //  || (cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_HEARTBEAT_HVBMS]), now) != 0)
+    //  || (hvcHeartbeat->errorStatus & CMR_CAN_HVBMS_ERROR_PACK_OVERVOLT)
+    //  || (hvcHeartbeat->errorStatus & CMR_CAN_HVBMS_ERROR_CELL_OVERVOLT);
+} //TODO check if this code needs to be uncommented

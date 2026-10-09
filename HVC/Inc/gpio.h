@@ -30,6 +30,7 @@ typedef enum {
     GPIO_IN_BSPD_ERR_N,         /**< @brief BSPD latch input signal. */
     GPIO_IN_IMD_ERR_N,          /**< @brief IMD latch input signal. */
     GPIO_IN_IMD_ERR_COND_N,     /**< @brief IMD un-latch input signal. */
+    GPIO_OUT_AMS_ERR_N,         /**< @brief AMS error Driver. */
     GPIO_LEN,    /**< @brief Total GPIO pins. */
 } gpio_t;
 

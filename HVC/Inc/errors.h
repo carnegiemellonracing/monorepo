@@ -27,6 +27,13 @@ void clearHVCErrorReg(void);
 
 cmr_canHVCError_t getHVCErrorReg(void);
 
+typedef enum {
+    LATCH_IMD_ERR,
+    LATCH_BSPD_ERR,
+} hvcErrorCode_t;
+
+extern const uint16_t brakePressureThreshold_PSI;
+
 
 // Heartbeat timeout	
 #define HEARTBEAT_TIMEOUT	50		// Periods of 10ms

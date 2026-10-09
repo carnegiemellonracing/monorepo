@@ -30,6 +30,8 @@ typedef enum {
     CANRX_LEN,     /**< @brief Number of periodic CAN messages. */
 } canRX_t;
 
+
+
 extern cmr_canRXMeta_t canRXMeta[];
 
 void canInit(void);

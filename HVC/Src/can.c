@@ -26,6 +26,8 @@
 #define V_TRANS_B -8313.3
 
 
+
+
 /**
  * @brief CAN periodic message receive metadata
  *
@@ -293,7 +295,7 @@ static void sendHVCSensors() {
     cmr_canHVSense_t hv_sensors = {
         .packCurrent_dA = adcRead(ADC_ISENSE),
         .packVoltage_cV = getHVmillivolts() / 1000,
-        .brakePressureRear_PSI =    cmr_sensorListGetValue(&sensorList, SENSOR_CH_BPRES_PSI),,
+        .brakePressureRear_PSI =    cmr_sensorListGetValue(&sensorList, SENSOR_CH_BPRES_PSI),
         .hv_current_A =             cmr_sensorListGetValue(&sensorList, SENSOR_CH_HALL_EFFECT_A),   
     };
 
