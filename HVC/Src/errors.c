@@ -2,6 +2,7 @@
 #include <string.h> //memcpy
 
 static bool checkHVCCommandTimeout();
+bool getAMSError(); //forward declaration
 
 static cmr_canHVCError_t errorRegister = CMR_CAN_HVC_ERROR_NONE;
 
@@ -40,25 +41,21 @@ cmr_canHVCError_t checkHVCErrors(cmr_canHVCState_t currentState){
     }
      
     if (!cmr_gpioRead(GPIO_IN_IMD_ERR_N)) {
-        heartbeatErrors |= CMR_CAN_ERROR_VSM_LATCHED_ERROR;
-        latchMatrix |= CMR_CAN_VSM_LATCH_IMD;
+        errorFlags |= CMR_CAN_HVC_LATCH_IMD;
         sendFirstError(LATCH_IMD_ERR);
     }
     if (!cmr_gpioRead(GPIO_IN_BSPD_ERR_N)) {
-        heartbeatErrors |= CMR_CAN_ERROR_VSM_LATCHED_ERROR;
-        latchMatrix |= CMR_CAN_VSM_LATCH_BSPD;
+        errorFlags |= CMR_CAN_VSM_LATCH_BSPD;
         sendFirstError(LATCH_BSPD_ERR);
     }
 
      if (getAMSError()) {
+        errorFlags |= CMR_CAN_HVC_LATCH_AMS;
         cmr_gpioWrite(GPIO_OUT_AMS_ERR_N, 0);
     }
     else {
         cmr_gpioWrite(GPIO_OUT_AMS_ERR_N, 1);
     }
-
-      errorFlags |= heartbeatErrors;
-      errorFlags |= latchMatrix; //TODO: check how to structure these errors
 
     errorRegister = errorFlags;
     
@@ -82,3 +79,13 @@ static bool checkHVCCommandTimeout() {
 
 	return hvc_commmand_error;
 }
+
+bool getAMSError(){
+    return false;
+    // TickType_t now = xTaskGetTickCount();
+    // cmr_canHVCHeartbeat_t *hvcHeartbeat = getPayload(CANRX_HEARTBEAT_HVC);
+    // return (cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_HEARTBEAT_HVC]), now) != 0)
+    //  || (cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_HEARTBEAT_HVBMS]), now) != 0)
+    //  || (hvcHeartbeat->errorStatus & CMR_CAN_HVBMS_ERROR_PACK_OVERVOLT)
+    //  || (hvcHeartbeat->errorStatus & CMR_CAN_HVBMS_ERROR_CELL_OVERVOLT);
+} //TODO check if this code needs to be uncommented

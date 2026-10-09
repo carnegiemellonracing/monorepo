@@ -520,22 +520,27 @@ typedef enum {
 
 /** @brief High Voltage Controller error bit vector definitions. */
 typedef enum {
-    CMR_CAN_HVC_ERROR_NONE = 0x0000,    /**< @brief No errors detected. */
+    CMR_CAN_HVC_ERROR_NONE = 0x00000,    /**< @brief No errors detected. */
 
     // Pack errors
-    CMR_CAN_HVC_ERROR_PACK_UNDERVOLT   = 0x0001,    /**< @brief Pack voltage too low. */
-    CMR_CAN_HVC_ERROR_PACK_OVERVOLT    = 0x0002,    /**< @brief Pack voltage too high. */
-    CMR_CAN_HVC_ERROR_PACK_OVERCURRENT = 0x0008,    /**< @brief Pack current too high. */
+    CMR_CAN_HVC_ERROR_PACK_UNDERVOLT   = 0x00001,    /**< @brief Pack voltage too low. */
+    CMR_CAN_HVC_ERROR_PACK_OVERVOLT    = 0x00002,    /**< @brief Pack voltage too high. */
+    CMR_CAN_HVC_ERROR_PACK_OVERCURRENT = 0x00008,    /**< @brief Pack current too high. */
 
     // Cell errors
-    CMR_CAN_HVC_ERROR_CELL_UNDERVOLT = 0x0010,  /**< @brief At least one cell is undervoltage. */
-    CMR_CAN_HVC_ERROR_CELL_OVERVOLT  = 0x0020,  /**< @brief At least one cell is overvoltage. */
-    CMR_CAN_HVC_ERROR_CELL_OVERTEMP  = 0x0040,  /**< @brief At least one cell has overheated. */
-    CMR_CAN_HVC_ERROR_BMB_FAULT      = 0x0080,  /**< @brief At least one BMB has faulted. */
+    CMR_CAN_HVC_ERROR_CELL_UNDERVOLT = 0x00010,  /**< @brief At least one cell is undervoltage. */
+    CMR_CAN_HVC_ERROR_CELL_OVERVOLT  = 0x00020,  /**< @brief At least one cell is overvoltage. */
+    CMR_CAN_HVC_ERROR_CELL_OVERTEMP  = 0x00040,  /**< @brief At least one cell has overheated. */
+    CMR_CAN_HVC_ERROR_BMB_FAULT      = 0x00080,  /**< @brief At least one BMB has faulted. */
 
     // Communication errors
-    CMR_CAN_HVC_ERROR_BMB_TIMEOUT = 0x0100, /**< @brief BMB has timed out. */
-    CMR_CAN_HVC_ERROR_CAN_TIMEOUT = 0x0200, /**< @brief HVC command timed out. */
+    CMR_CAN_HVC_ERROR_BMB_TIMEOUT = 0x00100, /**< @brief BMB has timed out. */
+    CMR_CAN_HVC_ERROR_CAN_TIMEOUT = 0x00200, /**< @brief HVC command timed out. */
+
+    //Moved errors from VSM
+    CMR_CAN_HVC_LATCH_IMD  = 0x01000, /**< @brief IMD error latch is active. */
+    CMR_CAN_HVC_LATCH_BSPD = 0x02000, /**< @brief BSPD error latch is active */
+    CMR_CAN_HVC_LATCH_AMS  = 0x03000, /**< @brief AMS errors use software error latch. */ 
 
     // Other errors
     CMR_CAN_HVC_ERROR_RELAY        = (1<<12),    /**< @brief Fault with AIRs. */
