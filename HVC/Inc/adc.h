@@ -16,6 +16,8 @@
  */
 typedef enum {
 	ADC_AIR_POWER       = 0,
+	ADC_HALL_EFFECT,    /**< @brief Hall effect sense. */
+	ADC_REAR_BRAKE_PRES,    /**< @brief Rear brake pressure sense. */
 	ADC_SAFETY,
 	ADC_VSENSE,
 	ADC_ISENSE,

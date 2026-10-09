@@ -74,7 +74,7 @@ static cmr_can_t can;
 
 // Forward declarations
 static void sendHeartbeat(TickType_t lastWakeTime);
-static void sendHVCPower(); 
+static void sendHVCSensors(); 
 static void sendBMSLowVoltage(void);
 
 /** @brief CAN 10 Hz TX priority. */
@@ -86,24 +86,6 @@ static const TickType_t canTX10Hz_period_ms = 100;
 /** @brief CAN 10 Hz TX task. */
 static cmr_task_t canTX10Hz_task;
 
-/**
- * @brief Task for sending CAN messages at 10 Hz.
- *
- * @param pvParameters Ignored.
- *
- * @return Does not return.
- */
-static void canTX10Hz(void *pvParameters) {
-    (void) pvParameters;    // Placate compiler.
-
-    TickType_t lastWakeTime = xTaskGetTickCount();
-    while (1) {
-        // BRUSA Charger decided by state machine 
-        // sendBRUSAChargerControl();
-
-        vTaskDelayUntil(&lastWakeTime, canTX10Hz_period_ms);
-    }
-}
 
 /** @brief CAN 100 Hz TX priority. */
 static const uint32_t canTX100Hz_priority = 5;
@@ -117,15 +99,11 @@ static cmr_task_t canTX100Hz_task;
 static void canTX100Hz(void *pvParameters) {
     (void) pvParameters;    // Placate compiler.
 
-//    cmr_canRXMeta_t *heartbeatVSMMeta = canRXMeta + CANRX_HEARTBEAT_VSM;
-//    volatile cmr_canHeartbeat_t *heartbeatVSM =
-//        (void *) heartbeatVSMMeta->payload;
-
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
         sendHeartbeat(lastWakeTime);
         sendBMSLowVoltage(); 
-        sendHVCPower(); 
+        sendHVCSensors(); 
 
         vTaskDelayUntil(&lastWakeTime, canTX100Hz_period_ms);
     }
@@ -152,7 +130,7 @@ static void canTX200Hz(void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        sendHVCPower(); 
+        sendHVCSensors(); 
 
         vTaskDelayUntil(&lastWakeTime, canTX200Hz_period_ms);
     }
@@ -200,14 +178,6 @@ void canInit(void) {
         &can, canFilters, sizeof(canFilters) / sizeof(canFilters[0])
     );
 
-    // Task initialization.
-    cmr_taskInit(
-        &canTX10Hz_task,
-        "CAN TX 10Hz",
-        canTX10Hz_priority,
-        canTX10Hz,
-        NULL
-    );
     cmr_taskInit(
         &canTX100Hz_task,
         "CAN TX 100Hz",
@@ -311,7 +281,7 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
 }
 
 /** @brief calc that power bitch */
-static void sendHVCPower() {
+static void sendHVCSensors() {
 	int32_t power;
     int16_t voltage;
     int16_t current;
@@ -322,15 +292,12 @@ static void sendHVCPower() {
 
     cmr_canHVSense_t hv_sensors = {
         .packCurrent_dA = adcRead(ADC_ISENSE),
-        .packVoltage_cV = getHVmillivolts() / 1000
-        // (getHVmillivolts() / 1000)
-    }; 
+        .packVoltage_cV = getHVmillivolts() / 1000,
+        .brakePressureRear_PSI =    cmr_sensorListGetValue(&sensorList, SENSOR_CH_BPRES_PSI),,
+        .hv_current_A =             cmr_sensorListGetValue(&sensorList, SENSOR_CH_HALL_EFFECT_A),   
+    };
 
-    //hv_sensors->packPower_W = power;   
-
-    uint16_t voltageRaw, currentRaw;
-	voltageRaw = adcRead(ADC_VSENSE);
-	currentRaw = 0;
+        // (getHVmillivolts() / 1000) 
 
     canTX(CMR_CANID_HV_SENSORS, &hv_sensors, sizeof(hv_sensors), canTX200Hz_period_ms);
 }

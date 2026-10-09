@@ -118,15 +118,6 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
             .Speed = GPIO_SPEED_FREQ_LOW
         }
     },
-    [GPIO_IN_BSPD_ERR_UNLATCH] = {
-        .port = GPIOB,
-        .init = {
-            .Pin = GPIO_PIN_9,
-            .Mode = GPIO_MODE_INPUT,
-            .Pull = GPIO_NOPULL,
-            .Speed = GPIO_SPEED_FREQ_LOW
-        }
-    },
      [GPIO_IN_BSPD_ERR_N] = {
         .port = GPIOC,
         .init = {

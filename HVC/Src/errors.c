@@ -5,9 +5,12 @@ static bool checkHVCCommandTimeout();
 
 static cmr_canHVCError_t errorRegister = CMR_CAN_HVC_ERROR_NONE;
 
+
 cmr_canHVCError_t checkHVCErrors(cmr_canHVCState_t currentState){
     clearHVCErrorReg();
     cmr_canHVCError_t errorFlags = errorRegister;
+    cmr_canError_t heartbeatErrors = CMR_CAN_ERROR_NONE;
+    uint8_t latchMatrix = CMR_CAN_VSM_LATCH_NONE;
     if(checkHVCCommandTimeout()) { 
         // TODO E1 check the timeout field of the command mes sage meta data
         errorFlags |= CMR_CAN_HVC_ERROR_CAN_TIMEOUT;
@@ -40,8 +43,31 @@ cmr_canHVCError_t checkHVCErrors(cmr_canHVCState_t currentState){
     // cmr_canHeartbeat_t* hvbms_heartbeat = (cmr_canHeartbeat_t*) getPayload(CANRX_HEARTBEAT_HVBMS); 
     // cmr_canHVCError_t hvbms_errors;
     // memcpy(&hvbms_errors, hvbms_heartbeat->error, sizeof(hvbms_heartbeat->error));
-    // errorFlags |= hvbms_errors; 
+    // errorFlags |= hvbms_errors;
+    
+    if (!cmr_gpioRead(GPIO_IN_IMD_ERR_N)) {
+        heartbeatErrors |= CMR_CAN_ERROR_VSM_LATCHED_ERROR;
+        latchMatrix |= CMR_CAN_VSM_LATCH_IMD;
+        sendFirstError(LATCH_IMD_ERR);
+    }
+    if (!cmr_gpioRead(GPIO_IN_BSPD_ERR_N)) {
+        heartbeatErrors |= CMR_CAN_ERROR_VSM_LATCHED_ERROR;
+        latchMatrix |= CMR_CAN_VSM_LATCH_BSPD;
+        sendFirstError(LATCH_BSPD_ERR);
+    }
 
+     if (getAMSError()) {
+        cmr_gpioWrite(GPIO_OUT_AMS_ERR_N, 0);
+    }
+    else {
+        cmr_gpioWrite(GPIO_OUT_AMS_ERR_N, 1);
+    }
+
+      errorFlags |= heartbeatErrors;
+      errorFlags |= latchMatrix; //TODO: check how to structure these errors
+      
+ 
+    
     errorRegister = errorFlags;
     
     return errorFlags;

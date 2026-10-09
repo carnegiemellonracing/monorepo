@@ -34,6 +34,8 @@
  * @brief Mapping of sensor channels to ADC channels.
  */
 static const adcChannels_t sensorsADCCHANNELS[SENSOR_CH_LEN] = {
+    [SENSOR_CH_HALL_EFFECT_A] = ADC_HALL_EFFECT, //from VSM
+    [SENSOR_CH_BPRES_PSI]      = ADC_REAR_BRAKE_PRES, //from VSM
 	[SENSOR_CH_VREF] = ADC_VREF, //keep, from hvi 
 	[SENSOR_CH_AIR_POWER]  = ADC_AIR_POWER,
 	[SENSOR_CH_SAFETY]     = ADC_SAFETY,
@@ -107,8 +109,50 @@ static int32_t adcToVref(const cmr_sensor_t *sensor, uint32_t reading) {
     return vref;
 }
 
+/**
+ * @brief Converts a raw sensor value to a brake pressure in PSI.
+ *
+ * @param sensor The sensor.
+ * @param value The raw value.
+ *
+ * @return Front brake pressure in PSI.
+ */
+static int32_t adcToBrakePres_PSI(const cmr_sensor_t *sensor, uint32_t value) {
+    // https://www.variohm.com/images/datasheets/EPT3100_0113_F_1.pdf
+    // EPT3100-H-10000 is (0, 100) bar, (0.5, 4.5) V
+    // Divider is 5-to-3.3 V -> (0.333, 3) V
+    // 100 bar is 1450 PSI
+    static const uint32_t offset = 360;     // 0.333 V offset
+
+    (void) sensor;  // Placate compiler.
+
+    if (value < offset) {
+        // Clamp to 0.
+        value = offset;
+    }
+
+    uint32_t brakePres_PSI = (value - offset) * 1450 / 3313;
+    return (int32_t) brakePres_PSI;
+}
+
 
 static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
+     [SENSOR_CH_HALL_EFFECT_A] = { //moving over from VSM
+        .sample = sampleADCSensor,
+        .conv = adc_to_hv_current,
+        .readingMin = 0,            // TODO
+        .readingMax = CMR_ADC_MAX,  // TODO
+        .outOfRange_pcnt = 10,
+        .errorFlag = CMR_CAN_ERROR_NONE
+    },
+    [SENSOR_CH_BPRES_PSI] = { //moving over from VSM
+        .sample = sampleADCSensor,
+        .conv = adcToBrakePres_PSI,
+        .readingMin = 0,            // TODO
+        .readingMax = CMR_ADC_MAX,  // TODO
+        .outOfRange_pcnt = 10,
+        .errorFlag = CMR_CAN_ERROR_VSM_BPRES
+    },
 	[SENSOR_CH_AIR_POWER] = { //hvc 
 		.conv = ADCtoMV_24v,
 		.sample = sampleADCSensor,
@@ -218,4 +262,5 @@ int32_t getHVmilliamps(){
 int32_t getHVIvref(){
     return ((int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_VREF)); 
 }
+
 
