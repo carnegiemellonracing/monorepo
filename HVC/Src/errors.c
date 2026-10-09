@@ -42,11 +42,9 @@ cmr_canHVCError_t checkHVCErrors(cmr_canHVCState_t currentState){
      
     if (!cmr_gpioRead(GPIO_IN_IMD_ERR_N)) {
         errorFlags |= CMR_CAN_HVC_LATCH_IMD;
-        sendFirstError(LATCH_IMD_ERR);
     }
     if (!cmr_gpioRead(GPIO_IN_BSPD_ERR_N)) {
         errorFlags |= CMR_CAN_VSM_LATCH_BSPD;
-        sendFirstError(LATCH_BSPD_ERR);
     }
 
      if (getAMSError()) {
@@ -79,6 +77,7 @@ static bool checkHVCCommandTimeout() {
 
 	return hvc_commmand_error;
 }
+
 
 bool getAMSError(){
     return false;
