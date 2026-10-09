@@ -11,9 +11,9 @@
             "type": "uint8_t"
         },
         "CMR_CANID_AS_MISSION_FINISHED": {
-            "cycleTime": 100,
-            "timeOut": 500,
-            "type": "missionFinished"
+            "cycleTime": 5,
+            "timeOut": 25,
+            "type": "asFinishedData"
         },
         "CMR_CANID_AS_PRESSURE_READINGS": {
             "cycleTime": 10,
@@ -332,10 +332,6 @@
             "timeOut": 25,
             "type": "cmr_canCubeMarsData_t"
         },
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> b2139936 (Changed cmake permissions, unused variables, and added volatile qualifiers)
         "CMR_CANID_DAQ_0_LOADCELL": {
             "cycleTime": 100.0,
             "differential_voltage_uv": {
@@ -392,8 +388,6 @@
             "timeOut": 500,
             "type": "cmr_canIZZELoadCell_t"
         },
-<<<<<<< HEAD
-<<<<<<< HEAD
         "CMR_CANID_DAQ_VSM_HEARTBEAT": {
             "cycleTime": 10,
             "error": {
@@ -408,12 +402,6 @@
                 "enumstruct": "cmr_canVSMHeartbeatWrn_t cmr_canCDCHeartbeatWrn_t cmr_canFSMHeartbeatWrn_t"
             }
         },
-=======
->>>>>>> 9106a3c1 (updated CMR_CANID_HVC_MINMAX_CELL_TEMPS and CMR_CANID_HVC_MINMAX_CELL_VOLTAGE to HVBMS)
-=======
->>>>>>> f9edbaba (Revert "updated CMR_CANID_HVC_MINMAX_CELL_TEMPS and CMR_CANID_HVC_MINMAX_CELL_VOLTAGE to HVBMS")
-=======
->>>>>>> b2139936 (Changed cmake permissions, unused variables, and added volatile qualifiers)
         "CMR_CANID_DIM_ACKNOWLEDGE": {
             "cycleTime": 100,
             "timeOut": 500,
@@ -479,17 +467,6 @@
             },
             "cycleTime": 100,
             "timeOut": 500,
-            "type": "cmr_canEMDMeasurements_t",
-            "voltage": {
-                "u": "V"
-            }
-        },
-        "CMR_CANID_EMD_MEASUREMENT_RETX": {
-            "current": {
-                "u": "A"
-            },
-            "cycleTime": 10.0,
-            "timeOut": 50,
             "type": "cmr_canEMDMeasurements_t",
             "voltage": {
                 "u": "V"
@@ -1040,35 +1017,20 @@
         "canrx_prefixes_used": [
             "CANRX_"
         ],
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-        "files_processed": 2901,
-        "files_with_matches": 2901,
-=======
-        "files_processed": 2831,
-        "files_with_matches": 2831,
->>>>>>> 9106a3c1 (updated CMR_CANID_HVC_MINMAX_CELL_TEMPS and CMR_CANID_HVC_MINMAX_CELL_VOLTAGE to HVBMS)
-=======
-        "files_processed": 2905,
-        "files_with_matches": 2905,
->>>>>>> f9edbaba (Revert "updated CMR_CANID_HVC_MINMAX_CELL_TEMPS and CMR_CANID_HVC_MINMAX_CELL_VOLTAGE to HVBMS")
-=======
-        "files_processed": 2849,
-        "files_with_matches": 2849,
->>>>>>> b2139936 (Changed cmake permissions, unused variables, and added volatile qualifiers)
+        "files_processed": 2840,
+        "files_with_matches": 2840,
         "global_mappings": {
-            "canrx_mappings": 192,
-            "canrx_timeouts": 182,
-            "canrx_types": 64,
-            "constants": 267,
+            "canrx_mappings": 193,
+            "canrx_timeouts": 183,
+            "canrx_types": 63,
+            "constants": 269,
             "struct_members": 0,
-            "variable_types": 328
+            "variable_types": 329
         },
         "prefixes_used": [
             "CMR_CANID_",
             "CAN_ID_"
         ],
-        "total_canids": 111
+        "total_canids": 110
     }
 }

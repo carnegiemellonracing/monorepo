@@ -25,6 +25,11 @@
 /** @brief Intercept for voltage sense transfer function */
 #define V_TRANS_B -8313.3
 
+//Forward declarations
+static void sendHeartbeat(TickType_t lastWakeTime);
+static void sendHVCSensors(); 
+static void sendBMSLowVoltage(void);
+
 
 /**
  * @brief CAN periodic message receive metadata
@@ -82,11 +87,6 @@ cmr_canRXMeta_t canRXMeta[] = {
 /** @brief Primary CAN interface. */
 static cmr_can_t can;
 
-// Forward declarations
-static void sendHeartbeat(TickType_t lastWakeTime);
-static void sendHVCSensors(); 
-static void sendBMSLowVoltage(void);
-
 /** @brief CAN 10 Hz TX priority. */
 static const uint32_t canTX10Hz_priority = 4;
 
@@ -113,7 +113,7 @@ static void canTX100Hz(void *pvParameters) {
     while (1) {
         sendHeartbeat(lastWakeTime);
         sendBMSLowVoltage(); 
-        sendHVCPower(); 
+        sendHVCSensors(); 
 
         vTaskDelayUntil(&lastWakeTime, canTX100Hz_period_ms);
     }
@@ -137,7 +137,7 @@ static void canTX200Hz(void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        sendHVCPower(); 
+        sendHVCSensors(); 
         vTaskDelayUntil(&lastWakeTime, canTX200Hz_period_ms);
     }
 }
@@ -190,15 +190,6 @@ void canInit(void) {
     cmr_canFilter(
         &can, canFilters, sizeof(canFilters) / sizeof(canFilters[0])
     );
-
-    // Task initialization.
-    cmr_taskInit(
-        &canTX10Hz_task,
-        "CAN TX 10Hz",
-        canTX10Hz_priority,
-        canTX10Hz,
-        NULL
-    );
     cmr_taskInit(
         &canTX100Hz_task,
         "CAN TX 100Hz",
@@ -206,6 +197,7 @@ void canInit(void) {
         canTX100Hz,
         NULL
     );
+}
 
 /**
  * @brief Sends a CAN message with the given ID.
@@ -315,9 +307,10 @@ static void sendHVCSensors() {
     cmr_canHVSense_t hv_sensors = {
         .packCurrent_dA = adcRead(ADC_ISENSE),
         .packVoltage_cV = getHVmillivolts() / 1000,
-        .brakePressureRear_PSI =    cmr_sensorListGetValue(&sensorList, SENSOR_CH_BPRES_PSI),,
+        .brakePressureRear_PSI =    cmr_sensorListGetValue(&sensorList, SENSOR_CH_BPRES_PSI), //TODO where should this be
         .hv_current_A =             cmr_sensorListGetValue(&sensorList, SENSOR_CH_HALL_EFFECT_A),   
     };
+    
 
 
     canTX(CMR_CANID_HV_SENSORS, &hv_sensors, sizeof(hv_sensors), canTX200Hz_period_ms);
@@ -332,3 +325,4 @@ static void sendBMSLowVoltage(void) {
 
     canTX(CMR_CANID_HVC_LOW_VOLTAGE, &BMSLowVoltage, sizeof(BMSLowVoltage), canTX100Hz_period_ms);
 }
+

@@ -22,6 +22,12 @@ typedef struct ReceiveMeta_t {
     uint8_t wrongStateFlag;
 } ReceiveMeta_t;
 
+typedef enum {
+    LATCH_IMD_ERR,
+    LATCH_BSPD_ERR,
+} hvcErrorCode_t;
+
+extern const uint16_t brakePressureThreshold_PSI;
 cmr_canHVCError_t checkHVCErrors(cmr_canHVCState_t currentState);
 void clearHVCErrorReg(void);
 

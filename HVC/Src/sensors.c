@@ -108,7 +108,7 @@ static int32_t adcToVref(const cmr_sensor_t *sensor, uint32_t reading) {
 }
 
 
-static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
+
     /**
  * @brief Converts a raw sensor value to a brake pressure in PSI.
  *
@@ -133,6 +133,29 @@ static int32_t adcToBrakePres_PSI(const cmr_sensor_t *sensor, uint32_t value) {
 
     uint32_t brakePres_PSI = (value - offset) * 1450 / 3313;
     return (int32_t) brakePres_PSI;
+}
+
+/**
+ * @brief Converts a raw sensor value into accumulator current draw.
+ *
+ * @param sensor The sensor.
+ * @param value The raw value.
+ *
+ * @return Current in amps
+ */
+static int32_t adc_to_hv_current(const cmr_sensor_t *sensor, uint32_t value) {
+    (void) sensor;  // Placate compiler.
+
+    // https://www.lem.com/sites/default/files/products_datasheets/ho_50_250-s-0100_series.pdf
+    float mcu_volts_per_adc = 3.3f / 4096.0f; 
+    float offset_mcu_volts = 1.568f; // Reading at 0 amps off car
+    float amps_per_sensor_volt = 125.0f / 2.0f;
+    float sensor_volts_per_mcu_volt = 5.51f / 3.3f; // Based on voltage divider
+
+    float mcu_volts_no_offset = value * mcu_volts_per_adc;
+    float mcu_volts = mcu_volts_no_offset - offset_mcu_volts;
+    float sensor_volts = mcu_volts * sensor_volts_per_mcu_volt;
+    return (int8_t) (amps_per_sensor_volt * sensor_volts);
 }
 
 

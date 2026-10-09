@@ -91,8 +91,7 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
             .Speed = GPIO_SPEED_FREQ_LOW
         }
     },
-    ,
-     [GPIO_OUT_AMS_ERR_N] = {
+    [GPIO_OUT_AMS_ERR_N] = {
         .port = GPIOB,
         .init = {
             .Pin = GPIO_PIN_6,

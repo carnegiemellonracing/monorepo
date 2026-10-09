@@ -39,6 +39,7 @@ void canInit(void);
 int canTX(cmr_canID_t id, const void *data, size_t len, TickType_t timeout);
 
 volatile void *getPayload(canRX_t rxMsg);
+void sendFirstError(uint8_t error_code);
 
 #endif /* CAN_H */
 
