@@ -150,10 +150,6 @@ static cmr_task_t canTX200Hz_task;
 static void canTX200Hz(void *pvParameters) {
     (void) pvParameters;    // Placate compiler.
 
-//    cmr_canRXMeta_t *heartbeatVSMMeta = canRXMeta + CANRX_HEARTBEAT_VSM;
-//    volatile cmr_canHeartbeat_t *heartbeatVSM =
-//        (void *) heartbeatVSMMeta->payload;
-
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
         sendHVCPower(); 
@@ -219,13 +215,6 @@ void canInit(void) {
         canTX100Hz,
         NULL
     );
-    // cmr_taskInit(
-    //     &canTX200Hz_task,
-    //     "CAN TX 200Hz",
-    //     canTX200Hz_priority,
-    //     canTX200Hz,
-    //     NULL
-    // );
 }
 
 /**
