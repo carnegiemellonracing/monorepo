@@ -54,6 +54,8 @@ typedef enum {
     CANRX_VEH_DTI_ERROR_CODE,
     CANRX_VEH_AS_MISSION_FINISHED,
     CANRX_VEH_TSSI_LIGHT,
+    CANRX_TRAC_EMD_MEASUREMENT,
+    CANRX_TRAC_EMD_TEMPERATURE,
     CANRX_VEH_LEN                   /**< @brief Number of periodic CAN messages. */
 } canVehicleRX_t;
 
@@ -107,8 +109,6 @@ typedef enum {
     CANRX_TRAC_DTI_ERROR_MESSAGES,
     CANRX_TRAC_HVI_SENSE,             /**< @brief High voltage, current, and power sense in inverters. */
 
-    CANRX_TRAC_EMD_MEASUREMENT,
-    CANRX_TRAC_EMD_TEMPERATURE,
     CANRX_TRAC_IVT_CURRENT, 
     CANRX_TRAC_IVT_VOLTAGE,
     

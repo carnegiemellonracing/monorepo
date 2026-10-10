@@ -264,10 +264,18 @@ cmr_canRXMeta_t canVehicleRXMeta[CANRX_VEH_LEN] = {
         .timeoutWarn_ms = 75,
         .warnFlag = CMR_CAN_WARN_NONE
     },
-
+    [CANRX_TRAC_EMD_MEASUREMENT] = {
+        .canID = CMR_CANID_EMD_MEASUREMENT,
+        .timeoutError_ms = 2000,
+        .timeoutWarn_ms = 1000
+    },
+    [CANRX_TRAC_EMD_TEMPERATURE] = {
+        .canID = CMR_CANID_EMD_TEMPERATURE,
+        .timeoutError_ms = 2500,
+        .timeoutWarn_ms = 2000
+    },
 };
 
-//TODO: Move EMD CAN IDs into VEH
 #define dti_timeout 1000
 /** @brief Metadata for tractive CAN message reception. */
 cmr_canRXMeta_t canTractiveRXMeta[CANRX_TRAC_LEN] = {
@@ -487,16 +495,6 @@ cmr_canRXMeta_t canTractiveRXMeta[CANRX_TRAC_LEN] = {
     },
     [CANRX_TRAC_RR_TEST] = {
         .canID = CMR_CANID_DTI_RR_TEST
-    },
-    [CANRX_TRAC_EMD_MEASUREMENT] = {
-        .canID = CMR_CANID_EMD_MEASUREMENT,
-        .timeoutError_ms = 2000,
-        .timeoutWarn_ms = 1000
-    },
-    [CANRX_TRAC_EMD_TEMPERATURE] = {
-        .canID = CMR_CANID_EMD_TEMPERATURE,
-        .timeoutError_ms = 2500,
-        .timeoutWarn_ms = 2000
     },
     [CANRX_TRAC_IVT_CURRENT] = {
         .canID = CMR_CANID_IVT_CURRENT,
