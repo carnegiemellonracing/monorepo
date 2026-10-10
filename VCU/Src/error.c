@@ -97,7 +97,7 @@ void updateCurrentErrors(volatile vsmStatus_t *vsmStatus, TickType_t lastWakeTim
     // }
 
     // Check all latches
-    if (!cmr_gpioRead(GPIO_IN_SOFTWARE_ERR_N)) {
+    if (!cmr_gpioRead(GPIO_SOFTWARE_ERR_N)) {
         heartbeatErrors |= CMR_CAN_ERROR_VSM_LATCHED_ERROR;
         latchMatrix |= CMR_CAN_VSM_LATCH_SOFTWARE;
         sendFirstError(LATCH_SOFTWARE_ERR);

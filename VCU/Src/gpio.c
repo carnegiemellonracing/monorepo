@@ -25,16 +25,6 @@
  * @see `stm32f4xx_hal_gpio.h` for various initialization values.
  */
 static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
-//REMOVE GPIO_LED_STATUS 
-    [GPIO_BRKLT_ENABLE] = {
-        .port = GPIOG,
-        .init = {
-            .Pin = GPIO_PIN_11,
-            .Mode = GPIO_MODE_OUTPUT_PP,
-            .Pull = GPIO_NOPULL,
-            .Speed = GPIO_SPEED_FREQ_LOW
-        }
-    },
 
     [GPIO_FAN_ON] = {
         .port = GPIOC,
@@ -95,10 +85,8 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
             .Speed = GPIO_SPEED_FREQ_LOW
         }
     },
-//REMOVE GPIO_PUMP_ON
 
-    //REMOVE GPIO_AUXILIARY_ENABLE and GPIO_MTR_CTRL_ENABLE
-    [GPIO_AUX_1] = {
+    [GPIO_MTR_CTRL_ENABLE] = {
         .port = GPIOB,
         .init = {
             .Pin = GPIO_PIN_0,
@@ -108,7 +96,7 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
         }
     },
 
-    [GPIO_AUX_2] = {
+    [GPIO_BRKLT_ENABLE] = {
         .port = GPIOA,
         .init = {
             .Pin = GPIO_PIN_4,
@@ -117,7 +105,7 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
             .Speed = GPIO_SPEED_FREQ_LOW
         }
     },
-//REMOVE: GPIO_OUT_LED_STATUS
+
     [GPIO_MCU_STATUS] = {
         .port = GPIOA,
         .init = {
@@ -138,9 +126,8 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
         }
     },
 
-//REMOVE GPIO_IN_SOFTWARE_ERR_N and GPIO_OUT_SOFTWARE_ERR_N
-
-    [GPIO_IN_EAB] = {
+//RENAME GPIO_IN_EAB to GPIO_EAB_READ
+    [GPIO_EAB_READ] = {
         .port = GPIOC,
         .init = {
             .Pin = GPIO_PIN_7,
@@ -180,9 +167,8 @@ void gpioInit(void) {
         sizeof(gpioPinConfigs) / sizeof(gpioPinConfigs[0])
     );
 
-    /* DCM initialization */
-    cmr_gpioWrite(GPIO_AUXILIARY_ENABLE, 0);
+    cmr_gpioWrite(GPIO_MTR_CTRL_ENABLE, 0);
+    cmr_gpioWrite(GPIO_BRKLT_ENABLE, 0);
 
-    /* VSM initialization */
-    cmr_gpioWrite(GPIO_OUT_SOFTWARE_ERR_N, 1);
+    cmr_gpioWrite(GPIO_SOFTWARE_ERR_N, 1);
 }
