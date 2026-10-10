@@ -34,7 +34,6 @@ static const uint32_t FRAM_TIMEOUT = 1;
 
 /** @brief Primary, shared I2C interface */
 static cmr_i2c_t i2c_fram;
-static cmr_i2c_t i2c_ext;
 
 static void rtcInit(void);
 static void framInit(void);
@@ -68,16 +67,7 @@ void i2cInit() {
         GPIOB, GPIO_PIN_6,         /* Clock Port/Pin */
         GPIOB, GPIO_PIN_7          /* Data Port/Pin */
     );
-
-    //REMOVE EVERYTHING HERE
-    //NOTE: Check the actual channel fo I2C once board is done
-    // cmr_i2cInit(
-    //     &i2c_ext, I2C1,                // TODO: Increase Clock Speed if can't hit deadlines
-    //     I2C_CLOCK_LOW, 0, /* Clock Speed and own address */
-    //     GPIOC, GPIO_PIN_11,         /* Clock Port/Pin */
-    //     GPIOC, GPIO_PIN_10          /* Data Port/Pin */
-    // );
-
+    
     cmr_taskInit(
         &FRAM_task,
         "FRAM Task",
