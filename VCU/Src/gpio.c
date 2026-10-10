@@ -25,16 +25,7 @@
  * @see `stm32f4xx_hal_gpio.h` for various initialization values.
  */
 static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
-    [GPIO_LED_STATUS] = {
-        .port = GPIOA,
-        .init = {
-            .Pin = GPIO_PIN_2,
-            .Mode = GPIO_MODE_OUTPUT_PP,
-            .Pull = GPIO_NOPULL,
-            .Speed = GPIO_SPEED_FREQ_LOW
-        }
-    },
-
+//REMOVE GPIO_LED_STATUS 
     [GPIO_BRKLT_ENABLE] = {
         .port = GPIOG,
         .init = {
@@ -95,47 +86,7 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
         }
     },
 
-    [GPIO_PUMP_ON] = {
-        .port = GPIOA,
-        .init = {
-            .Pin = GPIO_PIN_0,
-            .Mode = GPIO_MODE_OUTPUT_PP,
-            .Pull = GPIO_NOPULL,
-            .Speed = GPIO_SPEED_FREQ_LOW
-        }
-    },
-
-    [GPIO_AUXILIARY_ENABLE] = {
-        .port = GPIOC,
-        .init = {
-            .Pin = GPIO_PIN_7,
-            .Mode = GPIO_MODE_OUTPUT_PP,
-            .Pull = GPIO_NOPULL,
-            .Speed = GPIO_SPEED_FREQ_LOW
-        }
-    },
-
-    [GPIO_MTR_CTRL_ENABLE] = {
-        .port = GPIOG,
-        .init = {
-            .Pin = GPIO_PIN_10,
-            .Mode = GPIO_MODE_OUTPUT_PP,
-            .Pull = GPIO_NOPULL,
-            .Speed = GPIO_SPEED_FREQ_LOW
-        }
-    },
-
-    [GPIO_OUT_LED_STATUS] = {
-        .port = GPIOB,
-        .init = {
-            .Pin = GPIO_PIN_4,
-            .Mode = GPIO_MODE_OUTPUT_PP,
-            .Pull = GPIO_NOPULL,
-            .Speed = GPIO_SPEED_FREQ_LOW
-        }
-    },
-
-    [GPIO_OUT_SOFTWARE_ERR_N] = {
+    [GPIO_FRAM_WP] = {
         .port = GPIOB,
         .init = {
             .Pin = GPIO_PIN_5,
@@ -144,16 +95,50 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
             .Speed = GPIO_SPEED_FREQ_LOW
         }
     },
+//REMOVE GPIO_PUMP_ON
 
-    [GPIO_IN_SOFTWARE_ERR_N] = {
-        .port = GPIOC,
+    //REMOVE GPIO_AUXILIARY_ENABLE and GPIO_MTR_CTRL_ENABLE
+    [GPIO_AUX_1] = {
+        .port = GPIOB,
         .init = {
-            .Pin = GPIO_PIN_12,
-            .Mode = GPIO_MODE_INPUT,
+            .Pin = GPIO_PIN_0,
+            .Mode = GPIO_MODE_OUTPUT_PP,
             .Pull = GPIO_NOPULL,
             .Speed = GPIO_SPEED_FREQ_LOW
         }
     },
+
+    [GPIO_AUX_2] = {
+        .port = GPIOA,
+        .init = {
+            .Pin = GPIO_PIN_4,
+            .Mode = GPIO_MODE_OUTPUT_PP,
+            .Pull = GPIO_NOPULL,
+            .Speed = GPIO_SPEED_FREQ_LOW
+        }
+    },
+//REMOVE: GPIO_OUT_LED_STATUS
+    [GPIO_MCU_STATUS] = {
+        .port = GPIOA,
+        .init = {
+            .Pin = GPIO_PIN_3,
+            .Mode = GPIO_MODE_OUTPUT_PP,
+            .Pull = GPIO_NOPULL,
+            .Speed = GPIO_SPEED_FREQ_LOW
+        }
+    },
+
+    [GPIO_SOFTWARE_ERR_N] = {
+        .port = GPIOC,
+        .init = {
+            .Pin = GPIO_PIN_5,
+            .Mode = GPIO_MODE_OUTPUT_PP,
+            .Pull = GPIO_NOPULL,
+            .Speed = GPIO_SPEED_FREQ_LOW
+        }
+    },
+
+//REMOVE GPIO_IN_SOFTWARE_ERR_N and GPIO_OUT_SOFTWARE_ERR_N
 
     [GPIO_IN_EAB] = {
         .port = GPIOC,
