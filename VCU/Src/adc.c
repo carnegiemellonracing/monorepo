@@ -26,35 +26,22 @@
  */
 static cmr_adcChannel_t adcChannels[ADC_LEN] = {
 
-    /* VSM channels */
-    [ADC_HALL_EFFECT] = {
+    [ADC_LV_HALL_EFFECT] = {
         .channel = ADC_CHANNEL_1,
         .port = GPIOA,
         .pin = GPIO_PIN_1,
         .samplingTime = ADC_SAMPLETIME_15CYCLES,
     },
+//REMOVE ADC_REAR_BRAKE_PRES
 
-    [ADC_REAR_BRAKE_PRES] = {
-        .channel = ADC_CHANNEL_2,
-        .port = GPIOA,
+    [ADC_VSENSE] = {
+        .channel = ADC_CHANNEL_12,
+        .port = GPIOC,
         .pin = GPIO_PIN_2,
         .samplingTime = ADC_SAMPLETIME_15CYCLES,
     },
 
-    [ADC_VSENSE] = {
-        .channel = ADC_CHANNEL_15,
-        .port = GPIOC,
-        .pin = GPIO_PIN_5,
-        .samplingTime = ADC_SAMPLETIME_15CYCLES,
-    },
-
-    [ADC_SSIN] = {
-        .channel = ADC_CHANNEL_7,
-        .port = GPIOA,
-        .pin = GPIO_PIN_7,
-        .samplingTime = ADC_SAMPLETIME_15CYCLES,
-    },
-
+    //REMOVE ADC_SS_IN
     [ADC_SSOUT] = {
         .channel = ADC_CHANNEL_14,
         .port = GPIOC,
