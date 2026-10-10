@@ -63,14 +63,14 @@ float getPackVoltage() {
 
 /** @brief returns the pack current */
 float getPackCurrent() {
-	volatile cmr_canHVSense_t *HVISense = canVehicleGetPayload(CANRX_HVI_SENSE);
-	return (((float)(HVISense->packCurrent_dA)) * 1e-1f) + 1.25; // convert to amps
+	volatile cmr_canHVSense_t *HVCSense = canVehicleGetPayload(CANRX_HVC_SENSE);
+	return (((float)(HVCSense->packCurrent_dA)) * 1e-1f) + 1.25; // convert to amps
 }
 
-/** @brief returns the pack power measured by HVISense */
+/** @brief returns the pack power measured by HVCSense */
 float getHVISensePackPower() {
-    volatile cmr_canHVSense_t *HVISense = canTractiveGetPayload(CANRX_HVI_SENSE);
-    const int32_t pack_power_mW = ((int32_t)(HVISense->packCurrent_dA)) * ((int32_t)(HVISense->packVoltage_cV));
+    volatile cmr_canHVSense_t *HVCSense = canTractiveGetPayload(CANRX_HVC_SENSE);
+    const int32_t pack_power_mW = ((int32_t)(HVCSense->packCurrent_dA)) * ((int32_t)(HVCSense->packVoltage_cV));
     return ((float)pack_power_mW) * 1e-3f; // convert to watts
 }
 

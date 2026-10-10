@@ -126,7 +126,7 @@ cmr_canRXMeta_t canVehicleRXMeta[CANRX_VEH_LEN] = {
         .errorFlag = CMR_CAN_ERROR_NONE,
         .warnFlag = CMR_CAN_WARN_NONE
     },
-	[CANRX_HVI_SENSE] = {
+	[CANRX_HVC_SENSE] = {
 	        .canID = CMR_CANID_HV_SENSORS,
 	        .timeoutError_ms = 100,
 	        .timeoutWarn_ms = 75
@@ -707,7 +707,6 @@ static void canTX10Hz(void *pvParameters) {
 
     cmr_canEMDMeasurements_t *emdMeasurements = canTractiveGetPayload(CANRX_TRAC_EMD_MEASUREMENT);
     cmr_canEMDTemperatures_t *emdTemperature  = canTractiveGetPayload(CANRX_TRAC_EMD_TEMPERATURE);
-    //TODO: Rename CANRX_HVI_SENSE to HVC_SENSE
 
     while (1) {
         
