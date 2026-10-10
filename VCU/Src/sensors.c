@@ -21,10 +21,8 @@ const adcChannel_t sensorsADCChannels[SENSOR_CH_LEN] =
 {
     //TODO: Remove potential ADC channels
     [SENSOR_CH_HALL_EFFECT_A] = ADC_HALL_EFFECT,
-    [SENSOR_CH_BPRES_PSI]      = ADC_REAR_BRAKE_PRES,
     [SENSOR_CH_VOLTAGE_MV]     = ADC_VSENSE,
-    [SENSOR_CH_SS_IN]          = ADC_SSIN,
-    [SENSOR_CH_SS_OUT]         = ADC_SSOUT
+    [SENSOR_CH_SS]          = ADC_SS
 };
 //TODO: Delete SENSOR_CH_BPRES_PSI and consolidate SENSOR_CH_SS_IN + SENSOR_CH_SS_OUT = SENSOR_CH_SS
 /**

@@ -8,15 +8,6 @@
 #include "adc.h"    // Interface to implement
 
 /**
- * TODO: Verify the ADC peripheral, channel, GPIO port/pin, and sampling time
- * for every channel against the new combined board schematic.
- *
- * The mappings below are carried over from the previous VSM and DCM boards.
- * The VSM channels previously used ADC1, while the DCM thermistor channels
- * previously used ADC3.
- */
-
-/**
  * @brief Board-specific ADC channel configuration.
  *
  * Replace/add more ADC channel configurations here as appropriate. Each
@@ -32,7 +23,6 @@ static cmr_adcChannel_t adcChannels[ADC_LEN] = {
         .pin = GPIO_PIN_1,
         .samplingTime = ADC_SAMPLETIME_15CYCLES,
     },
-//REMOVE ADC_REAR_BRAKE_PRES
 
     [ADC_VSENSE] = {
         .channel = ADC_CHANNEL_12,
@@ -41,8 +31,7 @@ static cmr_adcChannel_t adcChannels[ADC_LEN] = {
         .samplingTime = ADC_SAMPLETIME_15CYCLES,
     },
 
-    //REMOVE ADC_SS_IN
-    [ADC_SSOUT] = {
+    [ADC_SS_OUT] = {
         .channel = ADC_CHANNEL_14,
         .port = GPIOC,
         .pin = GPIO_PIN_4,
