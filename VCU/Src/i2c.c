@@ -65,17 +65,18 @@ void i2cInit() {
     cmr_i2cInit(
         &i2c_fram, I2C3,                // TODO: Increase Clock Speed if can't hit deadlines
         I2C_CLOCK_LOW, 0, /* Clock Speed and own address */
-        GPIOA, GPIO_PIN_8,         /* Clock Port/Pin */
-        GPIOC, GPIO_PIN_9          /* Data Port/Pin */
+        GPIOB, GPIO_PIN_6,         /* Clock Port/Pin */
+        GPIOB, GPIO_PIN_7          /* Data Port/Pin */
     );
 
+    //REMOVE EVERYTHING HERE
     //NOTE: Check the actual channel fo I2C once board is done
-    cmr_i2cInit(
-        &i2c_ext, I2C1,                // TODO: Increase Clock Speed if can't hit deadlines
-        I2C_CLOCK_LOW, 0, /* Clock Speed and own address */
-        GPIOC, GPIO_PIN_11,         /* Clock Port/Pin */
-        GPIOC, GPIO_PIN_10          /* Data Port/Pin */
-    );
+    // cmr_i2cInit(
+    //     &i2c_ext, I2C1,                // TODO: Increase Clock Speed if can't hit deadlines
+    //     I2C_CLOCK_LOW, 0, /* Clock Speed and own address */
+    //     GPIOC, GPIO_PIN_11,         /* Clock Port/Pin */
+    //     GPIOC, GPIO_PIN_10          /* Data Port/Pin */
+    // );
 
     cmr_taskInit(
         &FRAM_task,

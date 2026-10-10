@@ -1233,8 +1233,8 @@ void canInit(void) {
         CMR_CAN_BITRATE_500K,
         canVehicleRXMeta, sizeof(canVehicleRXMeta) / sizeof(canVehicleRXMeta[0]),
         NULL,
-        GPIOB, GPIO_PIN_12,     // CAN2 RX port/pin.
-        GPIOB, GPIO_PIN_13      // CAN2 TX port/pin.
+        GPIOA, GPIO_PIN_8,     // CAN2 RX port/pin.
+        GPIOB, GPIO_PIN_4      // CAN2 TX port/pin.
     );
 
     //TRAC CAN Init
@@ -1243,8 +1243,8 @@ void canInit(void) {
         CMR_CAN_BITRATE_500K,
         canVehicleRXMeta, sizeof(canVehicleRXMeta) / sizeof(canVehicleRXMeta[0]),
         NULL,
-        GPIOB, GPIO_PIN_12,     // CAN2 RX port/pin.
-        GPIOB, GPIO_PIN_13      // CAN2 TX port/pin.
+        GPIOB, GPIO_PIN_8,     // CAN2 RX port/pin.
+        GPIOB, GPIO_PIN_9      // CAN2 TX port/pin.
     );
 
     //TODO: Fit everything into 14 * 4 CAN Filters
