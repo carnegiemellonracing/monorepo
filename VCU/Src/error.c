@@ -150,10 +150,9 @@ static bool dimRequestIsValid(
 
     cmr_canFSMData_t *fsmData = canVehicleGetPayload(CANRX_VEH_FSM_DATA);
     uint16_t throttlePosition = fsmData->throttlePosition;
-
-    uint32_t brakePressureRear_PSI = cmr_sensorListGetValue(
-        &sensorList, SENSOR_CH_BPRES_PSI
-    );
+    
+    cmr_canHVSense_t *HVCSensors = canVehicleGetPayload(CANRX_HVC_SENSE); 
+    uint16_t brakePressureRear_PSI = HVCSensors -> brakePressureRear_PSI;
 
     bool valid = true;
     switch (dimRequestedState) {

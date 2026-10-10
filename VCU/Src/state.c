@@ -242,9 +242,8 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
     cmr_canFSMData_t *fsmData = canVehicleGetPayload(CANRX_VEH_FSM_DATA);
     uint16_t throttlePosition = fsmData->throttlePosition;
 
-    uint32_t brakePressureRear_PSI = cmr_sensorListGetValue(
-        &sensorList, SENSOR_CH_BPRES_PSI
-    );
+    cmr_canHVSense_t *HVCSensors = canVehicleGetPayload(CANRX_HVC_SENSE); 
+    uint16_t brakePressureRear_PSI = HVCSensors -> brakePressureRear_PSI;
 
     taskENTER_CRITICAL();
 
@@ -584,15 +583,13 @@ static bool getDVBrakeDeployable(void){
     return brakes_deployable;
 }
 
-//TODO: Use HVC BPRES Sensor
 /**
  * @brief Checks if the DV brakes are currently deployed
  * @note  This should be active before attempting to state up
  */
 static bool getDVBrakeActive(void){
-    uint32_t brakePressureRear_PSI = cmr_sensorListGetValue(&sensorList, SENSOR_CH_BPRES_PSI);
-    cmr_canFSMData_t *fsmData = canVehicleGetPayload(CANRX_VEH_FSM_DATA);
-    uint16_t brakePressureFront_PSI = fsmData->brakePressureFront_PSI;
+    cmr_canHVSense_t *HVCSensors = canVehicleGetPayload(CANRX_HVC_SENSE); 
+    uint16_t brakePressureRear_PSI = HVCSensors -> brakePressureRear_PSI;
 
     bool brakes_active = brakePressureFront_PSI > FRONT_MINIMUM_BRAKING_PSI &&  
             brakePressureRear_PSI  > REAR_MINIMUM_BRAKING_PSI;

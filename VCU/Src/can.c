@@ -671,8 +671,20 @@ const cmr_canVSMTimeoutErrorSource_t vsmErrorSourceFlags[CANRX_VEH_LEN] = {
 /** @brief CAN interfaces - Vehicle, DAQ, and Tractive */
 static cmr_can_t can[CMR_CAN_BUS_NUM];
 
+static bool detectedFirstError = false;
+
+// Forward declarations
 static void transmitDCM_DIMconfigMessages();
 static bool inverterMessagesValid();
+static void sendVSMHeartbeat(TickType_t lastWakeTime);
+static void sendVSMStatus(void);
+static void sendVSMSensors(void);
+static void sendVSMLatchedStatus(void);
+static void sendHVCCommand(void);
+static void sendRESEnable(void);
+void resetError(void);
+void sendFirstError(uint8_t error_code);
+void sendEMDMesaurements(void)
 
 /** @brief CAN 10 Hz TX priority. */
 static const uint32_t canTX10Hz_priority = 3;
@@ -703,14 +715,8 @@ static void canTX10Hz(void *pvParameters) {
 
     cmr_canDTI_ErrorMessages_t dtiErrorMessages;
 
-    cmr_canEMDMeasurements_t *emdMeasurements = canTractiveGetPayload(CANRX_TRAC_EMD_MEASUREMENT);
-    cmr_canEMDTemperatures_t *emdTemperature  = canTractiveGetPayload(CANRX_TRAC_EMD_TEMPERATURE);
-
     while (1) {
-        
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_EMD_MEASUREMENT, emdMeasurements, sizeof(cmr_canEMDMeasurements_t), canTX10Hz_period_ms);
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_EMD_TEMPERATURE, emdTemperature, sizeof(cmr_canEMDTemperatures_t), canTX10Hz_period_ms);
-        
+        sendEMDMesaurements(); 
         //TODO: add correct diagnostic messages here 
         //TODO: Consolidate CAN TX into functions and call the functions here
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_VCU_COULOMB_COUNTING, &coulombCounting, sizeof(cmr_canVCUKiloCoulombs_t), canTX10Hz_period_ms);
@@ -721,6 +727,11 @@ static void canTX10Hz(void *pvParameters) {
         vTaskDelayUntil(&lastWakeTime, canTX10Hz_period_ms);
     }
 }
+
+void {
+    canTX(CMR_CAN_BUS_VEH, CMR_CANID_VCU_COULOMB_COUNTING, &coulombCounting, sizeof(cmr_canVCUKiloCoulombs_t), canTX10Hz_period_ms);
+}
+
 
 /** @brief CAN latched status TX priority. */
 static const uint32_t canTXLatchedStatus_priority = 1;
@@ -751,18 +762,6 @@ static void canTXLatchedStatus(void *pvParameters) {
         vTaskDelayUntil(&lastWakeTime, canTXLatchedStatus_period_ms);
     }
 }
-
-static bool detectedFirstError = false;
-
-// Forward declarations
-static void sendVSMHeartbeat(TickType_t lastWakeTime);
-static void sendVSMStatus(void);
-static void sendVSMSensors(void);
-static void sendVSMLatchedStatus(void);
-static void sendHVCCommand(void);
-static void sendRESEnable(void);
-void resetError(void);
-void sendFirstError(uint8_t error_code);
 
 /** @brief CAN 100 Hz TX priority. */
 static const uint32_t canTX100Hz_priority = 5;
@@ -1838,4 +1837,13 @@ void sendFirstError(uint8_t error_code) {
 
 void resetError() {
     detectedFirstError = false;
+}
+
+void sendEMDMesaurements(void) {
+    cmr_canEMDMeasurements_t *emdMeasurements = canTractiveGetPayload(CANRX_TRAC_EMD_MEASUREMENT);
+    cmr_canEMDTemperatures_t *emdTemperature  = canTractiveGetPayload(CANRX_TRAC_EMD_TEMPERATURE);
+
+    canTX(CMR_CAN_BUS_VEH, CMR_CANID_EMD_MEASUREMENT, emdMeasurements, sizeof(cmr_canEMDMeasurements_t), canTX10Hz_period_ms);
+    canTX(CMR_CAN_BUS_VEH, CMR_CANID_EMD_TEMPERATURE, emdTemperature, sizeof(cmr_canEMDTemperatures_t), canTX10Hz_period_ms);
+        
 }

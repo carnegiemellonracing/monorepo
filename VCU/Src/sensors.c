@@ -22,9 +22,9 @@ const adcChannel_t sensorsADCChannels[SENSOR_CH_LEN] =
     //TODO: Remove potential ADC channels
     [SENSOR_CH_HALL_EFFECT_A] = ADC_HALL_EFFECT,
     [SENSOR_CH_VOLTAGE_MV]     = ADC_VSENSE,
-    [SENSOR_CH_SS]          = ADC_SS
+    [SENSOR_CH_SS_OUT]          = ADC_SS_OUT
 };
-//TODO: Delete SENSOR_CH_BPRES_PSI and consolidate SENSOR_CH_SS_IN + SENSOR_CH_SS_OUT = SENSOR_CH_SS
+
 /**
  * @brief Gets a new value from an ADC sensor.
  *
@@ -127,15 +127,6 @@ cmr_sensor_t sensors[SENSOR_CH_LEN] = {
         .readingMax = CMR_ADC_MAX,  // TODO
         .outOfRange_pcnt = 10,
         .errorFlag = CMR_CAN_ERROR_NONE
-    },
-    [SENSOR_CH_BPRES_PSI] = {
-        .sample = sampleADCSensor,
-        //TODO: Delete conversion function
-        .conv = adcToBrakePres_PSI,
-        .readingMin = 0,            // TODO
-        .readingMax = CMR_ADC_MAX,  // TODO
-        .outOfRange_pcnt = 10,
-        .errorFlag = CMR_CAN_ERROR_VSM_BPRES
     },
     [SENSOR_CH_VOLTAGE_MV] = {
         .conv = adcToBusVoltage_mV,
